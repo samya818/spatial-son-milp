@@ -557,6 +557,12 @@ body::before {
 <div class="nav-label"><strong>Hypotheses</strong><small>H1-H4 &amp; Justifications</small></div>
 <span class="nav-badge badge-phil">Phil</span>
 </a>
+<a class="nav-item phil-nav" href="#journey">
+<div class="nav-dot"></div>
+<div class="nav-num">§3</div>
+<div class="nav-label"><strong>Behind the Scenes</strong><small>The Engineering Journey</small></div>
+<span class="nav-badge badge-phil">Phil</span>
+</a>
 <div class="sidebar-section-label">— Completed</div>
 <a class="nav-item done-nav" href="#phase1">
 <div class="nav-dot"></div>
@@ -883,6 +889,51 @@ body::before {
 <strong>Reference:</strong> 3GPP TS 36.331, section 5.5.4.4: <em>"The UE shall trigger the A3 event when the RSRP of the neighbour cell becomes better than the RSRP of the serving cell by the offset configured by a3-Offset."</em> The offset is the only parameter configurable by SON in real time.
         </div>
 </div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     §3 — ENGINEERING JOURNEY (BEHIND THE SCENES)
+══════════════════════════════════════════ -->
+<div class="phase-section" id="journey">
+<div class="phase-header">
+<div class="phase-num-box phil">§3</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-phil">Behind the Scenes — Rigor & Exploration</span>
+</div>
+<div class="phase-title">The Engineering Journey: What You Don't See</div>
+<div class="phase-desc">The final solution is the culmination of a long exploration process. We present here the technical challenges and branches explored that forged the solidity of the current system.</div>
+</div>
+</div>
+
+<div class="philosophy-box">
+<h4>1. The "Model War": Beyond Boosting</h4>
+<p>Before adopting XGBoost and TiDE, we conducted deep benchmarks on alternative models:</p>
+<ul>
+  <li><strong>SARIMA Case Studies</strong>: We tested the statistical rigor of SARIMA on isolated cells (<code>benchmark_sarima_case_study.py</code>). While accurate on linear trends, its per-cell computational cost (several minutes) made it unusable for 1024 cells in real time.</li>
+  <li><strong>The Meta Prophet Approach</strong>: We explored Prophet (<code>eval_prophet.py</code>) for its native management of holidays and events. However, pure Machine Learning (Boosting) proved more responsive to the unpredictable traffic spikes of the Milan dataset.</li>
+</ul>
+</div>
+
+<div class="callout phil">
+<div class="callout-icon">🔬</div>
+<div class="callout-body">
+<strong>The Obsession with Mass Conservation</strong>
+<p>A major challenge was ensuring that traffic offloading did not create "ghost" bytes or make them disappear. We developed dedicated diagnostic tools (<code>debug_h_matrices.py</code>) to audit each spatial transfer matrix. Every byte leaving an antenna is tracked until its arrival at a neighbor, ensuring a physically irreproachable simulation.</p>
+</div>
+</div>
+
+<div class="philosophy-box">
+<h4>2. The Story of the Pivot: From 10,000 to 1,024 Cells</h4>
+<p>The project began with the ambition to cover the entire city of Milan (10,000 cells). The legacy scripts (<code>phase1_ingestion_10k.py</code>) bear witness to this phase. We quickly realized that for <strong>global</strong> optimization (MILP), geographic contiguity was more important than raw area. Switching to a dense 1024-cell block allowed for true cascade transfer simulation, where a scattered sample failed physically.</p>
+</div>
+
+<div class="callout info">
+<div class="callout-icon">💡</div>
+<div class="callout-body">
+<strong>The Refinement of Nominal Capacity</strong>
+<p>One of the project's most elegant ideas was not using a fixed capacity. By analyzing historical data, we created a <strong>Statistical Nominal Capacity</strong> (based on the 90th percentile per time slot). This allows the SON system to be "intelligent": it doesn't alert unnecessarily at night if traffic is low, but becomes extremely vigilant during peak hours.</p>
 </div>
 </div>
 </div>

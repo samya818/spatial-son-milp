@@ -557,6 +557,12 @@ body::before {
 <div class="nav-label"><strong>Hypothèses</strong><small>H1-H4 &amp; Justifications</small></div>
 <span class="nav-badge badge-phil">Phil</span>
 </a>
+<a class="nav-item phil-nav" href="#journey">
+<div class="nav-dot"></div>
+<div class="nav-num">§3</div>
+<div class="nav-label"><strong>Coulisses</strong><small>Le Parcours d'Ingénierie</small></div>
+<span class="nav-badge badge-phil">Phil</span>
+</a>
 <div class="sidebar-section-label">— Terminé</div>
 <a class="nav-item done-nav" href="#phase1">
 <div class="nav-dot"></div>
@@ -883,6 +889,51 @@ body::before {
 <strong>Référence :</strong> 3GPP TS 36.331, section 5.5.4.4 : <em>"The UE shall trigger the A3 event when the RSRP of the neighbour cell becomes better than the RSRP of the serving cell by the offset configured by a3-Offset."</em> L'offset est le seul paramètre configurable par le SON en temps réel.
         </div>
 </div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     §3 — ENGINEERING JOURNEY (BEHIND THE SCENES)
+══════════════════════════════════════════ -->
+<div class="phase-section" id="journey">
+<div class="phase-header">
+<div class="phase-num-box phil">§3</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-phil">Coulisses — Rigueur & Exploration</span>
+</div>
+<div class="phase-title">Le Parcours d'Ingénierie : Ce qu'on ne voit pas</div>
+<div class="phase-desc">La solution finale est l'aboutissement d'un long processus d'exploration. Nous présentons ici les défis techniques et les embranchements explorés qui ont forgé la solidité du système actuel.</div>
+</div>
+</div>
+
+<div class="philosophy-box">
+<h4>1. La "Guerre des Modèles" : Au-delà du Boosting</h4>
+<p>Avant d'adopter XGBoost et TiDE, nous avons mené des benchmarks profonds sur des modèles alternatifs :</p>
+<ul>
+  <li><strong>SARIMA Case Studies</strong> : Nous avons testé la rigueur statistique du SARIMA sur des cellules isolées (<code>benchmark_sarima_case_study.py</code>). Bien que précis sur les tendances linéaires, son coût de calcul par cellule (plusieurs minutes) le rendait inexploitable pour 1024 cellules en temps réel.</li>
+  <li><strong>L'approche Meta Prophet</strong> : Nous avons exploré Prophet (<code>eval_prophet.py</code>) pour sa gestion native des vacances et événements. Cependant, le Machine Learning pur (Boosting) s'est avéré plus réactif face aux pics de trafic imprévisibles du dataset Milan.</li>
+</ul>
+</div>
+
+<div class="callout phil">
+<div class="callout-icon">🔬</div>
+<div class="callout-body">
+<strong>L'obsession de la Conservation de la Masse</strong>
+<p>Un défi majeur a été de garantir que le délestage de trafic ne créait pas d'octets "fantômes" ou n'en faisait pas disparaître. Nous avons développé des outils de diagnostic dédiés (<code>debug_h_matrices.py</code>) pour auditer chaque matrice de transfert spatial. Chaque octet quittant une antenne est tracé jusqu'à son arrivée chez un voisin, garantissant une simulation physiquement irréprochable.</p>
+</div>
+</div>
+
+<div class="philosophy-box">
+<h4>2. L'Histoire du Pivot : De 10 000 à 1024 cellules</h4>
+<p>Le projet a commencé avec l'ambition de couvrir l'intégralité de la ville de Milan (10 000 cellules). Les scripts legacy (<code>phase1_ingestion_10k.py</code>) témoignent de cette phase. Nous avons rapidement réalisé que pour une optimisation <strong>globale</strong> (MILP), la contiguïté géographique était plus importante que la surface brute. Passer à un bloc dense de 1024 cellules a permis de simuler de vrais transferts en cascade, là où un échantillon dispersé échouait physiquement.</p>
+</div>
+
+<div class="callout info">
+<div class="callout-icon">💡</div>
+<div class="callout-body">
+<strong>Le Raffinement de la Capacité Nominale</strong>
+<p>L'une des idées les plus élégantes du projet a été de ne pas utiliser une capacité fixe. En analysant les données historiques, nous avons créé une <strong>Capacité Nominale Statistique</strong> (basée sur le 90ème percentile par créneau horaire). Cela permet au système SON d'être "intelligent" : il ne s'alerte pas inutilement la nuit si le trafic est faible, mais devient extrêmement vigilant durant les heures de pointe.</p>
 </div>
 </div>
 </div>
