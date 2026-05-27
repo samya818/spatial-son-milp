@@ -21,7 +21,10 @@ research/data/raw/
 *.png
 *.pdf
 
-# Allow small critical assets and code
+# Allow critical files
+!requirements*.txt
+!Makefile
+!check_environment.py
 !research/offline/fractions_1024.parquet
 !research/offline/timeline_24h.parquet
 !research/models/xgb_q80.pkl
