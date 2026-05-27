@@ -1613,6 +1613,16 @@ ce qui est parfaitement compatible avec un cycle de décision de 30 minutes.</di
 </ul>
 <p>C'est cette précision chirurgicale (point par point) qui permet d'obtenir un gain de <strong>73,53%</strong>, là où des méthodes moins précises plafonnent ou déstabilisent le réseau.</p>
 </div>
+
+<div class="philosophy-box">
+<h4>3. Le Secret de Performance : La Dualité Hors-ligne / Temps-réel</h4>
+<p>L'un des plus grands défis d'un réseau de 1024 cellules est la vitesse. Recalculer la physique radio à chaque slot de 30 min serait suicidaire informatiquement. Notre architecture repose sur le <strong>Précalcul Hors-ligne (Offline Precomputation)</strong> :</p>
+<ul>
+  <li><strong>Une seule fois pour toutes</strong> : On calcule la "logique spatiale" du réseau et on la stocke dans des matrices de transfert (Phase 8).</li>
+  <li><strong>Inférence éclair</strong> : En temps réel, le moteur MILP ne fait que lire ces matrices. Il n'a plus besoin de savoir où sont les antennes ou comment les ondes se propagent.</li>
+</ul>
+<p>Résultat : On trouve la solution <strong>optimale globale</strong> pour un quartier entier en <strong>moins de 2 secondes</strong>, rendant le système réellement utilisable sur le terrain.</p>
+</div>
 </div>
 <!-- ══════════════════════════════════════════
      PHASE 10 — MONITORING

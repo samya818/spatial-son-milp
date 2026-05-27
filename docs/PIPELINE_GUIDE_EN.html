@@ -1613,6 +1613,16 @@ which is perfectly compatible with a 30-minute decision cycle.</div></div>
 </ul>
 <p>It is this surgical precision (point by point) that allows for a **73.53%** gain, where less precise methods plateau or destabilize the network.</p>
 </div>
+
+<div class="philosophy-box">
+<h4>3. The Performance Secret: The Offline-Online Duality</h4>
+<p>One of the biggest challenges for a 1,024-cell network is speed. Recalculating radio physics at every 30-minute slot would be computationally suicidal. Our architecture relies on <strong>Offline Precomputation</strong>:</p>
+<ul>
+  <li><strong>Once and for all</strong>: We calculate the "spatial logic" of the network and store it in transfer matrices (Phase 8).</li>
+  <li><strong>Lightning-fast inference</strong>: In real-time, the MILP engine only reads these matrices. It no longer needs to know where antennas are or how waves propagate.</li>
+</ul>
+<p>Result: We find the <strong>global optimal</strong> solution for an entire neighborhood in <strong>under 2 seconds</strong>, making the system truly deployable in the field.</p>
+</div>
 </div>
 <!-- ══════════════════════════════════════════
      PHASE 10 — MONITORING
