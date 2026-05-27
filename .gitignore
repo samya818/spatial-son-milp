@@ -1,0 +1,33 @@
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+.DS_Store
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+logs/*.log
+
+# Data and Models
+data/raw/
+research/data/raw/
+**/data/raw/
+*.parquet
+*.pkl
+*.txt
+*.csv
+*.png
+*.pdf
+
+# Allow small critical assets and code
+!research/offline/fractions_1024.parquet
+!research/offline/timeline_24h.parquet
+!research/models/xgb_q80.pkl
+!research/models/lgbm_l2_corrector.pkl
+!research/data/processed/nominal_capacities_v2.parquet
+!research/README.md
+!docs/**/*.md
+!docs/**/*.html
+!research/notebooks/*.ipynb

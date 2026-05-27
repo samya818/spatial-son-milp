@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  son-dashboard:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      - SON_SECRET_2026=INDUSTRIAL_STRENGTH_SALT
+    restart: always

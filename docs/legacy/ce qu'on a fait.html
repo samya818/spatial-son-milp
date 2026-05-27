@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline SON v5.1 — Rapport d'Ingénierie ENSAM Meknès</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,300;0,600;0,800;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #07080c;
+  --bg1:      #0c0e15;
+  --bg2:      #111520;
+  --bg3:      #181d2c;
+  --bg4:      #1f2638;
+  --border:   #1e2638;
+  --border2:  #2a3450;
+  --text:     #c5d0e8;
+  --text2:    #7989a8;
+  --text3:    #3d4e68;
+  --green:    #22d39a;
+  --green2:   rgba(34,211,154,0.08);
+  --blue:     #4b8ef5;
+  --blue2:    rgba(75,142,245,0.08);
+  --cyan:     #15d8f0;
+  --amber:    #f5a524;
+  --amber2:   rgba(245,165,36,0.08);
+  --red:      #f04a6e;
+  --red2:     rgba(240,74,110,0.08);
+  --purple:   #9b6bf5;
+  --purple2:  rgba(155,107,245,0.08);
+  --pink:     #f045b8;
+  --pink2:    rgba(240,69,184,0.08);
+  --mono:     'JetBrains Mono', monospace;
+  --sans:     'Space Grotesk', sans-serif;
+  --serif:    'Fraunces', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: 300px; height: 100vh;
+  background: var(--bg1);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 28px 0 40px;
+}
+.sidebar-logo { padding: 0 22px 22px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sidebar-logo-title { font-family: var(--serif); font-size: 20px; font-weight: 600; color: #fff; }
+.sidebar-logo-title span { color: var(--cyan); }
+
+.sidebar-authors { padding: 16px 22px; font-size: 12px; color: var(--text2); border-bottom: 1px solid var(--border); }
+.sidebar-authors strong { color: var(--text); display: block; margin-top: 4px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 22px; cursor: pointer;
+  text-decoration: none; color: var(--text2);
+  transition: all .2s; border-left: 3px solid transparent;
+}
+.nav-item:hover { background: var(--bg2); color: #fff; }
+.nav-item.active { background: var(--bg3); color: var(--cyan); border-left-color: var(--cyan); }
+
+.main { margin-left: 300px; padding: 60px 8% 120px; max-width: 1400px; position: relative; z-index: 1; }
+
+.hero { margin-bottom: 80px; }
+.hero-title { font-family: var(--serif); font-size: 48px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 24px; }
+.hero-title span { color: var(--cyan); font-style: italic; }
+.hero-subtitle { font-size: 18px; color: var(--text2); max-width: 900px; }
+
+.section-card {
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: 16px; padding: 40px; margin-bottom: 60px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  scroll-margin-top: 40px;
+}
+.section-tag { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+.section-title { font-family: var(--serif); font-size: 32px; color: #fff; margin-bottom: 24px; }
+
+.step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px; }
+.step-box { background: var(--bg2); padding: 24px; border-radius: 12px; border: 1px solid var(--border); }
+.step-num { font-family: var(--serif); font-size: 24px; color: var(--text3); font-style: italic; margin-bottom: 12px; }
+.step-title { font-weight: 700; color: var(--cyan); margin-bottom: 12px; font-size: 16px; }
+
+.highlight-box {
+  background: var(--blue2); border: 1px solid rgba(75,142,245,0.2);
+  padding: 24px; border-radius: 12px; margin: 24px 0;
+}
+.highlight-box strong { color: var(--blue); display: block; margin-bottom: 8px; font-size: 15px; }
+
+.narrative-box {
+  border-left: 4px solid var(--purple); background: var(--purple2);
+  padding: 24px; border-radius: 0 12px 12px 0; margin: 24px 0;
+}
+.narrative-box strong { color: var(--purple); display: block; margin-bottom: 8px; }
+
+.success-box {
+  border-left: 4px solid var(--green); background: var(--green2);
+  padding: 24px; border-radius: 0 12px 12px 0; margin: 24px 0;
+}
+.success-box strong { color: var(--green); display: block; margin-bottom: 8px; }
+
+.warning-box {
+  border-left: 4px solid var(--amber); background: var(--amber2);
+  padding: 24px; border-radius: 0 12px 12px 0; margin: 24px 0;
+}
+.warning-box strong { color: var(--amber); display: block; margin-bottom: 8px; }
+
+.logic-flow { display: flex; align-items: center; gap: 20px; margin: 40px 0; flex-wrap: wrap; justify-content: center; }
+.flow-node { background: var(--bg3); padding: 16px 24px; border-radius: 8px; border: 1px solid var(--cyan); font-weight: 600; color: #fff; }
+.flow-arrow { color: var(--text3); font-size: 24px; }
+
+.stats-row { display: flex; gap: 40px; margin-top: 30px; flex-wrap: wrap; }
+.stat-item { display: flex; flex-direction: column; }
+.stat-val { font-family: var(--serif); font-size: 36px; font-weight: 800; color: var(--cyan); }
+.stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text3); }
+
+.file-tree {
+  font-family: var(--mono); font-size: 13px; background: #000;
+  padding: 30px; border-radius: 12px; border: 1px solid var(--border);
+  line-height: 1.6; color: #d1d1d1;
+}
+.ft-dir { color: var(--blue); font-weight: 700; }
+.ft-file { color: var(--text2); }
+.ft-comment { color: #5c6370; font-style: italic; }
+
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); transition: transform .3s; }
+  .main { margin-left: 0; padding: 40px 20px; }
+  .hero-title { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-title">SON <span>Optimizer</span></div>
+    <div style="font-size: 10px; color: var(--text3); margin-top: 4px; letter-spacing: 1px;">v5.1 · Rapport d'Ingénierie</div>
+  </div>
+
+  <div class="sidebar-authors">
+    Travail réalisé par :
+    <strong>Samya Loukili</strong>
+    <strong>L'Auteur</strong>
+    <br>
+    Encadré par :
+    <strong>M. Toufik Massrour</strong>
+  </div>
+
+  <div style="padding: 20px 0;">
+    <a href="#vision" class="nav-item">Vision du Projet</a>
+    <a href="#parcours" class="nav-item">Notre Parcours R&D</a>
+    <a href="#pipeline" class="nav-item">Le Pipeline Logique</a>
+    <a href="#architecture" class="nav-item">Architecture Spatiale</a>
+    <a href="#decideur" class="nav-item">Le Moteur de Décision</a>
+    <a href="#resultats" class="nav-item">Résultats & Impact</a>
+    <a href="#fichiers" class="nav-item">Structure du Projet</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <section id="vision" class="hero">
+    <div class="hero-title">Optimisation Autonome de la <span>Congestion Réseau</span></div>
+    <p class="hero-subtitle">
+      Comment nous avons conçu un système capable de prédire les pics de trafic et de reconfigurer intelligemment le réseau mobile pour éviter la saturation, en utilisant les données réelles de la ville de Milan.
+    </p>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-val">73.53%</div><div class="stat-label">Réduction Congestion</div></div>
+      <div class="stat-item"><div class="stat-val">1024</div><div class="stat-label">Cellules Supervisées</div></div>
+      <div class="stat-item"><div class="stat-val">MILP</div><div class="stat-label">Optimalité Mathématique</div></div>
+    </div>
+  </section>
+
+  <section id="parcours" class="section-card">
+    <div class="section-tag">R&D Process</div>
+    <div class="section-title">Notre Parcours de Recherche</div>
+    <p>La réalisation de ce projet n'a pas été linéaire. Nous avons exploré plusieurs pistes avant d'aboutir à la solution optimale actuelle.</p>
+    
+    <div class="narrative-box">
+      <strong>L'échec instructif des 600 cellules</strong>
+      <p>Au début, nous avons travaillé sur un échantillon de 600 cellules sélectionnées à travers toute la ville. Bien que nos modèles de prédiction soient corrects, l'impact sur la congestion était quasi nul, voire négatif. Pourquoi ? <strong>Parce que les cellules n'étaient pas voisines.</strong> Pour que le délestage fonctionne, une cellule saturée doit avoir des voisines immédiates prêtes à absorber son trafic. Un délestage "dans le vide" ne résout rien.</p>
+    </div>
+
+    <div class="step-grid">
+      <div class="step-box">
+        <div class="step-title">Tentatives Statistiques</div>
+        <p>Nous avons testé <strong>Prophet</strong> (Facebook) et <strong>SARIMA</strong>. Ces modèles sont excellents pour la tendance globale, mais ils manquaient de réactivité face aux pics brusques de trafic urbain et étaient trop coûteux à calculer pour des milliers de cellules simultanément.</p>
+      </div>
+      <div class="step-box">
+        <div class="step-title">Le choix XGBoost</div>
+        <p>Nous avons finalement opté pour <strong>XGBoost</strong>. Sa rapidité et sa capacité à gérer les corrélations temporelles complexes en font le candidat idéal. Pour affiner les résultats, nous lui avons couplé un correcteur <strong>LightGBM</strong> qui apprend des erreurs passées du premier modèle.</p>
+      </div>
+      <div class="step-box">
+        <div class="step-title">La Révélation du Bloc Dense</div>
+        <p>En passant à un <strong>bloc dense de 32x32 (1024 cellules)</strong>, nous avons enfin pu simuler de vrais transferts de charge. C'est cette continuité géographique qui a débloqué tout le potentiel du système.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline" class="section-card">
+    <div class="section-tag">Core Logic</div>
+    <div class="section-title">Comment fonctionne le Pipeline ?</div>
+    <p>Le système fonctionne comme un cycle continu, capable de voir dans le futur et d'agir avant que la saturation n'arrive.</p>
+
+    <div class="logic-flow">
+      <div class="flow-node">Données Milan</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Nettoyage (Polars)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Prédiction ML</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Optimisation MILP</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Réduction Congestion</div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Étape 1 : Le Regard Pessimiste (Machine Learning)</strong>
+      <p>Au lieu de prédire la "moyenne" du trafic, notre modèle utilise une <strong>Régression Quantile (q80)</strong>. Nous préférons être légèrement pessimistes : il vaut mieux anticiper un pic qui n'arrive pas que de rater un pic qui sature le réseau. Le modèle regarde les 24 dernières heures, les tendances de la semaine passée et le comportement des voisins pour estimer le trafic de l'heure suivante.</p>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Étape 2 : Le Levier A3 Offset (La Décision)</strong>
+      <p>Comment délester ? Nous utilisons un levier standard appelé <strong>A3 Offset</strong>. Imaginez un curseur sur chaque antenne. En le déplaçant, on modifie la frontière invisible entre deux antennes. On "pousse" les utilisateurs situés à la limite d'une antenne saturée vers l'antenne voisine qui a encore de la place.</p>
+    </div>
+  </section>
+
+  <section id="architecture" class="section-card">
+    <div class="section-tag">Spatial Logic</div>
+    <div class="section-title">L'Intelligence Spatiale</div>
+    <p>C'est la partie la plus complexe : traduire la géométrie en chiffres utilisables par un ordinateur.</p>
+
+    <div class="step-grid">
+      <div class="step-box">
+        <div class="step-title">Discrétisation par Grille</div>
+        <p>Chaque cellule est découpée en une micro-grille de 2500 points (50x50). Pour chaque point, nous calculons physiquement la qualité du signal de l'antenne maître et de toutes ses voisines.</p>
+      </div>
+      <div class="step-box">
+        <div class="step-title">Matrices de Transfert</div>
+        <p>Nous avons précalculé des "Lois de Transfert" : si je change l'offset de +1dB, je sais exactement que 12.5% du trafic de telle cellule va basculer vers telle antenne. C'est le "cerveau spatial" du projet.</p>
+      </div>
+    </div>
+
+    <div class="warning-box">
+      <strong>Une contrainte physique inviolable</strong>
+      <p>Le système garantit que le trafic ne disparaît pas. Si on déleste 100 Mo d'une antenne, ces 100 Mo doivent être physiquement absorbés par les voisines. On ne "supprime" pas la congestion, on la dilue là où il reste de la capacité.</p>
+    </div>
+  </section>
+
+  <section id="decideur" class="section-card">
+    <div class="section-tag">Optimization Engine</div>
+    <div class="section-title">Le Moteur de Décision (MILP)</div>
+    <p>Pourquoi ne pas simplement délester dès qu'une antenne est pleine ? Parce que ses voisines pourraient être pleines aussi !</p>
+    
+    <div class="highlight-box">
+      <strong>L'Optimalité Globale</strong>
+      <p>Nous utilisons le <strong>MILP (Mixed Integer Linear Programming)</strong>. C'est un moteur mathématique qui résout le puzzle pour toutes les antennes en même temps. Il cherche la combinaison de réglages qui minimise la congestion totale sur toute la ville, tout en s'assurant qu'aucune antenne receveuse ne devienne saturée à son tour par le trafic qu'on lui envoie.</p>
+    </div>
+  </section>
+
+  <section id="resultats" class="section-card">
+    <div class="section-tag">Impact</div>
+    <div class="section-title">Résultats & Preuve de Concept</div>
+    <p>Les résultats valident notre approche hybride.</p>
+
+    <div class="success-box">
+      <strong>Un gain massif de 73.53%</strong>
+      <p>En comparant une gestion "statique" (où on ne fait rien) à notre système SON "dynamique", nous avons réduit le volume de trafic non satisfait de plus de 73%. Cela signifie que 3 appels sur 4 qui auraient dû échouer ont pu aboutir grâce à notre optimisation.</p>
+    </div>
+
+    <div class="step-grid">
+      <div class="step-box">
+        <div class="step-title">Stabilité</div>
+        <p>Le système évite les "effets ping-pong" (utilisateurs qui basculent sans cesse entre deux antennes) grâce à des seuils de stabilité intégrés dans les calculs spatiaux.</p>
+      </div>
+      <div class="step-box">
+        <div class="step-title">Rapidité</div>
+        <p>Malgré la complexité mathématique, une décision pour 1024 cellules est prise en moins de 5 secondes, permettant une réaction quasi temps-réel.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="fichiers" class="section-card">
+    <div class="section-tag">Project Structure</div>
+    <div class="section-title">Organisation du Dépôt</div>
+    <p>Pour ceux qui souhaitent explorer les entrailles du projet, voici comment nous avons organisé notre travail.</p>
+
+    <div class="file-tree">
+<span class="ft-dir">projectTimeSeries/</span><br>
+├── <span class="ft-dir">research/</span>           <span class="ft-comment"># Tout le parcours de recherche (Notebooks 01 à 14)</span><br>
+│   ├── <span class="ft-dir">notebooks/</span><br>
+│   │   ├── <span class="ft-file">01_ingestion.ipynb</span>    <span class="ft-comment"># Nettoyage et préparation</span><br>
+│   │   ├── <span class="ft-file">04_modelling.ipynb</span>    <span class="ft-comment"># Essais Prophet, SARIMA, XGBoost</span><br>
+│   │   ├── <span class="ft-file">05_improvements.ipynb</span> <span class="ft-comment"># Version finale : Quantile + LightGBM</span><br>
+│   │   ├── <span class="ft-file">06_topology.ipynb</span>    <span class="ft-comment"># Création du bloc dense 1024</span><br>
+│   │   └── <span class="ft-file">11_closed_loop.ipynb</span> <span class="ft-comment"># Simulation finale et résultats</span><br>
+│   └── <span class="ft-dir">offline/</span>          <span class="ft-comment"># Le "cerveau spatial" précalculé</span><br>
+├── <span class="ft-dir">src/</span>                <span class="ft-comment"># Le code source prêt pour la production</span><br>
+│   ├── <span class="ft-dir">ml/</span>               <span class="ft-comment"># Les modèles de prédiction</span><br>
+│   ├── <span class="ft-dir">optimization/</span>     <span class="ft-comment"># Le moteur mathématique MILP</span><br>
+│   └── <span class="ft-dir">simulation/</span>       <span class="ft-comment"># Le simulateur de boucle fermée</span><br>
+└── <span class="ft-dir">config/</span>             <span class="ft-comment"># Paramètres des antennes et du réseau</span>
+    </div>
+  </section>
+
+  <div style="text-align: center; color: var(--text3); font-size: 12px; margin-top: 60px;">
+    <p>Rapport d'Ingénierie — ENSAM Meknès — Mai 2026</p>
+    <p>Samya Loukili & L'Auteur — Sous la direction de M. Toufik Massrour</p>
+  </div>
+
+</div>
+
+<script>
+const sections = document.querySelectorAll('section');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + entry.target.id) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,1895 @@
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pipeline v5.1 — Gestion Congestion Réseau · Rapport d'Ingénierie ENSAM Meknès</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&amp;family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Fraunces:ital,wght@0,300;0,600;0,800;1,300&amp;display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #07080c;
+  --bg1:      #0c0e15;
+  --bg2:      #111520;
+  --bg3:      #181d2c;
+  --bg4:      #1f2638;
+  --border:   #1e2638;
+  --border2:  #2a3450;
+  --text:     #c5d0e8;
+  --text2:    #7989a8;
+  --text3:    #3d4e68;
+  --green:    #22d39a;
+  --green2:   rgba(34,211,154,0.08);
+  --blue:     #4b8ef5;
+  --blue2:    rgba(75,142,245,0.08);
+  --cyan:     #15d8f0;
+  --amber:    #f5a524;
+  --amber2:   rgba(245,165,36,0.08);
+  --red:      #f04a6e;
+  --red2:     rgba(240,74,110,0.08);
+  --purple:   #9b6bf5;
+  --purple2:  rgba(155,107,245,0.08);
+  --pink:     #f045b8;
+  --pink2:    rgba(240,69,184,0.08);
+  --mono:     'JetBrains Mono', monospace;
+  --sans:     'Space Grotesk', sans-serif;
+  --serif:    'Fraunces', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: 280px; height: 100vh;
+  background: var(--bg1);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 28px 0 40px;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.sidebar-logo {
+  padding: 0 22px 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo-tag {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 3px;
+  color: var(--text3); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.sidebar-logo-title {
+  font-family: var(--serif);
+  font-size: 17px; font-weight: 600;
+  color: #fff; line-height: 1.3;
+}
+.sidebar-logo-title span { color: var(--cyan); font-style: italic; }
+
+.sidebar-authors {
+  padding: 16px 22px;
+  font-size: 11px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-authors strong { color: var(--text); display: block; margin-top: 4px; }
+
+.sidebar-section-label {
+  padding: 14px 22px 6px;
+  font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text3);
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 22px; cursor: pointer;
+  transition: background .15s;
+  border-left: 2px solid transparent;
+  text-decoration: none; color: var(--text2);
+  font-size: 11px;
+}
+.nav-item:hover { background: var(--bg2); color: var(--text); }
+.nav-item.active { border-left-color: var(--blue); background: var(--blue2); color: #fff; }
+.nav-item.done-nav .nav-dot { background: var(--green); }
+.nav-item.todo-nav .nav-dot { background: var(--blue); }
+.nav-item.arch-nav .nav-dot { background: var(--amber); }
+.nav-item.phil-nav .nav-dot { background: var(--purple); }
+
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.nav-num {
+  font-size: 10px; font-weight: 700;
+  width: 20px; text-align: center; flex-shrink: 0;
+  color: var(--text3);
+}
+.nav-label { flex: 1; line-height: 1.3; }
+.nav-label strong { display: block; color: inherit; font-size: 11px; font-weight: 500; }
+.nav-label small { font-size: 9px; color: var(--text3); }
+.nav-badge {
+  font-size: 8px; padding: 2px 6px;
+  border-radius: 10px; letter-spacing: 1px;
+  text-transform: uppercase; flex-shrink: 0;
+}
+.badge-done { background: var(--green2); color: var(--green); }
+.badge-todo { background: var(--blue2); color: var(--blue); }
+.badge-arch { background: var(--amber2); color: var(--amber); }
+.badge-crit { background: var(--red2); color: var(--red); }
+.badge-phil { background: var(--purple2); color: var(--purple); }
+
+.main {
+  margin-left: 280px;
+  min-height: 100vh;
+  position: relative; z-index: 1;
+}
+
+.hero {
+  padding: 80px 60px 60px;
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(75,142,245,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  font-size: 10px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--blue);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-size: 48px; font-weight: 800;
+  color: #fff; line-height: 1.05;
+  margin-bottom: 16px;
+}
+.hero h1 em { color: var(--cyan); font-style: italic; }
+.hero-sub {
+  color: var(--text2); font-family: var(--sans);
+  font-size: 15px; max-width: 720px; line-height: 1.6;
+  margin-bottom: 32px;
+}
+.hero-stats {
+  display: flex; gap: 32px; flex-wrap: wrap;
+}
+.stat {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.stat-val {
+  font-family: var(--serif); font-size: 26px;
+  font-weight: 600; color: #fff;
+}
+.stat-val.g { color: var(--green); }
+.stat-val.b { color: var(--blue); }
+.stat-val.a { color: var(--amber); }
+.stat-val.p { color: var(--purple); }
+.stat-label { font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; }
+
+.content { padding: 0 60px 80px; }
+
+.phase-section {
+  padding-top: 64px; padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.phase-section:last-child { border-bottom: none; }
+
+.phase-header {
+  display: flex; align-items: flex-start;
+  gap: 20px; margin-bottom: 32px;
+}
+.phase-num-box {
+  width: 52px; height: 52px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 700; font-size: 16px;
+  flex-shrink: 0;
+}
+.phase-num-box.done { background: var(--green2); color: var(--green); border: 1px solid rgba(34,211,154,0.2); }
+.phase-num-box.todo { background: var(--blue2); color: var(--blue); border: 1px solid rgba(75,142,245,0.2); }
+.phase-num-box.crit { background: var(--red2); color: var(--red); border: 1px solid rgba(240,74,110,0.2); }
+.phase-num-box.arch { background: var(--purple2); color: var(--purple); border: 1px solid rgba(155,107,245,0.2); }
+.phase-num-box.phil { background: var(--amber2); color: var(--amber); border: 1px solid rgba(245,165,36,0.2); }
+
+.phase-meta { flex: 1; }
+.phase-status-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 6px;
+}
+.phase-status {
+  font-size: 9px; padding: 3px 10px; border-radius: 20px;
+  letter-spacing: 2px; text-transform: uppercase; font-weight: 700;
+}
+.ps-done { background: var(--green2); color: var(--green); border: 1px solid rgba(34,211,154,0.2); }
+.ps-todo { background: var(--blue2); color: var(--blue); border: 1px solid rgba(75,142,245,0.2); }
+.ps-crit { background: var(--red2); color: var(--red); border: 1px solid rgba(240,74,110,0.2); }
+.ps-arch { background: var(--purple2); color: var(--purple); border: 1px solid rgba(155,107,245,0.2); }
+.ps-phil { background: var(--amber2); color: var(--amber); border: 1px solid rgba(245,165,36,0.2); }
+
+.phase-file {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text3); letter-spacing: 1px;
+}
+.phase-title {
+  font-family: var(--serif); font-size: 26px;
+  font-weight: 600; color: #fff; line-height: 1.2;
+  margin-bottom: 6px;
+}
+.phase-desc {
+  font-family: var(--sans); font-size: 13px;
+  color: var(--text2); line-height: 1.6; max-width: 750px;
+}
+
+.io-strip {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 28px;
+}
+.io-box {
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px 16px;
+  background: var(--bg1);
+}
+.io-label {
+  font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.io-label.inp { color: var(--cyan); }
+.io-label.out { color: var(--green); }
+.io-files { list-style: none; }
+.io-files li {
+  font-size: 11px; padding: 3px 0;
+  color: var(--text2); border-bottom: 1px solid var(--border);
+}
+.io-files li:last-child { border-bottom: none; }
+.io-files li span { color: var(--text); font-weight: 500; }
+
+.notebook-card {
+  border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden;
+  margin-bottom: 20px;
+}
+.notebook-card.done-card { border-color: rgba(34,211,154,0.2); }
+.notebook-card.done-card { border-color: rgba(75,142,245,0.2); }
+.notebook-card.crit-card { border-color: rgba(240,74,110,0.2); }
+.notebook-card.arch-card { border-color: rgba(155,107,245,0.2); }
+.notebook-card.phil-card { border-color: rgba(245,165,36,0.2); }
+
+.nb-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.nb-header:hover { background: var(--bg3); }
+.nb-header-icon { font-size: 14px; }
+.nb-header-title {
+  font-family: var(--sans); font-size: 13px;
+  font-weight: 600; color: #fff; flex: 1;
+}
+.nb-header-sub { font-size: 10px; color: var(--text3); }
+.nb-toggle {
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text3); font-size: 12px;
+  transition: transform .2s;
+}
+.nb-toggle.open { transform: rotate(180deg); }
+
+.nb-body { display: none; padding: 20px; }
+.nb-body.open { display: block; }
+
+.md-cell {
+  background: rgba(21,216,240,0.04);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 6px 6px 0;
+  padding: 12px 16px; margin-bottom: 10px;
+}
+.md-cell-tag {
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--cyan);
+  margin-bottom: 6px; opacity: 0.7;
+}
+.md-cell-content {
+  font-family: var(--sans); font-size: 12px;
+  color: var(--text2); line-height: 1.65;
+}
+.md-cell-content strong { color: var(--text); }
+.md-cell-content code {
+  font-family: var(--mono); font-size: 11px;
+  background: var(--bg3); padding: 1px 5px;
+  border-radius: 3px; color: var(--amber);
+}
+
+.code-cell {
+  background: #050710;
+  border: 1px solid var(--border);
+  border-radius: 8px; margin-bottom: 10px;
+  overflow: hidden;
+}
+.code-cell-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+.code-cell-lang {
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text3);
+}
+.code-cell-desc {
+  font-size: 10px; color: var(--text3); flex: 1;
+}
+.code-cell-body {
+  padding: 14px 18px; overflow-x: auto;
+  font-size: 12px; line-height: 1.7;
+  font-family: var(--mono);
+}
+.c { color: #3d5473; }
+.kw { color: var(--purple); }
+.s { color: var(--green); }
+.n { color: var(--amber); }
+.fn { color: var(--cyan); }
+.cl { color: var(--blue); }
+.op { color: var(--text3); }
+.im { color: var(--pink); }
+
+.callout {
+  display: flex; gap: 14px;
+  padding: 14px 18px; border-radius: 8px;
+  margin: 14px 0; font-size: 12px;
+}
+.callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.callout-body { line-height: 1.65; }
+.callout-body strong { display: block; margin-bottom: 4px; font-family: var(--sans); font-size: 13px; }
+.callout-body p { color: var(--text2); }
+.callout.info { background: var(--blue2); border: 1px solid rgba(75,142,245,0.2); }
+.callout.info .callout-body strong { color: var(--blue); }
+.callout.warn { background: var(--amber2); border: 1px solid rgba(245,165,36,0.2); }
+.callout.warn .callout-body strong { color: var(--amber); }
+.callout.success { background: var(--green2); border: 1px solid rgba(34,211,154,0.2); }
+.callout.success .callout-body strong { color: var(--green); }
+.callout.danger { background: var(--red2); border: 1px solid rgba(240,74,110,0.2); }
+.callout.danger .callout-body strong { color: var(--red); }
+.callout.phil { background: var(--purple2); border: 1px solid rgba(155,107,245,0.2); }
+.callout.phil .callout-body strong { color: var(--purple); }
+
+.spec-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; margin: 12px 0;
+}
+.spec-table th {
+  text-align: left; padding: 8px 14px;
+  background: var(--bg3); color: var(--text2);
+  font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+.spec-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-table .td-key { color: var(--text2); min-width: 160px; font-weight: 500; }
+.spec-table .td-val { color: var(--text); }
+.spec-table .td-val strong { color: #fff; }
+.spec-table .tag {
+  display: inline-block; font-size: 9px;
+  padding: 1px 7px; border-radius: 10px;
+  margin-right: 5px; letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tag-done { background: var(--green2); color: var(--green); }
+.tag-new { background: var(--blue2); color: var(--blue); }
+.tag-crit { background: var(--red2); color: var(--red); }
+.tag-arch { background: var(--purple2); color: var(--purple); }
+
+.progress-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin: 32px 0;
+}
+.prog-cell {
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px;
+  text-align: center; cursor: pointer;
+  transition: all .15s;
+  background: var(--bg1);
+}
+.prog-cell:hover { background: var(--bg2); transform: translateY(-2px); }
+.prog-cell.done { border-color: rgba(34,211,154,0.3); background: var(--green2); }
+.prog-cell.todo { border-color: rgba(75,142,245,0.25); }
+.prog-cell.crit { border-color: rgba(240,74,110,0.3); }
+.prog-cell.arch { border-color: rgba(155,107,245,0.25); }
+.prog-cell.phil { border-color: rgba(245,165,36,0.25); }
+.prog-num {
+  font-family: var(--serif); font-size: 20px;
+  font-weight: 600; margin-bottom: 4px;
+}
+.prog-cell.done .prog-num { color: var(--green); }
+.prog-cell.todo .prog-num { color: var(--blue); }
+.prog-cell.crit .prog-num { color: var(--red); }
+.prog-cell.arch .prog-num { color: var(--purple); }
+.prog-cell.phil .prog-num { color: var(--amber); }
+.prog-name { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; line-height: 1.3; }
+
+.results-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; margin: 12px 0;
+}
+.results-table th {
+  text-align: left; padding: 8px 12px;
+  background: var(--bg3); color: var(--text2);
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border2);
+}
+.results-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.results-table tr:last-child td { border-bottom: none; }
+.results-table .best { color: var(--green); font-weight: 700; }
+.results-table .bad { color: var(--red); }
+
+.compare-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin: 12px 0;
+}
+.compare-col { border-radius: 8px; overflow: hidden; }
+.compare-header {
+  padding: 8px 14px; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase; font-weight: 700;
+}
+.col-bad .compare-header { background: var(--red2); color: var(--red); }
+.col-good .compare-header { background: var(--green2); color: var(--green); }
+
+.file-tree {
+  background: #050710; border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 20px;
+  font-size: 12px; line-height: 2;
+  font-family: var(--mono);
+}
+.ft-dir { color: var(--blue); }
+.ft-file { color: var(--text2); }
+.ft-done { color: var(--green); }
+.ft-todo { color: var(--text3); }
+.ft-comment { color: #2d3f5a; }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+.guide-footer {
+  padding: 32px 60px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 20px;
+}
+.guide-footer p { font-size: 11px; color: var(--text3); }
+.guide-footer strong { color: var(--text2); }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-left: 0; }
+  .hero, .content { padding-left: 24px; padding-right: 24px; }
+  .progress-grid { grid-template-columns: repeat(2, 1fr); }
+  .io-strip, .compare-grid { grid-template-columns: 1fr; }
+}
+
+.philosophy-box {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.philosophy-box h4 {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--amber);
+  margin-bottom: 12px;
+}
+.philosophy-box p {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+.philosophy-box ul {
+  margin-left: 20px;
+  color: var(--text2);
+  font-size: 12px;
+  line-height: 1.8;
+}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+<div class="sidebar-logo">
+<div class="sidebar-logo-tag">// Guide Pipeline · v5.1</div>
+<div class="sidebar-logo-title">SON <span>Optimizer</span></div>
+</div>
+<div class="sidebar-authors">
+  Projet réalisé par :
+  <strong>Loukili Samya</strong>
+  <strong>Kenza El Khaniri</strong>
+  <br/>
+  Encadré par :
+  <strong>M. Toufik Massrour</strong>
+</div><div class="sidebar-section-label">— Fondements</div>
+<a class="nav-item phil-nav" href="#philosophy">
+<div class="nav-dot"></div>
+<div class="nav-num">§0</div>
+<div class="nav-label"><strong>Avant-Propos</strong><small>Réponse à vos questions</small></div>
+<span class="nav-badge badge-phil">Phil</span>
+</a>
+<a class="nav-item phil-nav" href="#ontology">
+<div class="nav-dot"></div>
+<div class="nav-num">§1</div>
+<div class="nav-label"><strong>Clarifications</strong><small>Cellule vs Antenne, Capacité...</small></div>
+<span class="nav-badge badge-phil">Phil</span>
+</a>
+<a class="nav-item phil-nav" href="#hypotheses">
+<div class="nav-dot"></div>
+<div class="nav-num">§2</div>
+<div class="nav-label"><strong>Hypothèses</strong><small>H1-H4 &amp; Justifications</small></div>
+<span class="nav-badge badge-phil">Phil</span>
+</a>
+<div class="sidebar-section-label">— Terminé</div>
+<a class="nav-item done-nav" href="#phase1">
+<div class="nav-dot"></div>
+<div class="nav-num">01</div>
+<div class="nav-label"><strong>Ingestion</strong><small>01_ingestion.ipynb</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase2">
+<div class="nav-dot"></div>
+<div class="nav-num">02</div>
+<div class="nav-label"><strong>EDA</strong><small>02_eda.ipynb</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase3">
+<div class="nav-dot"></div>
+<div class="nav-num">03</div>
+<div class="nav-label"><strong>Features</strong><small>03_features.ipynb</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase4">
+<div class="nav-dot"></div>
+<div class="nav-num">04</div>
+<div class="nav-label"><strong>Modelling</strong><small>04_modelling.ipynb</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<div class="sidebar-section-label">— Mise en Œuvre &amp; Validation</div>
+<a class="nav-item done-nav" href="#phase5">
+<div class="nav-dot"></div>
+<div class="nav-num">05</div>
+<div class="nav-label"><strong>Intelligence ML</strong><small>Optimisation Quantile &amp; Correcteur</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase6">
+<div class="nav-dot"></div>
+<div class="nav-num">06</div>
+<div class="nav-label"><strong>Architecture</strong><small>Topologie 1024 Cellules</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase7">
+<div class="nav-dot"></div>
+<div class="nav-num">07</div>
+<div class="nav-label"><strong>Utilisateurs</strong><small>Distribution Spatiale</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase8">
+<div class="nav-dot"></div>
+<div class="nav-num">08</div>
+<div class="nav-label"><strong>Simulation Spatiale</strong><small>Précalcul des Transferts</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase9">
+<div class="nav-dot"></div>
+<div class="nav-num">09</div>
+<div class="nav-label"><strong>Moteur MILP</strong><small>Optimisation Décisionnelle</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase10">
+<div class="nav-dot"></div>
+<div class="nav-num">10</div>
+<div class="nav-label"><strong>Surveillance</strong><small>Monitoring &amp; Drift</small></div>
+<span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#phase11">
+  <div class="nav-dot"></div>
+  <div class="nav-num">11</div>
+  <div class="nav-label"><strong>Boucle Fermée</strong><small>Simulation & Impact</small></div>
+  <span class="nav-badge badge-done">✓</span>
+</a>
+
+<div class="sidebar-section-label">— Outils & Dashboards</div>
+<a class="nav-item done-nav" href="#streamlit">
+  <div class="nav-dot"></div>
+  <div class="nav-num">12</div>
+  <div class="nav-label"><strong>Streamlit App</strong><small>Pilotage Interactif</small></div>
+  <span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#makefile">
+  <div class="nav-dot"></div>
+  <div class="nav-num">13</div>
+  <div class="nav-label"><strong>Automatisation</strong><small>Makefile & Commandes</small></div>
+  <span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#tests">
+  <div class="nav-dot"></div>
+  <div class="nav-num">14</div>
+  <div class="nav-label"><strong>Tests & Qualité</strong><small>Pytest & Validation</small></div>
+  <span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#adr">
+  <div class="nav-dot"></div>
+  <div class="nav-num">15</div>
+  <div class="nav-label"><strong>Décisions ADR</strong><small>Historique Architecture</small></div>
+  <span class="nav-badge badge-done">✓</span>
+</a>
+<a class="nav-item done-nav" href="#benchmark">
+  <div class="nav-dot"></div>
+  <div class="nav-num">16</div>
+  <div class="nav-label"><strong>Benchmark Greedy</strong><small>MILP vs Heuristique</small></div>
+  <span class="nav-badge badge-done">✓</span>
+</a>
+</nav>
+<div class="main">
+<div class="hero">
+<div class="hero-tag">// Pipeline v5.1 — Spatial MILP · Rapport d'Ingénierie ENSAM Meknès</div>
+<h1>Optimisation Autonome de la<br/><span>Congestion Réseau</span></h1>
+
+<div style="background: rgba(245, 165, 36, 0.15); border: 1px solid var(--amber); border-radius: 8px; padding: 15px; margin-bottom: 20px; font-family: var(--sans); font-size: 14px; color: var(--amber);">
+  ⚠️ <strong>Note pour les développeurs :</strong> Pour exécuter ce projet localement (installation, venv, streamlit), veuillez suivre les instructions du <strong>README.md</strong> à la racine. Ce guide constitue la documentation scientifique interactive et le rapport technique complet.
+</div>
+
+<p class="hero-sub">
+    Pipeline intelligent de prédiction et d'optimisation du trafic réseau radio. Ce document présente les <strong>11 phases</strong> complétées et validées du projet, incluant le code implémenté, les <strong>justifications académiques</strong> des choix technologiques, et les résultats finaux démontrant une réduction de <strong>73,53%</strong> de la congestion sur un bloc dense de 1024 cellules.
+  </p>
+<div class="hero-stats">
+<div class="stat"><div class="stat-val g">11/11</div><div class="stat-label">Phases validées</div></div>
+<div class="stat"><div class="stat-val b">73.5%</div><div class="stat-label">Gain Congestion</div></div>
+<div class="stat"><div class="stat-val a">MILP</div><div class="stat-label">Décideur Optimal</div></div>
+<div class="stat"><div class="stat-val p">A3</div><div class="stat-label">Levier SON Unique</div></div>
+</div>
+</div>
+<div class="content">
+<!-- ══════════════════════════════════════════
+     §0 — AVANT-PROPOS : JUSTIFICATIONS THÉORIQUES
+══════════════════════════════════════════ -->
+<div class="phase-section" id="philosophy">
+<div class="phase-header">
+<div class="phase-num-box phil">§0</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-phil">Fondements &amp; Vision</span>
+</div>
+<div class="phase-title">Avant-Propos : Pourquoi l'A3 Offset comme Levier Unique</div>
+<div class="phase-desc">L'approche choisie se concentre sur l'A3 offset comme unique levier de contrôle. C'est une simplification standard, légitime et largement documentée dans la littérature SON académique et industrielle.</div>
+</div>
+</div>
+<div class="philosophy-box">
+<h4>📚 Ce que dit la littérature</h4>
+<p>Les travaux fondateurs de <strong>Wang et al. (2015)</strong> sur l'optimisation SON par Q-Learning modélisent explicitement l'A3 offset comme <em>"the primary control parameter for mobility load balancing"</em>. Zhang et al. (2023) confirment dans leur survey IEEE : <em>"A3 offset is the most influential parameter for handover-triggered load balancing because it directly controls the spatial boundary of cell coverage."</em></p>
+<p>La norme <strong>3GPP TS 36.331</strong> définit l'A3 event comme le mécanisme standard de handover inter-cellulaire. Dans les déploiements SON commerciaux (Cisco MEO, Ericsson ENM, Huawei SON), l'opérateur configure :</p>
+<ul>
+<li><strong>Time-to-Trigger</strong> = 320 ms (valeur standard, fixe)</li>
+<li><strong>Hysteresis</strong> = 1 dB (valeur standard, fixe)</li>
+<li><strong>FilterCoefficient</strong> = fc4 (fixe)</li>
+</ul>
+<p>Et optimise uniquement <strong>l'offset A3</strong> comme variable de contrôle dynamique. Pourquoi ? Parce que les autres paramètres ont des effets secondaires complexes (ping-pong, call drops) et sont verrouillés par les playbooks d'exploitation. L'A3 offset est le seul levier que l'opérateur autorise le SON à modifier en temps réel sans risque métier majeur.</p>
+</div>
+<div class="callout phil">
+<div class="callout-icon">💡</div>
+<div class="callout-body">
+<strong>Distinction entre Simplification de Pilotage et de Modélisation</strong>
+<p>Il est crucial de distinguer la complexité de l'environnement radio de la simplicité du levier de contrôle. Ne pas modéliser dynamiquement la puissance d'émission ou le TTT ne signifie pas ignorer leur existence, mais les considérer comme des <strong>constantes fixées par le standard</strong>. On optimise ainsi la seule variable que l'opérateur peut réellement faire varier en temps réel.</p>
+</div>
+</div>
+<div class="callout info">
+<div class="callout-icon">📖</div>
+<div class="callout-body">
+<strong>Références académiques qui étayent ce choix</strong>
+<p>• <strong>Wang et al. (2015)</strong> — "A Q-Learning Approach for Self-Organizing Network with A3 Offset Control", IEEE TNSM. Modélise A3 comme unique variable d'action.<br/>
+      • <strong>Zhang et al. (2023)</strong> — "SON Load Balancing Survey", IEEE Access. Classe l'A3 offset comme paramètre primaire, TTT/hysteresis comme paramètres secondaires fixés.<br/>
+      • <strong>Huang et al. (2024)</strong> — "MILP Load Balancing with Handover Offset", Computer Networks. Formulation MILP exacte avec A3 comme seule variable binaire par antenne.<br/>
+      • <strong>3GPP TS 36.331</strong> — Spécification LTE RRC. Définit l'A3 event : <em>"Mn + Ofn + Ocn - Hys &gt; Ms + Ofs + Ocs + Off"</em>, où Off est l'offset optimisable.</p>
+</div>
+</div>
+<div class="philosophy-box">
+<h4>🎯 Synthèse de l'approche</h4>
+<p><strong>L'utilisation du MILP avec l'A3 offset est l'outil mathématique optimal</strong> pour ce problème car :</p>
+<ul>
+<li>Le problème est <strong>combinatoire discret</strong> par nature.</li>
+<li>La relation entre l'offset et le volume délesté est <strong>déterministe</strong> après discrétisation spatiale.</li>
+<li>Les <strong>contraintes de capacité sont linéaires</strong> grâce aux précalculs.</li>
+<li>Le <strong>couplage global</strong> est assuré par des contraintes linéaires exactes.</li>
+</ul>
+<p>En s'appuyant sur les hypothèses H1-H3, le problème complexe de la dynamique réseau est traduit en un <strong>problème de géométrie discrète et d'optimisation linéaire en nombres entiers</strong>.</p>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     §1 — CLARIFICATIONS ONTOLOGIQUES
+══════════════════════════════════════════ -->
+<div class="phase-section" id="ontology">
+<div class="phase-header">
+<div class="phase-num-box phil">§1</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-phil">Fondements — Terminologie exacte</span>
+</div>
+<div class="phase-title">Clarifications Ontologiques : Qui est Qui ?</div>
+<div class="phase-desc">La confusion entre cellule géographique et antenne physique est la source de 90% des malentendus dans ce projet. Nous clarifions ici chaque entité, chaque mesure, et chaque capacité.</div>
+</div>
+</div>
+<table class="spec-table">
+<thead><tr><th>Entité</th><th>Définition exacte</th><th>ID dans le dataset</th><th>Analogie</th></tr></thead>
+<tbody>
+<tr><td class="td-key"><strong>Cellule géographique</strong> <code>c</code></td><td class="td-val">Zone discrète de la grille Milan (100×100 = 10 000 cellules). Surface ~235m × 235m = ~5,5 hectares. Grille complète = 23,5×23,5 km = <strong>552 km²</strong> (aire métropolitaine). Contient N utilisateurs à un instant donné.</td><td class="td-val"><code>square_id</code> (1–10 000)</td><td class="td-val">Un quartier de ville</td></tr>
+<tr><td class="td-key"><strong>Antenne physique</strong> <code>a</code></td><td class="td-val">Équipement radio réel (macro/micro/smallcell) à une position (x,y) fixe. Émet un signal. A une capacité radio théorique.</td><td class="td-val"><code>A001, A002...</code> (générés Phase 6)</td><td class="td-val">Une station de métro</td></tr>
+<tr><td class="td-key"><strong>Couverture</strong> <code>𝒞_a</code></td><td class="td-val">Ensemble des cellules géographiques dont l'antenne <code>a</code> est le maître (plus proche voisin). C'est un ensemble, pas une surface continue.</td><td class="td-val"><code>cell_antenna_map_600.json</code></td><td class="td-val">Les quartiers desservis par une station</td></tr>
+<tr><td class="td-key"><strong>Utilisateur</strong> <code>u</code></td><td class="td-val">Abonné avec un téléphone. Consomme du volume. Se déplace (ou pas). Sa consommation est mesurée agrégée par cellule.</td><td class="td-val">Non identifié individuellement</td><td class="td-val">Un passager</td></tr>
+<tr><td class="td-key"><strong>Volume de trafic</strong> <code>V_c</code></td><td class="td-val">Somme des volumes Internet (Mo) consommés par tous les utilisateurs présents dans la cellule <code>c</code> pendant un slot de 30 min.</td><td class="td-val"><code>internet_volume</code></td><td class="td-val">Nombre total de passagers transportés</td></tr>
+<tr><td class="td-key"><strong>Capacité radio</strong> <code>C_a^radio</code></td><td class="td-val">Capacité théorique de l'antenne calculée par la formule de Shannon (BW × log₂(1+SINR)). C'est un <strong>plafond physique dur</strong>.</td><td class="td-val"><code>capacity_mo</code> dans topology.yaml</td><td class="td-val">Capacité maximale d'un wagon (places)</td></tr>
+<tr><td class="td-key"><strong>Capacité nominale</strong> <code>C_a^nom</code></td><td class="td-val">Percentile 90 du trafic historique observé sur l'antenne, par plage horaire et type de jour. C'est un <strong>seuil statistique de confort</strong>.</td><td class="td-val"><code>nominal_capacity</code></td><td class="td-val">Seuil d'alerte "ça devient bondé"</td></tr>
+<tr><td class="td-key"><strong>Slot temporel</strong></td><td class="td-val">Intervalle de 30 minutes. Le dataset Milan original est en 10 min, agrégé en 30 min pour la stabilité.</td><td class="td-val"><code>slot_30m</code> (0–2975)</td><td class="td-val">Un créneau horaire</td></tr>
+<tr><td class="td-key"><strong>A3 Offset</strong> <code>δ</code></td><td class="td-val">Paramètre SON (Self-Organizing Network) qui contrôle à quel moment un utilisateur bascule d'une antenne à une voisine. Plus δ est bas, plus tôt le handover se déclenche.</td><td class="td-val">Variable de décision du MILP</td><td class="td-val">Seuil de décision pour changer de ligne de métro</td></tr>
+</tbody>
+</table>
+<div class="callout warn">
+<div class="callout-icon">⚠️</div>
+<div class="callout-body">
+<strong>La dualité capacité : deux seuils, deux rôles</strong>
+<p>Il y a <strong>deux capacités différentes</strong> dans le pipeline. Ne les confondez jamais.<br/><br/>
+<strong>1. C_a^radio (capacity_mo)</strong> = capacité opérationnelle effective (~407 Mo pour une macro) : c'est le seuil <strong>opérationnel dur</strong>, utilisé comme contrainte C_a dans le MILP (C3). On ne peut pas dépasser ce seuil sans perdre des paquets.<br/><br/>
+<strong>2. C_a^nom (nominal_capacity)</strong> = percentile 90 du trafic historique : c'est le <strong>trigger statistique</strong> qui décide si on appelle le MILP. Logique : si <code>pred_q80 &gt; nominal_capacity</code> → on suspecte une congestion → on lance le MILP avec <code>C_a = capacity_mo</code> (physique). Ça évite de lancer le MILP à chaque slot inutilement.</p>
+</div>
+</div>
+<div class="callout info">
+<div class="callout-icon">🗺️</div>
+<div class="callout-body">
+<strong>Pourquoi une antenne couvre plusieurs cellules ?</strong>
+<p>Une antenne (surtout macro) a un rayon de couverture de ~800 m. Une cellule fait ~235 m. Donc une macro couvre naturellement <strong>plusieurs cellules adjacentes</strong> (typiquement 4 à 16). Ces cellules sont voisines et continues — c'est la définition même d'une zone de couverture. L'assignation se fait par plus proche voisin : chaque cellule est assignée à l'antenne dont le centre est le plus proche du centre de la cellule.</p>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     §2 — HYPOTHÈSES & JUSTIFICATIONS
+══════════════════════════════════════════ -->
+<div class="phase-section" id="hypotheses">
+<div class="phase-header">
+<div class="phase-num-box phil">§2</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-phil">Fondements — Approximations validées</span>
+</div>
+<div class="phase-title">Hypothèses de Modélisation &amp; Leurs Justifications</div>
+<div class="phase-desc">Chaque hypothèse est une approximation. L'important n'est pas qu'elle soit parfaite, mais qu'elle soit <strong>conservatrice</strong> (ne sous-estime pas le risque) et <strong>localement crédible</strong> (valide à l'échelle d'une cellule).</div>
+</div>
+</div>
+<div class="notebook-card phil-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📐</div>
+<div style="flex:1">
+<div class="nb-header-title">H1 — Consommation uniforme par utilisateur</div>
+<div class="nb-header-sub">Tous les utilisateurs d'une même cellule consomment v_c = V_c / U_c [Mo/30min/user]</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Justification H1</div>
+<div class="md-cell-content">
+<strong>Pourquoi cette hypothèse est acceptable :</strong><br/><br/>
+          Nous ne connaissons pas le profil individuel de chaque utilisateur. Mais à l'échelle d'une cellule de ~5 hectares et de quelques dizaines/centaines d'utilisateurs, la <strong>loi des grands nombres</strong> s'applique faiblement. L'hétérogénéité individuelle s'atténue lorsqu'on agrège.<br/><br/>
+<strong>Plus important :</strong> cette hypothèse est <strong>conservatrice pour le MILP</strong>. Si en réalité certains utilisateurs consomment plus que la moyenne, le volume réel délesté sera légèrement différent, mais l'ordre de grandeur reste correct. Le MILP vise à déplacer <em>le bon ordre de grandeur de volume</em> (ex: délester 150 Mo d'une macro saturée), pas à prédire pixel-par-pixel.<br/><br/>
+<strong>Référence :</strong> Huang et al. (2024) utilisent la même hypothèse dans leur formulation MILP : <em>"We assume uniform traffic demand per user within a cell to derive the offloading fraction."</em>
+</div>
+</div>
+</div>
+</div>
+<div class="notebook-card phil-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📐</div>
+<div style="flex:1">
+<div class="nb-header-title">H2 — Distribution uniforme des utilisateurs sur la cellule</div>
+<div class="nb-header-sub">Les U_c utilisateurs sont uniformément répartis sur la surface de la cellule</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Justification H2</div>
+<div class="md-cell-content">
+<strong>C'est le rôle de la granularité des cellules.</strong><br/><br/>
+          Si chaque cellule est assez petite (votre grille 100×100 sur Milan ≈ 235m), l'hypothèse d'uniformité devient <strong>localement crédible</strong>. Une cellule de ~5 hectares ne contient pas à la fois un centre commercial géant et un parc désert. Elle contient typiquement un pâté de maisons homogène, une portion de rue, ou un petit parc.<br/><br/>
+          L'uniformité par cellule est une approximation <strong>beaucoup plus solide</strong> que l'uniformité par antenne (qui couvre des km² et mélange centre commercial + parc + autoroute).<br/><br/>
+<strong>Remarque :</strong> Si une cellule contient un hotspot (ex: un café très fréquenté), l'erreur sera localisée à cette cellule. Mais comme le handover se fait vers l'antenne voisine la plus proche, l'erreur reste géographiquement cohérente — les utilisateurs du café migreront vers l'antenne derrière le café, ce qui est physiquement plausible.
+        </div>
+</div>
+</div>
+</div>
+<div class="notebook-card phil-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📐</div>
+<div style="flex:1">
+<div class="nb-header-title">H3 — Qualité signal = f(distance) uniquement</div>
+<div class="nb-header-sub">Path-loss : Q_a(p) = −3.76 × log₁₀(d(a,p))</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Justification H3</div>
+<div class="md-cell-content">
+<strong>Approximation macroscopique validée par 3GPP.</strong><br/><br/>
+          En réalité urbaine, le signal dépend aussi des obstacles, du fading, des réflexions. Mais pour la <strong>planification de couverture</strong> (coverage planning), l'industrie utilise exclusivement des modèles de path-loss basés sur la distance :<br/><br/>
+          • <strong>Okumura-Hata</strong> : PL = 69.55 + 26.16 log₁₀(f) − 13.82 log₁₀(h_b) − a(h_m) + [44.9 − 6.55 log₁₀(h_b)] log₁₀(d)<br/>
+          • <strong>COST-231 Hata</strong> (version urbaine dense)<br/>
+          • <strong>3GPP TR 38.901</strong> : modèles 3D-UMa, 3D-UMi<br/><br/>
+          Notre exposant 3.76 est dérivé du modèle <strong>UMi (Urban Micro)</strong> de 3GPP pour des fréquences ~2 GHz et des hauteurs d'antenne 5–25 m. C'est une approximation <strong>macroscopique</strong> : elle ne prédit pas le signal exact au coin d'une rue, mais elle prédit correctement <em>quelle antenne domine dans quelle zone</em> — ce qui est exactement ce dont le MILP a besoin.<br/><br/>
+<strong>Conséquence conservatrice :</strong> Quelques utilisateurs migreront vers la "mauvaise" antenne (à cause d'un immeuble non modélisé), mais la majorité migrera vers la bonne. Le MILP ne vise pas la perfection pixel-par-pixel. Il vise à <strong>déplacer le bon ordre de grandeur de volume</strong>. L'erreur de quelques % sur la localisation exacte est acceptable pour la congestion.
+        </div>
+</div>
+</div>
+</div>
+<div class="notebook-card phil-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📐</div>
+<div style="flex:1">
+<div class="nb-header-title">H4 — A3 Offset comme unique levier de contrôle</div>
+<div class="nb-header-sub">On ne modélise pas la puissance, le TTT, ni l'hysteresis</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Justification H4</div>
+<div class="md-cell-content">
+<strong>Simplification de pilotage, pas de modélisation physique.</strong><br/><br/>
+          En pratique, l'opérateur fixe :<br/>
+          • Time-to-Trigger = 320 ms (standard 3GPP)<br/>
+          • Hysteresis = 1 dB (standard)<br/>
+          • FilterCoefficient = fc4<br/><br/>
+          Et optimise seulement <strong>l'offset A3</strong> comme variable de contrôle SON. C'est valide : vous réduisez le problème à un seul levier par antenne, ce qui est exactement ce que les algorithmes SON commerciaux font (Cisco MEO, Ericsson ENM, Huawei SON).<br/><br/>
+<strong>Pourquoi les autres paramètres sont verrouillés :</strong><br/>
+          • <strong>Puissance d'émission</strong> : modifier la puissance affecte toute la couverture, crée des interférences sur les cellules voisines, et est réglementée (exposition aux ondes). C'est un levier planification, pas exploitation.<br/>
+          • <strong>Time-to-Trigger</strong> : un TTT trop court = ping-pongs (handovers répétés) = call drops. Un TTT trop long = retard à la congestion. Les opérateurs le fixent à 320 ms et ne le touchent pas.<br/>
+          • <strong>Hysteresis</strong> : fixée à 1 dB pour éviter les oscillations. C'est un paramètre de robustesse, pas d'optimisation.<br/><br/>
+<strong>Référence :</strong> 3GPP TS 36.331, section 5.5.4.4 : <em>"The UE shall trigger the A3 event when the RSRP of the neighbour cell becomes better than the RSRP of the serving cell by the offset configured by a3-Offset."</em> L'offset est le seul paramètre configurable par le SON en temps réel.
+        </div>
+</div>
+</div>
+</div>
+</div>
+<hr class="divider"/>
+<!-- ══════════════════════════════════════════
+     PHASE 1 — INGESTION
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase1">
+<div class="phase-header">
+<div class="phase-num-box done">01</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Terminé — Ne pas modifier</span>
+<span class="phase-file">01_ingestion.ipynb</span>
+</div>
+<div class="phase-title">Ingestion &amp; Nettoyage des données</div>
+<div class="phase-desc">Agrégation des 62 fichiers bruts Milan (10 min → 30 min), sélection de 600 cellules représentatives (500 actives + 100 calmes), production du fichier parquet canonique.</div>
+</div>
+</div>
+<div class="io-strip">
+<div class="io-box">
+<div class="io-label inp">↓ Entrées</div>
+<ul class="io-files">
+<li>62 fichiers bruts Milan (10 min) — SMS, Internet, Appels</li>
+<li>Tous country_codes agrégés</li>
+</ul>
+</div>
+<div class="io-box">
+<div class="io-label out">↑ Sorties produites</div>
+<ul class="io-files">
+<li><span>data/processed/work_600cells.parquet</span> — 1 785 594 lignes · 5 colonnes · compression zstd</li>
+</ul>
+</div>
+</div>
+<table class="spec-table">
+<thead><tr><th>Paramètre</th><th>Valeur</th></tr></thead>
+<tbody>
+<tr><td class="td-key">Cellules sélectionnées</td><td class="td-val">9994 éligibles (≥95% complétude) → top 500 actives + 100 calmes (4 quadrants, seed=42)</td></tr>
+<tr><td class="td-key">Granularité temporelle</td><td class="td-val">10 min agrégé en 30 min → 2976 slots sur 62 jours</td></tr>
+<tr><td class="td-key">Colonnes produites</td><td class="td-val"><strong>square_id, slot_30m, internet_volume, sms_in, call_in</strong></td></tr>
+<tr><td class="td-key">Qualité</td><td class="td-val">0 doublons · complétude min 99.8%</td></tr>
+</tbody>
+</table>
+<div class="callout success">
+<div class="callout-icon">✅</div>
+<div class="callout-body">
+<strong>Résultat validé</strong>
+<p>work_600cells.parquet produit et validé. Ce fichier est la source de vérité immuable pour tout le pipeline. Ne jamais le modifier.</p>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 2 — EDA
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase2">
+<div class="phase-header">
+<div class="phase-num-box done">02</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Terminé — Ne pas modifier</span>
+<span class="phase-file">02_eda.ipynb</span>
+</div>
+<div class="phase-title">Analyse Exploratoire (EDA)</div>
+<div class="phase-desc">Décomposition STL, test ADF de stationnarité, ACF/PACF pour calibration des lags, détection d'outliers. Décisions qui guident tout le feature engineering.</div>
+</div>
+</div>
+<div class="io-strip">
+<div class="io-box">
+<div class="io-label inp">↓ Entrée</div>
+<ul class="io-files"><li>data/processed/work_600cells.parquet</li></ul>
+</div>
+<div class="io-box">
+<div class="io-label out">↑ Décisions produites</div>
+<ul class="io-files">
+<li>Lags confirmés : <span>1, 2, 6, 12, 24, 48, 96, 336</span></li>
+<li>600 outliers détectés (|résidu| &gt; 3σ OU &gt; p99)</li>
+<li>Stationnarité confirmée sur résidus STL</li>
+</ul>
+</div>
+</div>
+<table class="spec-table">
+<thead><tr><th>Analyse</th><th>Paramètres</th><th>Résultat</th></tr></thead>
+<tbody>
+<tr><td class="td-key">STL</td><td class="td-val">period=48, seasonal=13, robust=True · 20 cellules pilotes</td><td class="td-val">Saisonnalité journalière + hebdomadaire confirmée</td></tr>
+<tr><td class="td-key">ACF/PACF</td><td class="td-val">Sur résidus STL</td><td class="td-val">Pics lags 1, 2, 48, 96, 336</td></tr>
+<tr><td class="td-key">Outliers</td><td class="td-val">|résidu STL| &gt; 3σ OU &gt; p99</td><td class="td-val">Corrélés événements sportifs Milan</td></tr>
+<tr><td class="td-key">ADF</td><td class="td-val">Test racine unitaire</td><td class="td-val">Résidus STL stationnaires · brut non-stationnaire</td></tr>
+</tbody>
+</table>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 3 — FEATURES
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase3">
+<div class="phase-header">
+<div class="phase-num-box done">03</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Terminé — Ne pas modifier</span>
+<span class="phase-file">03_features.ipynb</span>
+</div>
+<div class="phase-title">Feature Engineering</div>
+<div class="phase-desc">Construction des 31 features causales : lags calibrés sur ACF/PACF, rolling windows anti-fuite, encodage cyclique sin/cos, voisinage spatial Moore. Cible : target_1h (horizon +2 slots = 1h).</div>
+</div>
+</div>
+<div class="io-strip">
+<div class="io-box">
+<div class="io-label inp">↓ Entrée</div>
+<ul class="io-files"><li>data/processed/work_600cells.parquet</li></ul>
+</div>
+<div class="io-box">
+<div class="io-label out">↑ Sortie produite</div>
+<ul class="io-files">
+<li><span>data/processed/features_target_600cells.parquet</span></li>
+<li>1 316 362 lignes · 31 colonnes</li>
+</ul>
+</div>
+</div>
+<div class="callout success">
+<div class="callout-icon">📋</div>
+<div class="callout-body">
+<strong>31 colonnes existantes</strong>
+<p><code>square_id, slot_30m, internet_volume, sms_in, call_in, hour_slot, dow, sin_hour, cos_hour, sin_dow, cos_dow, is_weekend, lag_1, lag_2, lag_6, lag_12, lag_24, lag_48, lag_96, lag_336, roll_mean_3h, roll_std_3h, roll_max_3h, roll_mean_6h, roll_std_6h, roll_max_6h, roll_mean_24h, roll_std_24h, roll_max_24h, neighbor_mean_t_minus_2, target_1h</code></p>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 4 — MODELLING
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase4">
+<div class="phase-header">
+<div class="phase-num-box done">04</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Terminé — Ne pas modifier</span>
+<span class="phase-file">04_modelling.ipynb</span>
+</div>
+<div class="phase-title">Modelling — Baseline XGBoost</div>
+<div class="phase-desc">Mise en place des modèles de base (XGBoost) avec walk-forward validation. Ces baselines servent de référence pour les optimisations ultérieures (Phase 5). MAE=52.79 sur test, skill +35.1% par rapport à la persistance.</div>
+</div>
+</div>
+<table class="results-table">
+<thead><tr><th>Split</th><th>Modèle</th><th>MAE</th><th>RMSE</th><th>Skill</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>final_test (jours 57–62)</td><td class="best">XGBoost</td><td class="best">52.79</td><td class="best">77.29</td><td class="best">+35.1%</td><td>Meilleur modèle → base Phase 5</td></tr>
+<tr><td>final_test</td><td>Baseline persistence</td><td>81.30</td><td>141.18</td><td>—</td><td>Référence</td></tr>
+<tr><td>final_test</td><td class="bad">LSTM (seq=48)</td><td class="bad">491.62</td><td class="bad">536.95</td><td class="bad">−504%</td><td>→ Remplacer par TiDE</td></tr>
+<tr><td>fold_1</td><td>XGBoost</td><td>95.48</td><td>139.23</td><td>+45.1%</td><td></td></tr>
+<tr><td>fold_2</td><td>XGBoost</td><td>77.30</td><td>105.86</td><td>+48.1%</td><td></td></tr>
+<tr><td>fold_3</td><td>XGBoost</td><td>92.85</td><td>120.08</td><td>+9.9%</td><td>Fold difficile</td></tr>
+</tbody>
+</table>
+<div class="callout warn">
+<div class="callout-icon">⚠️</div>
+<div class="callout-body">
+<strong>Problème identifié — Loss symétrique</strong>
+<p>La loss MSE actuelle pénalise également sur- et sous-estimation. Métier : <strong>sous-estimer une congestion coûte 5–10× plus cher</strong> : le réseau sature, les appels tombent, les SLA sont violés. Correction en Phase 5 : loss quantile asymétrique.</p>
+</div>
+</div>
+<div class="callout phil" style="margin-top:20px">
+<div class="callout-icon">🗺️</div>
+<div class="callout-body">
+<strong>Le parcours réel : ce qu'on a essayé avant d'arriver ici</strong>
+<p>
+      Les résultats de cette phase 4 ne racontent qu'une partie de l'histoire. En parallèle, nous avons testé trois autres familles de modèles,
+      chacune pour une raison précise — et chacune rejetée pour une raison précise.<br/><br/>
+<strong>Prophet</strong> (Meta) gère bien les saisonnalités multiples et les jours fériés, mais il traite chaque cellule indépendamment,
+      est conçu pour des séries longues et régulières, et réagit lentement aux pics brusques. Sur 600 cellules en parallèle, il était trop lent.<br/><br/>
+<strong>SARIMA</strong> est statistiquement rigoureux pour les séries univariées avec saisonnalité. Nous avons testé SARIMA(p,d,q)×(P,D,Q)₄₈
+      (m=48 slots = 24h). Il donne de bons résultats sur une seule cellule, mais il est aveugle aux corrélations spatiales entre voisines,
+      et son coût de calcul par cellule le rend inexploitable à l'échelle de 600 ou 1024 cellules simultanément.<br/><br/>
+<strong>Le LSTM</strong> de la Phase 4 a produit une MAE de 491.62 — pire que la persistance naïve. Ce n'est pas une surprise :
+      les LSTM souffrent de vanishing gradient sur des séries longues (62 jours × 48 slots = 2976 points), et nécessitent un tuning
+      architectural soigné qui sort du cadre de ce projet.<br/><br/>
+      Ces trois voies ont été documentées et conservées dans <code>research/</code>. Elles font partie intégrante du processus scientifique.
+    </p>
+</div>
+</div>
+<div class="callout danger" style="margin-top:14px">
+<div class="callout-icon">🔴</div>
+<div class="callout-body">
+<strong>L'échec des 600 cellules : un enseignement fondamental</strong>
+<p>
+      Avec nos premiers modèles, nous avons appliqué le pipeline MILP sur 600 cellules sélectionnées à travers toute la grille de Milan.
+      Les prédictions étaient correctes — mais l'impact sur la congestion était quasi nul.
+      La raison est géographique : ces 600 cellules étaient dispersées sur la grille 100×100 sans continuité spatiale.
+      Une cellule saturée en zone Nord n'avait aucune voisine supervisée disponible pour absorber son trafic.
+      Le délestage "dans le vide" ne résout rien physiquement.<br/><br/>
+      La solution a été de passer à un <strong>bloc dense et contigu de 32×32 = 1024 cellules</strong>, extrait du centre de Milan.
+      Dans ce bloc, chaque antenne est entourée de voisines supervisées. Le délestage a enfin pu s'opérer réellement,
+      débloquant les 73.53% de réduction de congestion.
+    </p>
+</div>
+</div>
+
+</div>
+<hr class="divider"/>
+<!-- ══════════════════════════════════════════
+     PHASE 5 — AMÉLIORATIONS ML
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase5">
+<div class="phase-header">
+<div class="phase-num-box done">05</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Intelligence ML Avancée</span>
+<span class="phase-file">05_improvements.ipynb · src/ml/predictor.py</span>
+</div>
+<div class="phase-title">Intelligence ML : Régression Quantile &amp; TiDE</div>
+<div class="phase-desc">L'implémentation finale utilise une approche asymétrique pour anticiper les risques de saturation. Nous avons intégré des modèles XGBoost Quantile (q80) et le modèle TiDE (Time-series Dense Encoder) pour capturer les dépendances temporelles complexes, surpassant les performances des baselines traditionnelles.</div>
+</div>
+</div>
+<div class="io-strip">
+<div class="io-box">
+<div class="io-label inp">↓ Entrées</div>
+<ul class="io-files">
+<li>data/processed/features_target_600cells.parquet (Phase 3)</li>
+<li>reports/predictions_boosting.parquet (Phase 4)</li>
+</ul>
+</div>
+<div class="io-box">
+<div class="io-label out">↑ Sorties Validées</div>
+<ul class="io-files">
+<li><span>data/processed/features_v2.parquet</span> — 31 + 5 nouvelles features</li>
+<li><span>models/xgb_q20.pkl · xgb_q50.pkl · xgb_q80.pkl</span></li>
+<li><span>models/lgbm_l2_corrector.pkl</span></li>
+<li><span>data/processed/nominal_capacities.parquet</span></li>
+</ul>
+</div>
+</div>
+<div class="callout info">
+<div class="callout-icon">📚</div>
+<div class="callout-body">
+<strong>Pourquoi TiDE et pas LSTM / PatchTST ?</strong>
+<p>D'après les benchmarks 2024 (Long-term Time Series Forecasting Benchmark), <strong>TiDE</strong> (Time-series Dense Encoder) surpasse PatchTST sur 55% des datasets longs et N-BEATS sur 60% des datasets courts. TiDE est un MLP pur sans attention, plus rapide que le Transformer, gère nativement les covariates passées et futures, et converge mieux sur des données tabulaires hétérogènes comme les nôtres. Le LSTM de la Phase 4 a échoué (MAE=491) à cause du vanishing gradient sur des séries longues — TiDE n'a pas ce problème.<br/><br/>
+<strong>Référence :</strong> Das et al. (2023), "Long-term Forecasting with TiDE", + benchmarks 2024 montrant TiDE meilleur que PatchTST sur ETTm1, ETTm2, Exchange.</p>
+</div>
+</div>
+<div class="notebook-card done-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">Section A — Loss asymétrique + 3 scénarios quantile</div>
+<div class="nb-header-sub">Remplacer MSE par quantile loss · 3 modèles α=0.20/0.50/0.80</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Cellule Markdown — En-tête Section A</div>
+<div class="md-cell-content">
+<strong># 05 — Améliorations du Prédicteur ML</strong><br/><br/>
+          Ce notebook améliore le prédicteur de la Phase 4 sans modifier les notebooks précédents.<br/>
+          Il lit <code>features_target_600cells.parquet</code> et produit 3 modèles quantile XGBoost + 1 correcteur LightGBM.<br/><br/>
+<strong>## Section A — Pourquoi la loss asymétrique ?</strong><br/>
+          La MSE symétrique pénalise également sur-estimation et sous-estimation. Dans ce projet, <strong>sous-estimer une congestion coûte 5–10× plus</strong> : le réseau sature, les appels tombent, les SLA sont violés. On utilise la <strong>quantile loss α=0.80</strong> qui pénalise 4× plus fortement les sous-estimations.<br/><br/>
+          On entraîne 3 modèles : optimiste (α=0.20), nominal (α=0.50), pessimiste (α=0.80). La largeur de l'intervalle mesure l'incertitude. Cible de couverture : 78–82%.
+        </div>
+</div>
+<div class="callout danger">
+<div class="callout-icon">⛔</div>
+<div class="callout-body">
+<strong>CRITIQUE — Syntaxe XGBoost ≠ LightGBM (confusion silencieuse)</strong>
+<p>Les deux compilent sans erreur mais donnent des résultats radicalement différents.</p>
+</div>
+</div>
+<div class="callout warn" style="margin:14px 0"><div class="callout-icon">⚠️</div><div class="callout-body"><strong>Piège syntaxique silencieux : XGBoost vs LightGBM</strong><p>Dans XGBoost, la régression quantile s'active avec <code>objective='reg:quantileerror'</code> et <code>quantile_alpha=0.80</code>. Dans LightGBM, c'est <code>objective='quantile'</code> et <code>alpha=0.80</code>. Mélanger les deux conventions ne produit aucune erreur — mais le modèle entraîne silencieusement un mauvais objectif. La validation empirique de la couverture de l'intervalle [q20, q80] est l'unique moyen de détecter ce bug.</p></div></div>
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Nous entraînons <strong>trois modèles XGBoost distincts</strong>, chacun ciblant un quantile différent du trafic futur.
+Le modèle <strong>q20</strong> (optimiste) estime le plancher : le trafic sera probablement au-dessus.
+Le modèle <strong>q50</strong> (médiane) estime la valeur centrale : c'est l'estimateur le plus neutre.
+Le modèle <strong>q80</strong> (pessimiste) estime le plafond probable : dans 80% des cas, le trafic réel sera en-dessous de cette prédiction.
+<br/><br/>
+C'est le q80 que nous utilisons pour déclencher le MILP. Nous préférons légèrement surestimer la congestion future et agir par précaution plutôt que la sous-estimer et arriver trop tard.
+<br/><br/>
+Les trois modèles partagent la même architecture (n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8)
+et la même partition train/test : les jours 1 à 56 pour l'entraînement, les jours 57 à 62 pour l'évaluation.
+À la fin, nous mesurons la <strong>couverture empirique</strong> de l'intervalle [q20, q80], qui doit se situer entre 78% et 82% pour que le modèle soit correctement calibré.
+Les trois modèles sont sérialisés sur disque pour être chargés directement par le moteur MILP et le simulateur de boucle fermée.</div></div>
+</div>
+</div>
+<div class="notebook-card done-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">Section B — Features d'erreur passée + Stacking L2</div>
+<div class="nb-header-sub">error_t1, error_mean_6, error_sign · LightGBM correcteur de résidus</div>
+</div>
+<div class="nb-toggle open">▾</div>
+</div>
+<div class="nb-body open">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content"><strong>Pourquoi un deuxième modèle ?</strong> XGBoost q50 fait une bonne prédiction globale, mais il commet des erreurs systématiques sur certains profils de cellules — par exemple, il sous-estime régulièrement les antennes en zone commerciale le vendredi soir.
+<br/><br/>
+Le principe du <strong>stacking L2</strong> est simple : après que le premier modèle (L1 = XGBoost q50) ait prédit,
+on calcule le résidu <em>résidu = réel − prédit</em>. Un second modèle (L2 = LightGBM) est alors entraîné non pas sur le trafic brut,
+mais sur ces résidus. Il apprend à corriger les erreurs récurrentes de L1.
+<br/><br/>
+La prédiction finale est la somme <em>prédiction_finale = XGBoost_q50 + correction_LightGBM</em>.
+Pour que L2 ait de l'information contextuelle, on lui donne en entrée toutes les features originales <em>plus</em> la prédiction de L1.
+<br/><br/>
+Nous utilisons LightGBM avec un objectif de régression standard (<code>regression</code>), car ici on ne cherche plus à estimer un quantile mais la correction optimale en espérance.
+Le gain typique de ce stacking est de 3 à 8% de réduction de MAE sur des patterns difficiles.
+Le modèle correcteur est sauvegardé séparément sous <code>lgbm_l2_corrector.pkl</code>.</div></div>
+</div>
+</div>
+<div class="notebook-card done-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">Section C — Modélisation Temporelle TiDE</div>
+<div class="nb-header-sub">neuralforecast · TiDE (Time-series Dense Encoder)</div>
+</div>
+<div class="nb-toggle open">▾</div>
+</div>
+<div class="nb-body open">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Avant d'adopter XGBoost comme modèle principal, nous avons exploré plusieurs alternatives.
+<br/><br/>
+<strong>SARIMA</strong> a été notre première tentative. C'est un modèle statistique classique pour les séries temporelles avec saisonnalité.
+Nous avons testé SARIMA(p,d,q)×(P,D,Q)₄₈ (saisonnalité de 48 slots = 24h). Les résultats étaient corrects pour les tendances journalières,
+mais SARIMA traite chaque cellule de manière totalement indépendante, est lent à entraîner (plusieurs minutes par cellule),
+et ne capture pas les corrélations spatiales entre voisins. Sur 600 cellules, le coût de calcul était prohibitif.
+<br/><br/>
+<strong>Prophet</strong> (Meta) a été notre deuxième tentative. Il gère bien les saisonnalités multiples (journalière + hebdomadaire) et les jours fériés,
+mais il est conçu pour des séries longues et régulières. Sur notre données télécom avec des pics brusques, sa capacité de réaction était insuffisante.
+De plus, Prophet est conçu pour un usage cellule par cellule — son parallélisme est difficile à exploiter proprement.
+<br/><br/>
+<strong>TiDE (Time-series Dense Encoder)</strong> est un modèle neuronal que nous avons intégré pour comparer.
+Il utilise une architecture MLP avec encodeurs denses et connexions résiduelles. Il se distingue du LSTM (qui souffre de vanishing gradient sur les longues séries)
+par sa capacité à modéliser des dépendances longue-distance sans mécanisme d'attention coûteux.
+Ici, TiDE reçoit 96 slots d'historique (48h), les 5 covariables cycliques (sin/cos de l'heure, sin/cos du jour, is_weekend),
+et prédit 2 slots en avance (= 1h). Il est entraîné en mode <strong>global</strong> sur toutes les cellules simultanément,
+ce qui le rend bien meilleur que SARIMA ou Prophet pour généraliser.
+<br/><br/>
+En production, c'est <strong>XGBoost q80 + correcteur LightGBM</strong> qui a été retenu car il offre le meilleur compromis entre précision, vitesse d'inférence, et interprétabilité des features.</div></div>
+</div>
+</div>
+<div class="notebook-card done-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">Section D — Capacité nominale calibrée</div>
+<div class="nb-header-sub">Percentile 90 par (plage horaire × type_jour) · 12 seuils par cellule</div>
+</div>
+<div class="nb-toggle open">▾</div>
+</div>
+<div class="nb-body open">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content"><strong>Pourquoi une capacité "nominale" et non pas une capacité fixe ?</strong>
+Le trafic d'une antenne en zone résidentielle à 3h du matin n'a rien à voir avec celui d'une antenne en zone commerciale à 18h.
+Utiliser une capacité unique pour toutes les situations serait trop restrictif en heures creuses et insuffisant en heures de pointe.
+<br/><br/>
+Nous divisons chaque jour en <strong>4 plages horaires</strong> : nuit (0h–6h), matin (6h–12h), après-midi (12h–19h), soirée (19h–minuit).
+Nous distinguons également <strong>2 types de jours</strong> : semaine et week-end. Cela donne 8 combinaisons par cellule.
+Pour chaque combinaison, la capacité nominale est fixée au <strong>90e percentile</strong> du trafic historiquement observé.
+Autrement dit : la capacité est le volume que la cellule dépasse rarement (1 fois sur 10) en conditions normales.
+<br/><br/>
+Ces seuils sont stockés dans <code>nominal_capacities.parquet</code> et utilisés par le moteur MILP
+pour décider si une antenne est "en congestion" à un moment donné.
+Si la prédiction q80 dépasse la capacité nominale du slot en cours, l'antenne est marquée comme candidate au délestage.</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 6 — TOPOLOGY BUILDER
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase6">
+<div class="phase-header">
+<div class="phase-num-box done">06</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Architecture Spatiale v2.1</span>
+<span class="phase-file">06_topology.ipynb · src/topology/builder.py</span>
+</div>
+<div class="phase-title">Topology Builder — Bloc Dense 1024 Cellules</div>
+<div class="phase-desc">Construction de la topologie sur un bloc dense de 32x32 cellules (1024 cellules au total). Cette échelle permet une simulation haute fidélité des phénomènes de congestion locale et de transfert de charge inter-cellulaire. Placement de ~300 antennes hétérogènes calibrées sur des paramètres radio physiques.</div>
+</div>
+</div>
+<div class="callout warn">
+<div class="callout-icon">📡</div>
+<div class="callout-body">
+<strong>Calibration sur données réelles Milan — ARPA Lombardia 2025</strong>
+<p>Province de Milan : <strong>3 509 installations radio mobiles</strong> sur 1 575 km² = 2,2 antennes/km². La ville proprement dite (181 km²) est bien plus dense. Centre (Duomo/Garibaldi) : <strong>3–4 antennes/km²</strong>. Ceinture urbaine dense : <strong>1,5/km²</strong>. Périphérie : <strong>0,3/km²</strong>. Sur l'aire métropolitaine complète (552 km²), la densité moyenne simulée est ~0,8 antenne/km², mais elle atteint ~2,2 antennes/km² sur la zone center+urban_ring (3600 cellules ≈ 200 km²), cohérent avec les données ARPA. La grille 100×100 est assimilée à ~23,5×23,5 km = <strong>552 km²</strong> (aire métropolitaine) → 1 unité de grille ≈ 235 m × 235 m. Milan intra-muros (~181 km²) correspond approximativement à la zone center+urban_ring (20-80, 20-80 = 3600 cellules ≈ 200 km²).</p>
+</div>
+</div>
+<table class="spec-table">
+<thead><tr><th>Type antenne</th><th>BW</th><th>SINR typ.</th><th>Capacité Shannon 30 min @60%</th><th>Hauteur</th><th>Rayon couverture</th></tr></thead>
+<tbody>
+<tr><td class="td-key">Macro (4G/5G)</td><td class="td-val">20 MHz</td><td class="td-val">15 dB</td><td class="td-val"><strong>~407 Mo</strong></td><td class="td-val">25 m</td><td class="td-val">~3.5 unités grille (800 m)</td></tr>
+<tr><td class="td-key">Micro</td><td class="td-val">20 MHz</td><td class="td-val">20 dB</td><td class="td-val"><strong>~539 Mo</strong></td><td class="td-val">8 m</td><td class="td-val">~0.9 unités grille (200 m)</td></tr>
+<tr><td class="td-key">Smallcell</td><td class="td-val">10 MHz</td><td class="td-val">25 dB</td><td class="td-val"><strong>~337 Mo</strong></td><td class="td-val">4 m</td><td class="td-val">~0.2 unités grille (50 m)</td></tr>
+</tbody>
+</table>
+<div class="callout info">
+<div class="callout-icon">📐</div>
+<div class="callout-body">
+<strong>Capacités opérationnelles vs débits radio bruts</strong>
+<p>Les valeurs ci-dessus (~407 Mo/30 min pour une macro) sont des <strong>capacités opérationnelles effectives</strong>, pas des débits physiques bruts. La formule de Shannon brute donnerait ~8 000 Mo/30 min (60 Mbps), mais un <code>sharing_factor=0.05</code> est appliqué pour refléter le partage moyen entre ~20 utilisateurs simultanés et la sectorisation implicite des macros urbaines. Cela ramène l'ordre de grandeur à celui du trafic réel du dataset Milan et garantit que le MILP modélise une congestion réaliste.</p>
+</div>
+</div>
+<div class="notebook-card arch-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">Cellule A — Capacité radio physique (Shannon) + Génération antennes</div>
+<div class="nb-header-sub">Densité variable centre/ceinture/périphérie · capacités radio physiques</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Chaque antenne physique dans le modèle a un profil radio défini par trois paramètres : la bande passante, le SINR cible et la puissance d'émission.
+La capacité effective de l'antenne est calculée via la <strong>formule de Shannon</strong> :
+C = Bande × log₂(1 + SINR_linéaire) × efficacité_spectrale × taux_utilisation × facteur_partage.
+<br/><br/>
+Le <code>sharing_factor</code> de 0.05 est crucial : il reflète le fait que l'antenne sert environ 20 utilisateurs simultanément
+et que la cellule ne couvre qu'une fraction de la zone de l'antenne physique sectorisée.
+Sans ce facteur, la formule de Shannon brute donnerait ~8 000 Mo/30min — complètement déconnecté du trafic réel du dataset Milan.
+<br/><br/>
+Nous définissons <strong>trois profils d'antennes</strong> calibrés sur les déploiements LTE urbains standard :
+<br/>— <strong>Macro</strong> : bande 20 MHz, SINR cible 15 dB, puissance 46 dBm, hauteur 25m, rayon de couverture ~3.5 mailles. Capacité : ~407 Mo/30min.
+<br/>— <strong>Micro</strong> : bande 20 MHz, SINR cible 20 dB (meilleur rapport signal/bruit grâce à la proximité), puissance 37 dBm, hauteur 8m. Capacité : ~539 Mo/30min.
+<br/>— <strong>Small cell</strong> : bande 10 MHz, SINR 25 dB, puissance 24 dBm, hauteur 4m. Capacité : ~337 Mo/30min.
+<br/><br/>
+Ces profils sont placés avec des densités variables selon la zone géographique dans la grille 100×100 représentant Milan :
+le centre-ville (lignes 40–60, colonnes 40–60) est saturé de micros et de small cells, l'anneau urbain alterne macros et micros,
+et la périphérie est couverte presque exclusivement par des macros.</div></div>
+</div>
+</div>
+<div class="notebook-card arch-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">Cellule B — Placement antennes + assignation 10 000 cellules</div>
+<div class="nb-header-sub">Génération par zones · assignation vectorisée · extraction sous-ensemble 600</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Une fois les profils définis, nous plaçons physiquement les antennes dans la grille 100×100.
+Chaque zone de densité génère un nombre d'antennes proportionnel à son aire et à sa densité de déploiement
+(par exemple, le centre a une densité de 0.22 antenne par maille carrée, contre 0.012 en périphérie).
+Les positions sont tirées aléatoirement dans la zone, avec un léger jitter gaussien pour éviter les configurations trop régulières.
+Une contrainte de distance minimale (0.5 maille) empêche deux antennes d'être trop proches.
+<br/><br/>
+Une fois les antennes placées, nous assignons les 10 000 cellules géographiques à leur antenne physiquement la plus proche,
+en utilisant un <strong>algorithme KD-Tree</strong> (structure de données permettant une recherche de voisin le plus proche en O(log n)).
+Le centre géométrique de chaque cellule de la grille 100×100 est comparé à la position de toutes les antennes,
+et chaque cellule est affiliée à l'antenne la plus proche en distance euclidienne.
+<br/><br/>
+Pour les simulations, nous extrayons ensuite le sous-ensemble des <strong>1024 cellules</strong> formant le bloc dense 32×32
+(lignes 34–65, colonnes 34–65 de la grille), et les antennes qui couvrent ce bloc constituent notre graphe de travail.
+Ce bloc contient 201 antennes avec une parfaite continuité topologique — chaque antenne est entourée de voisines,
+ce qui rend le délestage possible dans toutes les directions.</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 7 — USER SIMULATOR
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase7">
+<div class="phase-header">
+<div class="phase-num-box arch">07</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-arch">Nouveau — Données simulées</span>
+<span class="phase-file">07_user_simulator.ipynb · simulation/user_simulator.py</span>
+</div>
+<div class="phase-title">Simulation du nombre d'utilisateurs</div>
+<div class="phase-desc">Générer une série temporelle réaliste de n_users par cellule et par slot 30 min. Nécessaire pour le modèle de handover : sans n_users, impossible de calculer combien d'utilisateurs migrent entre antennes.</div>
+</div>
+</div>
+<div class="callout info">
+<div class="callout-icon">👥</div>
+<div class="callout-body">
+<strong>Pourquoi simuler n_users ?</strong>
+<p>Le dataset Milan ne contient que les volumes agrégés (Internet, SMS, Appels). Il ne contient pas le nombre d'utilisateurs actifs. Or, le handover dépend du nombre d'utilisateurs qui basculent, pas seulement du volume. Si 100 utilisateurs consomment 100 Mo, ou si 10 utilisateurs consomment 100 Mo, le nombre de handovers sera radicalement différent.<br/><br/>
+<strong>Important :</strong> Ces données sont simulées. Elles servent à tester la pipeline. L'opérateur les remplacera par ses données réelles (compteurs RRC_connected par cellule).</p>
+</div>
+</div>
+<div class="notebook-card arch-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">07_user_simulator.ipynb — Code complet</div>
+<div class="nb-header-sub">Saisonnalité journalière + hebdo + bruit gaussien 10%</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Le dataset Telecom Italia Milan enregistre les volumes de trafic agrégés (Internet, SMS, appels) par cellule et par slot de 30 minutes.
+Il ne contient pas le nombre d'utilisateurs actifs à chaque instant. Or, le modèle de handover dépend du nombre d'utilisateurs
+susceptibles de basculer — pas uniquement du volume.
+<br/><br/>
+Nous générons donc une série temporelle synthétique de <code>n_users</code> par cellule et par slot, avec une structure réaliste :
+<br/>— Un <strong>patron journalier</strong> à double pic gaussien : un pic principal à 20h (soirée, usages résidentiels) et un pic secondaire à 12h (pause déjeuner).
+<br/>— Un <strong>multiplicateur week-end</strong> de +30% : les samedi et dimanche présentent une activité légèrement supérieure.
+<br/>— Un <strong>bruit gaussien de 10%</strong> autour de la valeur nominale pour simuler la variabilité aléatoire des comportements.
+<br/>— Un <strong>plancher à 1 utilisateur</strong> minimum pour éviter les valeurs nulles ou négatives.
+<br/><br/>
+La baseline de chaque cellule est tirée uniformément entre 25 et 100 utilisateurs, reflétant l'hétérogénéité entre zones denses et zones calmes.
+Ces données simulées sont la seule composante entièrement synthétique du projet.
+En production opérationnelle, elles seraient remplacées par les compteurs <code>RRC_connected</code> issus directement du système de gestion réseau.</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 8 — SPATIAL SIMULATOR
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase8">
+<div class="phase-header">
+<div class="phase-num-box arch">08</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-arch">Nouveau — Cœur spatial v2.0</span>
+<span class="phase-file">08_spatial_simulator.ipynb · offline/spatial_simulator.py</span>
+</div>
+<div class="phase-title">Simulateur Spatial — Précalcul Offline</div>
+<div class="phase-desc">Cœur du changement architectural. Pour chaque cellule et chaque niveau δ ∈ {0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0} dB, calculer exactement quelle fraction de surface bascule vers quelle antenne voisine (path-loss physique). Ce calcul est fait une fois par jour offline.</div>
+</div>
+</div>
+<div class="callout info">
+<div class="callout-icon">🔬</div>
+<div class="callout-body">
+<strong>Principe physique : pourquoi remplacer θ fixe et f(δ) linéaire ?</strong>
+<p><strong>θ fixe était faux :</strong> les utilisateurs au Nord de la cellule basculent vers l'antenne Nord, ceux à l'Est vers l'Est — ce n'est pas un pourcentage global. <strong>f(δ) linéaire était faux :</strong> c'est une courbe en S (sigmoïde). <strong>Solution :</strong> discrétiser chaque cellule en grille 50×50 points, calculer pour chaque point sa distance aux antennes, en déduire sa qualité (path-loss = −3.76 × log₁₀(distance)), et compter les points qui basculent. Avec des cellules de même surface, pas besoin de normaliser par l'aire — le volume est proportionnel au nombre de points.</p>
+</div>
+</div>
+<div class="notebook-card arch-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">08_spatial_simulator.ipynb — Code complet</div>
+<div class="nb-header-sub">SpatialTransferSimulator · NumPy vectorisé · grille 50×50</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Cellule Markdown — En-tête</div>
+<div class="md-cell-content">
+<strong># 08 — Simulateur Spatial (Précalcul Offline)</strong><br/><br/>
+          Ce notebook calcule les <em>fractions de transfert</em> pour chaque cellule. Pour chaque point d'une grille 50×50 à l'intérieur d'une cellule, on calcule la qualité signal de chaque antenne (path-loss = −3.76 × log₁₀(distance)). Quand le maître baisse son seuil de δ dB, les points dont la meilleure voisine dépasse le maître de δ basculent.<br/><br/>
+          Ce calcul est indépendant du trafic — seulement de la géométrie. Il est fait une fois par jour (offline, 10–30 secondes) et stocké. Les prédictions ML injectent le volume online.
+        </div>
+</div>
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">C'est le calcul le plus central du projet — celui qui traduit la géométrie physique du réseau en coefficients mathématiques utilisables par le MILP.
+<br/><br/>
+Pour chaque cellule géographique, nous discrétisons sa surface en une <strong>grille de 50×50 = 2500 points</strong>.
+Pour chaque point de cette micro-grille, nous calculons la qualité du signal reçu depuis l'antenne maître et depuis toutes ses antennes voisines.
+La qualité est modélisée par le <strong>path-loss standard 3GPP</strong> : Q = −3.76 × log₁₀(distance).
+Un signal diminue avec la distance selon cet exposant de 3.76, typique d'un environnement urbain dense.
+<br/><br/>
+Pour un offset A3 de δ dB, un point bascule de son antenne maître vers une voisine si et seulement si
+la voisine présente une qualité supérieure d'au moins δ dB à celle du maître.
+En comptant le nombre de points qui basculent (et vers quelle voisine), on obtient la <strong>fraction de transfert</strong> :
+si 12.5% des 2500 points d'une cellule basculent vers l'antenne B pour δ=1.5 dB, alors 12.5% du trafic de cette cellule
+est transféré à B quand on applique un offset de 1.5 dB.
+<br/><br/>
+Ce calcul est effectué pour les <strong>7 niveaux d'offset</strong> {0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0 dB} et pour toutes les cellules du bloc 1024.
+Il est effectué une seule fois, hors ligne (en 10 à 30 secondes), et stocké dans <code>fractions_1024.parquet</code>.
+À chaque slot de décision, le moteur MILP n'a plus qu'à lire ces fractions précalculées —
+sans jamais recalculer le path-loss. C'est ce qui rend le système temps-réel viable.</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 9 — MILP DÉCIDEUR
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase9">
+<div class="phase-header">
+<div class="phase-num-box done">09</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Moteur de Décision</span>
+<span class="phase-file">09_milp_decision_engine.ipynb · src/optimization/milp_engine.py</span>
+</div>
+<div class="phase-title">MILP Engine — Optimisation Décisionnelle</div>
+<div class="phase-desc">Le cœur du système. Ce moteur résout simultanément le problème de congestion pour toutes les antennes. Il choisit l'offset A3 optimal pour chaque antenne en garantissant que le trafic délesté vers une voisine ne sature pas cette dernière. C'est l'assurance d'une optimalité globale par rapport aux approches heuristiques simples.</div>
+</div>
+</div>
+<div class="callout warn">
+<div class="callout-icon">🔗</div>
+<div class="callout-body">
+<strong>La contrainte (C3) est la plus critique — couplage global</strong>
+<p>Si l'antenne A déleste vers B, et que B déleste aussi, le volume final sur B = V_B − délestage_B + reçu de A (et de tous les autres). Cette contrainte est globale et empêche qu'une antenne soit surchargée par les délestages de ses voisins. C'est ce que le LP simplifié ignorait.</p>
+</div>
+</div>
+<div class="callout info">
+<div class="callout-icon">⚖️</div>
+<div class="callout-body">
+<strong>Dualité capacité : radio (topology) vs statistique (nominal_capacities)</strong>
+<p>Il y a deux capacités différentes dans le pipeline. <strong>capacity_mo</strong> dans <code>network_topology.yaml</code> = capacité opérationnelle effective (~407 Mo pour une macro) : c'est le seuil opérationnel dur, utilisé comme contrainte C_a dans le MILP (C3). <strong>nominal_capacity</strong> dans <code>nominal_capacities.parquet</code> = percentile 90 du trafic historique observé par plage horaire : c'est le trigger statistique qui décide si on appelle le MILP. Logique : si <code>pred_q80 &gt; nominal_capacity</code> → on suspecte une congestion → on lance le MILP avec <code>C_a = capacity_mo</code> (physique). Ça évite de lancer le MILP à chaque slot inutilement.</p>
+</div>
+</div>
+<div class="notebook-card crit-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">09_milp_decision_engine.ipynb — Formulation complète</div>
+<div class="nb-header-sub">Pyomo · Gurobi/CBC · Variables z_{a,k} binaires · Contraintes C1, C2, C3</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell">
+<div class="md-cell-tag">## Cellule Markdown — En-tête</div>
+<div class="md-cell-content">
+<strong># 09 — MILP Décideur</strong><br/><br/>
+          Ce notebook implémente l'optimiseur de congestion. Il prend en entrée les prédictions ML (volume prévu par cellule) et les fractions précalculées (Phase 8), et décide quel seuil A3 appliquer à chaque antenne.<br/><br/>
+<strong>Pourquoi MILP et pas LP ?</strong> La fonction de transfert H(δ) est non-linéaire (courbe en S). En discrétisant δ en 7 niveaux, on transforme le choix continu en choix discret entre états précalculés. Chaque antenne choisit exactement un niveau k → variable binaire z_{a,k}. Résolvable avec garantie d'optimalité en 2–10 secondes pour 150 antennes.
+        </div>
+</div>
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Le moteur MILP commence par construire deux matrices tridimensionnelles à partir des fractions précalculées.
+<br/><br/>
+La <strong>matrice H_déleste</strong> représente la fraction du trafic de l'antenne A qui s'en va lorsqu'on applique un offset de niveau k :
+<code>H_déleste[a, k]</code> = fraction de V_a qui quitte A au niveau d'offset k.
+<br/><br/>
+La <strong>matrice H_recv</strong> représente le volume reçu par une antenne B en provenance de A pour le niveau k :
+<code>H_recv[b, a, k]</code> = fraction de V_a que B reçoit quand A active l'offset k.
+Ces matrices sont construites en itérant sur le fichier de fractions et en multipliant chaque fraction par le volume prédit V_a.
+<br/><br/>
+Ces deux matrices sont les seules entrées dont le solveur a besoin pour calculer la solution optimale.
+Elles encodent toute la physique du réseau (path-loss, topologie des voisins, géométrie des cellules) de façon linéaire et exploitable directement par un solveur MILP standard.</div></div>
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">La formulation MILP elle-même est définie avec <strong>Pyomo</strong>, un framework d'optimisation mathématique Python compatible avec de nombreux solveurs (CBC, Gurobi, GLPK).
+<br/><br/>
+Les <strong>variables de décision</strong> sont les niveaux d'offset discrets : pour chaque antenne A, une variable entière <code>x[a]</code>
+prend une valeur dans {0, 1, 2, 3, 4, 5, 6} correspondant aux niveaux {0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0 dB}.
+<br/><br/>
+La <strong>fonction objectif</strong> minimise la somme du volume insatisfait sur toutes les antennes.
+Le volume insatisfait de l'antenne B est défini comme : max(0, volume_résultant_sur_B − capacité_de_B).
+Comme on ne peut pas avoir de max() non-linéaire dans un MILP linéaire, on introduit des variables d'écart <code>s[b] ≥ 0</code>
+et on contraint <code>s[b] ≥ volume_résultant_sur_B − capacité_de_B</code>.
+<br/><br/>
+Les <strong>contraintes</strong> assurent la conservation du volume : tout trafic qui quitte A arrive forcément chez ses voisines —
+rien n'est créé ni détruit. Elles assurent aussi qu'une antenne non-congestionnée garde son offset à 0
+(pas de délestage inutile qui déstabiliserait le réseau).
+<br/><br/>
+Pour 200 antennes, le problème compte ~200 variables entières et ~400 contraintes. Le solveur CBC le résout en moins de 2 secondes,
+ce qui est parfaitement compatible avec un cycle de décision de 30 minutes.</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 10 — MONITORING
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase10">
+<div class="phase-header">
+<div class="phase-num-box done">10</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Surveillance Active</span>
+<span class="phase-file">10_monitoring.ipynb · src/monitoring.py</span>
+</div>
+<div class="phase-title">Monitoring &amp; Détection de Dérive (Drift)</div>
+<div class="phase-desc">Mise en place d'une surveillance continue de la qualité des prédictions. Le système détecte automatiquement les dérives de données (drift) ou les changements brusques de comportement des utilisateurs pour alerter sur la nécessité d'un réentraînement du modèle ML.</div>
+</div>
+</div>
+<div class="notebook-card done-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">10_monitoring.ipynb — Détection drift + anomalies</div>
+<div class="nb-header-sub">STL résidu comme anomaly score · Page-Hinkley test · Rolling MAE</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">Le moniteur de drift surveille en permanence la qualité des prédictions pour détecter un changement de comportement du réseau
+qui rendrait le modèle ML obsolète.
+<br/><br/>
+La mécanique est basée sur une <strong>fenêtre glissante de 48 slots (24h)</strong>.
+À chaque slot, on calcule l'erreur absolue <em>|prédit − réel|</em> et on la compare à la distribution des erreurs récentes.
+Un point est déclaré <strong>anomalie</strong> si son résidu STL dépasse 2 fois l'écart-type des erreurs de la fenêtre en cours.
+Le résidu STL est l'écart entre la valeur observée et la composante tendance+saisonnalité décomposée par l'algorithme STL.
+<br/><br/>
+Pour qu'une <strong>alerte de drift</strong> soit déclenchée (plutôt qu'un simple pic isolé), il faut 5 anomalies consécutives.
+Ce mécanisme évite les faux positifs sur des événements ponctuels comme un match de football ou une panne locale.
+<br/><br/>
+Le moniteur calcule également la <strong>précision décisionnelle</strong> : quel pourcentage de slots le modèle a-t-il correctement
+prédit l'état congestionné ou non-congestionné d'une cellule, indépendamment de l'erreur de volume absolue ?
+C'est cette métrique qui pilote directement la qualité des décisions MILP, car un MILP déclenché sur une fausse alarme
+consomme des ressources inutilement.</div></div>
+</div>
+</div>
+</div>
+<!-- ══════════════════════════════════════════
+     PHASE 11 — BOUCLE FERMÉE
+══════════════════════════════════════════ -->
+<div class="phase-section" id="phase11">
+<div class="phase-header">
+<div class="phase-num-box done">11</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Simulation Boucle Fermée</span>
+<span class="phase-file">11_closed_loop.ipynb · src/simulation/closed_loop_sim.py</span>
+</div>
+<div class="phase-title">Boucle Fermée — Validation Finale &amp; Impact</div>
+<div class="phase-desc">Le test ultime en conditions réelles. Nous avons simulé le fonctionnement du pipeline sur une période de 24 heures glissantes, où chaque décision de l'optimiseur impacte le trafic futur. Résultats : une réduction massive de la congestion globale, validant l'efficacité de l'approche hybride ML+MILP.</div>
+</div>
+</div>
+<table class="spec-table">
+<thead><tr><th>Métrique</th><th>Actuel (Phase 4)</th><th>Cible finale</th></tr></thead>
+<tbody>
+<tr><td class="td-key">MAE test final (XGBoost)</td><td class="td-val">52.79 Mo</td><td class="td-val"><strong>≤ 45 Mo (amélioration ≥ 15%)</strong></td></tr>
+<tr><td class="td-key">MAE test final (TiDE)</td><td class="td-val">491.62 (LSTM)</td><td class="td-val"><strong>≤ 200 → GO pour ensemble</strong></td></tr>
+<tr><td class="td-key">Skill vs baseline</td><td class="td-val">35.1%</td><td class="td-val"><strong>≥ 45%</strong></td></tr>
+<tr><td class="td-key">Couverture intervalle [q20,q80]</td><td class="td-val">non mesuré</td><td class="td-val"><strong>78–82%</strong></td></tr>
+<tr><td class="td-key">Taux décision correcte au seuil</td><td class="td-val">non mesuré</td><td class="td-val"><strong>&gt; 70%</strong></td></tr>
+<tr><td class="td-key">Volume non satisfait (prédictif vs statique)</td><td class="td-val">81.3 Mo MAE</td><td class="td-val"><strong>Réduction 73.53%</strong></td></tr>
+</tbody>
+</table>
+<div class="notebook-card done-card">
+<div class="nb-header" onclick="toggleNb(this)">
+<div class="nb-header-icon">📓</div>
+<div style="flex:1">
+<div class="nb-header-title">11_closed_loop.ipynb — Simulation slot par slot</div>
+<div class="nb-header-sub">Jours 57–62 · 3 politiques · comparaison finale</div>
+</div>
+<div class="nb-toggle">▾</div>
+</div>
+<div class="nb-body">
+<div class="md-cell" style="margin-bottom:10px"><div class="md-cell-tag">## Ce que fait cette section dans le notebook</div><div class="md-cell-content">La boucle fermée est la simulation finale qui valide l'ensemble du pipeline dans des conditions réalistes.
+Elle s'exécute sur les jours 57 à 62 du dataset (48 slots × 6 jours = 288 décisions).
+<br/><br/>
+<strong>À chaque slot de 30 minutes :</strong>
+<br/>1. Le modèle XGBoost q80 prédit le trafic de chaque cellule pour l'heure suivante.
+<br/>2. Les prédictions sont agrégées à l'échelle des antennes physiques (somme des cellules couvertes par chaque antenne).
+<br/>3. Pour chaque antenne, la prédiction est comparée à sa capacité nominale. Si la prédiction dépasse la capacité, l'antenne est candidate au délestage.
+<br/>4. Si des antennes candidates existent, le moteur MILP est invoqué. Il calcule le vecteur d'offsets optimal en ~2 secondes.
+<br/>5. Les offsets sont appliqués via les matrices de transfert précalculées : le trafic est redistribué numériquement entre antennes.
+<br/>6. On compare le trafic résultant à la capacité de chaque antenne et on comptabilise le volume insatisfait restant.
+<br/><br/>
+Trois politiques sont comparées en parallèle sur les mêmes données :
+<br/>— <strong>Statique</strong> : aucune action SON, on mesure simplement la congestion brute.
+<br/>— <strong>Conservatrice</strong> (XGBoost q50 + MILP) : déclenchement modéré, moins de faux positifs.
+<br/>— <strong>Pessimiste</strong> (XGBoost q80 + MILP) : déclenchement anticipé, maximise la prévention.
+<br/><br/>
+Sur 48 slots de test (24h équivalent), les résultats finaux sont :
+volume insatisfait statique = <strong>160 237 Mo</strong>, volume insatisfait dynamique (q80) = <strong>42 419 Mo</strong>,
+soit une réduction de <strong>73.53%</strong>. La conservation de la masse est vérifiée à &lt;1e-9 près à chaque slot.</div></div>
+</div>
+</div>
+</div>
+<div class="phase-section" id="streamlit">
+<div class="phase-header">
+<div class="phase-num-box done">12</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Interface Simulation Interactive</span>
+<span class="phase-file">scripts/dashboard/app.py</span>
+</div>
+<div class="phase-title">Tableau de Bord Streamlit — Simulation & Pilotage</div>
+<div class="phase-desc">Une application interactive permettant à tout utilisateur de simuler lui-même différents scénarios de congestion réseau et de visualiser l'impact de l'optimisation MILP en temps réel.</div>
+</div>
+</div>
+<div class="md-cell">
+<div class="md-cell-content">
+<strong>Comment simuler vous-même :</strong><br/><br/>
+L'application est conçue pour l'exploration libre. Pour lancer votre propre instance de simulation :<br/>
+<code>$env:PYTHONPATH="."</code><br/>
+<code>python -m streamlit run scripts/dashboard/app.py</code><br/>
+<br/>
+<strong>Options de pilotage interactif :</strong><br/><br/>
+Une fois dans l'application, vous pouvez manipuler les variables suivantes pour tester la robustesse du SON :
+<ul>
+  <li><strong>🕒 Navigation Temporelle</strong> : Utilisez le slider pour choisir l'un des 48 snapshots de la journée. Observez comment le moteur réagit différemment à 04h00 (calme) et à 18h30 (pic de congestion).</li>
+  <li><strong>⚙️ Paramètres Ingénieur (Expert Mode)</strong> :
+    <ul>
+      <li><strong>Intensité délestage (δ)</strong> : Ajustez la marge de manœuvre du solveur (dB). Un δ élevé permet plus de transferts mais complexifie l'équilibre global.</li>
+      <li><strong>Facteur de Capacité (Stress Test)</strong> : Réduisez artificiellement la capacité des antennes (ex: 0.5 pour simuler une panne de 50% du hardware) pour voir comment l'algorithme "sauve" le réseau par redistribution logicielle.</li>
+    </ul>
+  </li>
+</ul>
+<br/>
+<strong>Lecture des résultats :</strong><br/><br/>
+Les visualisations s'adaptent dynamiquement à vos changements de paramètres :
+<ul>
+  <li><strong>🌊 Sankey Flows</strong> : Visualisez les flux de délestage. Si vous augmentez δ, les liens s'épaississent car plus de volume est dérouté.</li>
+  <li><strong>📱 Impact QoE</strong> : Vérifiez comment vos réglages améliorent mathématiquement le débit moyen (Mbps) ressenti par les utilisateurs finaux.</li>
+  <li><strong>🔬 Audit Technique</strong> : Un expander en bas de page prouve la conservation de la masse et l'étanchéité du bloc pour chaque simulation que vous lancez.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="phase-section" id="makefile">
+<div class="phase-header">
+<div class="phase-num-box done">13</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Automatisation</span>
+<span class="phase-file">Makefile</span>
+</div>
+<div class="phase-title">Automatisation — Pipeline & Maintenance</div>
+<div class="phase-desc">Le projet intègre un Makefile pour simplifier les tâches récurrentes de développement, de test et d'exécution du pipeline SON.</div>
+</div>
+</div>
+<div class="md-cell">
+<div class="md-cell-content">
+Les cibles (targets) principales disponibles sont :
+<ul>
+  <li><code>make install</code> : Installation complète de l'environnement virtuel et des dépendances.</li>
+  <li><code>make run</code> : Exécution du pipeline complet sur le bloc 1024 avec la politique dynamique.</li>
+  <li><code>make verify</code> : Lance le script de vérification critique (conservation de la masse, étanchéité du bloc).</li>
+  <li><code>make test</code> : Exécution de la suite de tests unitaires via Pytest.</li>
+  <li><code>make lint</code> : Analyse statique du code via Ruff et vérification du formatage avec Black.</li>
+  <li><code>make clean</code> : Nettoyage des fichiers temporaires, du cache de test et des dossiers __pycache__.</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="phase-section" id="tests">
+<div class="phase-header">
+<div class="phase-num-box done">14</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Qualité Logicielle</span>
+<span class="phase-file">tests/unit/</span>
+</div>
+<div class="phase-title">Tests & Intégrité du Système</div>
+<div class="phase-desc">Validation rigoureuse des composants logiciels pour garantir la fiabilité des décisions du réseau SON.</div>
+</div>
+</div>
+<div class="md-cell">
+<div class="md-cell-content">
+Le projet utilise <strong>Pytest</strong> pour automatiser les tests. La suite de tests vérifie :
+<ul>
+  <li><strong>Logique du Dashboard</strong> : Intégrité du chargement des données et des calculs de KPIs.</li>
+  <li><strong>Cœur Radio</strong> : Validation des formules de capacité Shannon et des modèles de path-loss.</li>
+  <li><strong>Matrices de Transfert</strong> : Vérification que la somme des fractions de transfert pour une cellule est toujours égale à 1.0 (conservation de la masse).</li>
+  <li><strong>Moteur MILP</strong> : Test de convergence du solveur sur des scénarios de congestion simplifiés.</li>
+</ul>
+Lancement des tests : <code>pytest tests/unit/</code>
+</div>
+</div>
+</div>
+
+<div class="phase-section" id="adr">
+<div class="phase-header">
+<div class="phase-num-box done">15</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Architecture</span>
+<span class="phase-file">docs/adr/</span>
+</div>
+<div class="phase-title">Architecture Decision Records (ADR)</div>
+<div class="phase-desc">Historique des décisions architecturales majeures prises au cours du développement du projet.</div>
+</div>
+</div>
+<div class="md-cell">
+<div class="md-cell-content">
+Trois décisions clés structurent le projet actuel :
+<ol>
+  <li><strong>ADR-001 : Choix de la Quantile Loss</strong><br/>Abandon de la MSE (Mean Squared Error) pour XGBoost au profit d'une perte quantile à α=0.8. Raison : la sous-estimation de la congestion est plus coûteuse pour l'opérateur que la sur-estimation.</li>
+  <li><strong>ADR-002 : Optimisation MILP Globale</strong><br/>Utilisation d'un solveur MILP global pour coordonner les décisions de délestage. Raison : seule une approche globale garantit que le délestage d'une antenne ne sature pas ses voisines (problème de couplage).</li>
+  <li><strong>ADR-003 : Passage au Bloc Dense 32x32</strong><br/>Pivot majeur délaissant l'échantillonnage aléatoire pour un bloc contigu de 1024 cellules. Raison : la contiguïté spatiale est indispensable pour simuler des handovers réalistes et obtenir un gain de congestion significatif.</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div class="phase-section" id="benchmark">
+<div class="phase-header">
+<div class="phase-num-box done">16</div>
+<div class="phase-meta">
+<div class="phase-status-row">
+<span class="phase-status ps-done">✓ Validé — Benchmark Comparatif</span>
+<span class="phase-file">15_greedy_comparison.ipynb</span>
+</div>
+<div class="phase-title">Benchmark : MILP vs Heuristique Greedy</div>
+<div class="phase-desc">Preuve empirique de la supériorité de l'optimisation globale (MILP) sur une approche locale simplifiée (Greedy). Validation effectuée sur le bloc dense de 1024 cellules.</div>
+</div>
+</div>
+<div class="md-cell">
+<div class="md-cell-content">
+<table class="results-table">
+<thead><tr><th>Politique de Décision</th><th>Volume Insatisfait (Mo)</th><th>Gain / Statique</th><th>Efficacité Relative</th></tr></thead>
+<tbody>
+<tr><td><strong>Statique</strong> (Baseline)</td><td>160 237 Mo</td><td>0.00%</td><td>Référence</td></tr>
+<tr><td><strong>Greedy Heuristic</strong> (Local)</td><td>89 375 Mo</td><td>44.22%</td><td>Base de comparaison</td></tr>
+<tr><td class="best"><strong>Dynamique (MILP Global)</strong></td><td class="best">42 419 Mo</td><td class="best">73.53%</td><td class="best">+52.5% vs Greedy</td></tr>
+</tbody>
+</table>
+<br/>
+<div class="callout warn">
+<div class="callout-icon">⚠️</div>
+<div class="callout-body">
+<strong>Note sur la validité physique (600 vs 1024 cellules)</strong>
+<p>Vous remarquerez que les tests actuels sur le cluster de 600 cellules dispersées affichent également des gains positifs (contrairement aux versions précédentes). Cela est dû à l'amélioration de la coordination <strong>MILP</strong> et à l'anticipation <strong>q80</strong>.</p>
+<p>Cependant, ces gains sur 600 cellules sont <strong>artificiellement gonflés</strong> : comme les cellules sont dispersées, le trafic délesté s'échappe vers des voisins non-supervisés et "disparaît" de la simulation. Le <strong>Bloc 1024 (32x32)</strong> est notre seul benchmark physiquement valide car il forme un système fermé où la masse est conservée, garantissant que les 73,5% de réduction sont réels.</p>
+</div>
+</div>
+<br/>
+<strong>Conclusion du Benchmark :</strong><br/>
+Alors que l'heuristique Greedy parvient à délester une partie de la congestion par des décisions locales, elle échoue à gérer les <strong>effets de cascade</strong> (délestage vers une cellule déjà saturée). Le moteur MILP, en optimisant l'ensemble du bloc de 1024 cellules simultanément, parvient à réduire la congestion de <strong>52,5% supplémentaires</strong> par rapport au Greedy, prouvant que la coordination globale est indispensable dans un réseau urbain dense.
+</div>
+</div>
+</div>
+
+<hr class="divider"/>
+<!-- ─── ARCHITECTURE FICHIERS ─── -->
+<div style="padding-top:32px; margin-bottom:48px;">
+<div style="font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--text3); margin-bottom:16px;">// Architecture finale du projet (Production & R&D)</div>
+<div class="file-tree">
+<span class="ft-dir">projectTimeSeries/</span><br/>
+├── <span class="ft-dir">research/</span>           <span class="ft-comment"># Parcours complet de recherche et modèles</span><br/>
+│   ├── <span class="ft-dir">notebooks/</span><br/>
+│   │   ├── <span class="ft-done">01_ingestion.ipynb</span><br/>
+│   │   ├── <span class="ft-done">02_eda.ipynb</span><br/>
+│   │   ├── <span class="ft-done">03_features.ipynb</span><br/>
+│   │   ├── <span class="ft-done">04_modelling.ipynb</span>       <span class="ft-comment"># Prophet, SARIMA, XGBoost Baselines</span><br/>
+│   │   ├── <span class="ft-done">05_improvements.ipynb</span>     <span class="ft-comment"># TiDE & Quantile (q80) ✓</span><br/>
+│   │   ├── <span class="ft-done">06_topology.ipynb</span>         <span class="ft-comment"># Bloc 1024 cellules ✓</span><br/>
+│   │   ├── <span class="ft-done">07_users.ipynb</span><br/>
+│   │   ├── <span class="ft-done">08_spatial.ipynb</span>           <span class="ft-comment"># Cœur spatial ✓</span><br/>
+│   │   ├── <span class="ft-done">09_milp_decision_engine.ipynb</span><br/>
+│   │   ├── <span class="ft-done">10_monitoring.ipynb</span><br/>
+│   │   ├── <span class="ft-done">11_closed_loop.ipynb</span>       <span class="ft-comment"># Validation finale ✓</span><br/>
+│   │   ├── <span class="ft-done">12_comparison_report.ipynb</span><br/>
+│   │   ├── <span class="ft-done">13_full_scale_simulation.ipynb</span><br/>
+│   │   ├── <span class="ft-done">14_final_benchmark_report.ipynb</span><br/>
+│   │   └── <span class="ft-done">15_greedy_comparison.ipynb</span>     <span class="ft-comment"># Benchmark MILP vs Greedy ✓</span><br/>
+│   ├── <span class="ft-dir">offline/</span><br/>
+│   │   └── <span class="ft-done">fractions_1024.parquet</span>    <span class="ft-comment"># Matrices de transfert géométriques</span><br/>
+│   ├── <span class="ft-dir">models/</span><br/>
+│   │   ├── <span class="ft-done">xgb_q80.pkl</span><br/>
+│   │   └── <span class="ft-done">lgbm_l2_corrector.pkl</span><br/>
+│   ├── <span class="ft-dir">config/</span><br/>
+│   │   └── <span class="ft-done">network_topology_1024.yaml</span><br/>
+├── <span class="ft-dir">src/</span>                <span class="ft-comment"># Code source modulaire pour la production</span><br/>
+│   ├── <span class="ft-dir">ml/</span><br/>
+│   │   └── <span class="ft-done">predictor.py</span><br/>
+│   ├── <span class="ft-dir">optimization/</span><br/>
+│   │   └── <span class="ft-done">milp_engine.py</span><br/>
+│   └── <span class="ft-dir">simulation/</span><br/>
+│       ├── <span class="ft-done">closed_loop_sim.py</span><br/>
+│       └── <span class="ft-done">user_simulator.py</span><br/>
+├── <span class="ft-dir">scripts/</span>            <span class="ft-comment"># Dashboards et utilitaires</span><br/>
+│   ├── <span class="ft-dir">dashboard/</span><br/>
+│   │   └── <span class="ft-done">app.py</span><br/>
+│   └── <span class="ft-done">download_assets.sh</span><br/>
+├── <span class="ft-dir">docs/</span><br/>
+│   ├── <span class="ft-dir">adr/</span><br/>
+│   └── <span class="ft-done">RAPPORT_1024_CELLS.md</span><br/>
+└── <span class="ft-file">Makefile</span><br/>
+</div>
+</div>
+<!-- ─── RÉFÉRENCES BIBLIOGRAPHIQUES ─── -->
+<div style="padding-top:32px; margin-bottom:48px;">
+<div style="font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--text3); margin-bottom:16px;">// Références bibliographiques</div>
+<div class="philosophy-box">
+<p><strong>[1]</strong> Wang et al. (2015). "A Q-Learning Approach for Self-Organizing Network with A3 Offset Control." <em>IEEE Transactions on Network and Service Management</em>.</p>
+<p><strong>[2]</strong> Zhang et al. (2023). "Self-Organizing Network Load Balancing: A Survey." <em>IEEE Access</em>.</p>
+<p><strong>[3]</strong> Huang et al. (2024). "Exact MILP Formulation for Load Balancing with Handover Offset in Cellular Networks." <em>Computer Networks</em>.</p>
+<p><strong>[4]</strong> Das et al. (2023). "Long-term Forecasting with TiDE: Time-series Dense Encoder." <em>NeurIPS Workshop</em> + Benchmarks 2024.</p>
+<p><strong>[5]</strong> 3GPP TS 36.331. "Evolved Universal Terrestrial Radio Access (E-UTRA); Radio Resource Control (RRC); Protocol specification."</p>
+<p><strong>[6]</strong> ARPA Lombardia (2025). "Relazione annuale sullo stato dell'ambiente in Lombardia — Capitolo elettromagnetismo."</p>
+<p><strong>[7]</strong> Telecom Italia Big Data Challenge. "Milan Grid Dataset — 10 000 cells, 62 days."</p>
+</div>
+</div>
+</div>
+<div class="guide-footer">
+<p><strong>Pipeline Congestion Réseau v5.1</strong> — Architecture Spatiale MILP · Rapport d'Ingénierie ENSAM Meknès</p>
+<p>Lire d'abord <strong>§0 (Avant-Propos)</strong> et <strong>§1 (Clarifications)</strong> · Puis 05 → 06 → 07 → 08 → 09 → 10 → 11</p>
+</div>
+</div>
+<script>
+function toggleNb(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.nb-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+}
+
+const sections = document.querySelectorAll('.phase-section');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.getAttribute('href') === '#' + id) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => observer.observe(s));
+</script>
+<!-- 
+AUDIT GEMINI — 26 MAI 2026
+---------------------------
+INCOHÉRENCES CORRIGÉES :
+- Capacité Macro : 405 Mo -> 407 Mo (cohérence avec RAPPORT_1024_CELLS.md)
+- Capacité Micro : 526 Mo -> 539 Mo (cohérence avec RAPPORT_1024_CELLS.md)
+- Capacité Smallcell : 240 Mo -> 337 Mo (cohérence avec RAPPORT_1024_CELLS.md)
+- Chemins fichiers : Synchronisation avec la structure 'research/' et 'src/'
+- Équipe : Mise à jour à "Samya Loukili & L'Équipe Projet"
+
+SECTIONS AJOUTÉES :
+- §12 : Streamlit App (Dashboard interactif)
+- §13 : Automatisation (Makefile)
+- §14 : Tests & Qualité (Pytest)
+- §15 : Décisions ADR (001-003)
+
+ÉLÉMENTS NON VÉRIFIÉS :
+- Performance réelle du modèle TiDE (valeur cible ≤ 200 mentionnée mais non trouvée en brut dans les logs récents)
+- Temps exact de convergence MILP pour 1024 cellules (estimé à <5s via Makefile target 'run')
+-->
+</body></html>
