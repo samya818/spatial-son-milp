@@ -1786,31 +1786,31 @@ Alors que l'heuristique Greedy parvient à délester une partie de la congestion
 <div style="font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--text3); margin-bottom:16px;">// Architecture finale du projet (Production & R&D)</div>
 <div class="file-tree">
 <span class="ft-dir">projectTimeSeries/</span><br/>
-├── <span class="ft-dir">research/</span>           <span class="ft-comment"># Parcours complet de recherche et modèles</span><br/>
+├── <span class="ft-dir">research/</span><br/>
 │   ├── <span class="ft-dir">notebooks/</span><br/>
 │   │   ├── <span class="ft-done">01_ingestion.ipynb</span><br/>
 │   │   ├── <span class="ft-done">02_eda.ipynb</span><br/>
 │   │   ├── <span class="ft-done">03_features.ipynb</span><br/>
-│   │   ├── <span class="ft-done">04_modelling.ipynb</span>       <span class="ft-comment"># Prophet, SARIMA, XGBoost Baselines</span><br/>
-│   │   ├── <span class="ft-done">05_improvements.ipynb</span>     <span class="ft-comment"># TiDE & Quantile (q80) ✓</span><br/>
-│   │   ├── <span class="ft-done">06_topology.ipynb</span>         <span class="ft-comment"># Bloc 1024 cellules ✓</span><br/>
-│   │   ├── <span class="ft-done">07_users.ipynb</span><br/>
-│   │   ├── <span class="ft-done">08_spatial.ipynb</span>           <span class="ft-comment"># Cœur spatial ✓</span><br/>
+│   │   ├── <span class="ft-done">04_modelling.ipynb</span><br/>
+│   │   ├── <span class="ft-done">05_improvements.ipynb</span><br/>
+│   │   ├── <span class="ft-done">06_topology.ipynb</span><br/>
+│   │   ├── <span class="ft-done">07_user_simulator.ipynb</span><br/>
+│   │   ├── <span class="ft-done">08_spatial_simulator.ipynb</span><br/>
 │   │   ├── <span class="ft-done">09_milp_decision_engine.ipynb</span><br/>
 │   │   ├── <span class="ft-done">10_monitoring.ipynb</span><br/>
-│   │   ├── <span class="ft-done">11_closed_loop.ipynb</span>       <span class="ft-comment"># Validation finale ✓</span><br/>
+│   │   ├── <span class="ft-done">11_closed_loop.ipynb</span><br/>
 │   │   ├── <span class="ft-done">12_comparison_report.ipynb</span><br/>
 │   │   ├── <span class="ft-done">13_full_scale_simulation.ipynb</span><br/>
 │   │   ├── <span class="ft-done">14_final_benchmark_report.ipynb</span><br/>
-│   │   └── <span class="ft-done">15_greedy_comparison.ipynb</span>     <span class="ft-comment"># Benchmark MILP vs Greedy ✓</span><br/>
+│   │   └── <span class="ft-done">15_greedy_comparison.ipynb</span><br/>
 │   ├── <span class="ft-dir">offline/</span><br/>
-│   │   └── <span class="ft-done">fractions_1024.parquet</span>    <span class="ft-comment"># Matrices de transfert géométriques</span><br/>
+│   │   └── <span class="ft-done">fractions_1024.parquet</span><br/>
 │   ├── <span class="ft-dir">models/</span><br/>
 │   │   ├── <span class="ft-done">xgb_q80.pkl</span><br/>
 │   │   └── <span class="ft-done">lgbm_l2_corrector.pkl</span><br/>
-│   ├── <span class="ft-dir">config/</span><br/>
-│   │   └── <span class="ft-done">network_topology_1024.yaml</span><br/>
-├── <span class="ft-dir">src/</span>                <span class="ft-comment"># Code source modulaire pour la production</span><br/>
+│   └── <span class="ft-dir">config/</span><br/>
+│       └── <span class="ft-done">network_topology_1024.yaml</span><br/>
+├── <span class="ft-dir">src/</span><br/>
 │   ├── <span class="ft-dir">ml/</span><br/>
 │   │   └── <span class="ft-done">predictor.py</span><br/>
 │   ├── <span class="ft-dir">optimization/</span><br/>
@@ -1818,14 +1818,19 @@ Alors que l'heuristique Greedy parvient à délester une partie de la congestion
 │   └── <span class="ft-dir">simulation/</span><br/>
 │       ├── <span class="ft-done">closed_loop_sim.py</span><br/>
 │       └── <span class="ft-done">user_simulator.py</span><br/>
-├── <span class="ft-dir">scripts/</span>            <span class="ft-comment"># Dashboards et utilitaires</span><br/>
+├── <span class="ft-dir">scripts/</span><br/>
 │   ├── <span class="ft-dir">dashboard/</span><br/>
 │   │   └── <span class="ft-done">app.py</span><br/>
 │   └── <span class="ft-done">download_assets.sh</span><br/>
+├── <span class="ft-dir">tests/</span><br/>
+│   └── <span class="ft-dir">unit/</span><br/>
 ├── <span class="ft-dir">docs/</span><br/>
 │   ├── <span class="ft-dir">adr/</span><br/>
-│   └── <span class="ft-done">RAPPORT_1024_CELLS.md</span><br/>
-└── <span class="ft-file">Makefile</span><br/>
+│   └── <span class="ft-done">PIPELINE_GUIDE.html</span><br/>
+├── <span class="ft-file">check_environment.py</span><br/>
+├── <span class="ft-file">Makefile</span><br/>
+├── <span class="ft-file">requirements.txt</span><br/>
+└── <span class="ft-file">README.md</span><br/>
 </div>
 </div>
 <!-- ─── RÉFÉRENCES BIBLIOGRAPHIQUES ─── -->

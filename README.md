@@ -120,15 +120,22 @@ python -m streamlit run scripts/dashboard/app.py
 Consultez `docs/PIPELINE_GUIDE.html` pour une explication scientifique détaillée de chaque phase.
 
 | Phase | Notebook | Description |
-| :--- | :--- | :--- |
-| 01 | `01_ingestion.ipynb` | ✅ Nettoyage et agrégation du dataset Milan. |
-| 03 | `03_features.ipynb` | ✅ Feature Engineering (31 variables causales). |
-| 05 | `05_improvements.ipynb`| ✅ Intelligence ML (Quantile Regression q80 & TiDE). |
-| 06 | `06_topology.ipynb` | ✅ Construction du bloc dense 1024 cellules. |
-| 08 | `08_spatial.ipynb`   | ✅ Cœur Spatial (Matrices de transfert path-loss). |
-| 09 | `09_milp_engine.ipynb`| ✅ Moteur de décision MILP (Pyomo). |
-| 11 | `11_closed_loop.ipynb`| ✅ Validation en boucle fermée. |
-| 15 | `15_greedy_comparison.ipynb`| ✅ Benchmark final : MILP vs Greedy. |
+|-------|----------|-------------|
+| 01 | `01_ingestion.ipynb` | ✅ Ingestion & nettoyage Telecom Italia Milan (10 min → 30 min) |
+| 02 | `02_eda.ipynb` | ✅ EDA : STL, ADF, ACF/PACF, détection outliers |
+| 03 | `03_features.ipynb` | ✅ Feature Engineering (31 variables causales) |
+| 04 | `04_modelling.ipynb` | ✅ Baselines XGBoost, LSTM, Prophet, SARIMA |
+| 05 | `05_improvements.ipynb` | ✅ Quantile q80 + TiDE + correcteur LightGBM L2 |
+| 06 | `06_topology.ipynb` | ✅ Architecture 1024 cellules, antennes hétérogènes |
+| 07 | `07_user_simulator.ipynb` | ✅ Simulation n_users par cellule (saisonnalité + bruit) |
+| 08 | `08_spatial_simulator.ipynb` | ✅ Précalcul offline des matrices de transfert path-loss |
+| 09 | `09_milp_decision_engine.ipynb` | ✅ Moteur MILP Pyomo (optimalité globale) |
+| 10 | `10_monitoring.ipynb` | ✅ Détection de drift (Page-Hinkley, rolling MAE) |
+| 11 | `11_closed_loop.ipynb` | ✅ Validation boucle fermée (gain 73,53%) |
+| 12 | `12_comparison_report.ipynb` | ✅ Rapport comparatif intermédiaire |
+| 13 | `13_full_scale_simulation.ipynb` | ✅ Simulation à l'échelle complète |
+| 14 | `14_final_benchmark_report.ipynb` | ✅ Rapport de benchmark final |
+| 15 | `15_greedy_comparison.ipynb` | ✅ Benchmark MILP vs Greedy (+52,5% vs heuristique) |
 
 ---
 
