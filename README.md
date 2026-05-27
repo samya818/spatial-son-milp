@@ -168,7 +168,7 @@ python check_environment.py --verify
 
 ## ⚠️ Troubleshooting
 - **FileNotFound (data)**: Models and matrices are not included in the base repo (Git LFS). Use `bash scripts/download_assets.sh` to verify their local presence.
-- **Full Documentation**: For a detailed scientific explanation and a complete interactive guide for each phase, it is imperative to consult **`docs/PIPELINE_GUIDE.html`**.
+- **Full Documentation**: For a detailed scientific explanation and a complete interactive guide for each phase, it is imperative to consult the English guide (**`docs/PIPELINE_GUIDE_EN.html`**) or the French guide (**`docs/PIPELINE_GUIDE_FR.html`**).
 - **PYTHONPATH**: If your scripts cannot find the `src` module, export the path: `export PYTHONPATH=$PYTHONPATH:.` (or `$env:PYTHONPATH="."` on PowerShell).
 - **MILP Performance**: The default solver is CBC. For industrial performance on > 10,000 cells, we recommend Gurobi or CPLEX.
 
