@@ -163,7 +163,8 @@ python check_environment.py --verify
 ---
 
 ## ⚠️ Résolution des problèmes courants
-- **FileNotFound (data)** : Les fichiers volumineux sont dans la GitHub Release `v1.0-assets`. Utilisez `download_assets.sh`.
+- **FileNotFound (data)** : Les modèles et matrices ne sont pas inclus dans le repo de base (Git LFS). Utilisez `bash scripts/download_assets.sh` pour vérifier leur présence locale.
+- **Documentation complète** : Pour une explication scientifique détaillée et un guide interactif complet de chaque phase, consultez impérativement **`docs/PIPELINE_GUIDE.html`**.
 - **PYTHONPATH** : Si vos scripts ne trouvent pas le module `src`, exportez le chemin : `export PYTHONPATH=$PYTHONPATH:.` (ou `$env:PYTHONPATH="."` sur PowerShell).
 - **Performance MILP** : Le solveur par défaut est CBC. Pour des performances industrielles sur > 10 000 cellules, nous recommandons Gurobi ou CPLEX.
 
