@@ -6,183 +6,185 @@
 [![XGBoost](https://img.shields.io/badge/XGBoost-q80-orange)](https://xgboost.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Pipeline hybride ML + Optimisation MILP pour la gestion autonome de la congestion réseau (Self-Organizing Networks)**
+> ℹ️ **Note:** For the full scientific documentation (in French), see **`docs/PIPELINE_GUIDE.html`**.
 
-> 🚀 **Chiffre clé :** Réduction de **73,5%** de la congestion sur un bloc dense de 1 024 cellules (Milan dataset).
+**Hybrid ML + MILP Optimization Pipeline for autonomous network congestion management (Self-Organizing Networks)**
+
+> 🚀 **Proof of Concept:** In our simulation model, which is based on the documented H1-H4 hypotheses, we observe a **73.53%** reduction in unsatisfied volume. This proof of concept validates the hybrid ML+MILP approach and paves the way for validation on realistic network simulators (ns-3) and, eventually, field deployment.
 
 ---
 
-## 📑 Table des matières
+## 📑 Table of Contents
 1. [🚀 Quick Start (5 min)](#-quick-start-5-min)
-2. [📦 Installation complète](#-installation-complète)
-3. [🗂️ Architecture du repo](#%EF%B8%8F-architecture-du-repo)
-4. [🖥️ Lancer l'application Streamlit](#%EF%B8%8F-lancer-lapplication-streamlit)
-5. [📓 Notebooks de recherche](#-notebooks-de-recherche)
-6. [🧪 Tests & Qualité](#-tests--qualité)
+2. [📦 Full Installation](#-full-installation)
+3. [🗂️ Repository Architecture](#%EF%B8%8F-repository-architecture)
+4. [🖥️ Launching the Streamlit Application](#%EF%B8%8F-launching-the-streamlit-application)
+5. [📓 Research Notebooks](#-research-notebooks)
+6. [🧪 Tests & Quality](#-tests--quality)
 7. [📊 Benchmarks](#-benchmarks)
-8. [⚠️ Résolution des problèmes courants](#%EF%B8%8F-résolution-des-problèmes-courants)
-9. [📚 Références](#-références)
-10. [👥 Auteurs](#-auteurs)
+8. [⚠️ Troubleshooting](#%EF%B8%8F-troubleshooting)
+9. [📚 References](#-references)
+10. [👥 Authors](#-authors)
 
 ---
 
 ## 🚀 Quick Start (5 min)
 
 ```bash
-# 1. Cloner le repo
+# 1. Clone the repo
 git clone https://github.com/samya818/spatial-son-milp.git
 cd spatial-son-milp
 
-# 2. Créer et activer l'environnement virtuel
+# 2. Create and activate virtual environment
 python -m venv .venv
-# Sur Windows :
+# On Windows:
 .\venv\Scripts\activate
-# Sur Linux/macOS :
+# On Linux/macOS:
 source .venv/bin/activate
 
-# 3. Installer les dépendances
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Vérifier l'environnement
+# 4. Verify environment
 python check_environment.py
 
-# 5. Lancer le dashboard
+# 5. Launch the dashboard
 python -m streamlit run scripts/dashboard/app.py
 ```
 
 ---
 
-## 📦 Installation complète
+## 📦 Full Installation
 
-### 🛰️ Données et Assets
-Le dataset brut Telecom Italia Milan n'est pas inclus directement dans le repo pour des raisons de licence et de volume (> 1 Go). 
-- **Assets pré-calculés :** Pour lancer le dashboard immédiatement, téléchargez les modèles et matrices pré-calculées :
+### 🛰️ Data and Assets
+The raw Telecom Italia Milan dataset is not included directly in the repo due to licensing and volume (> 1 GB).
+- **Pre-computed Assets:** To launch the dashboard immediately, verify the pre-computed models and matrices:
   ```bash
   bash scripts/download_assets.sh
   ```
-- **Reconstruction complète :** Si vous possédez les fichiers CSV bruts, placez-les dans `data/raw/` et exécutez les notebooks de recherche `01` à `08`.
+- **Full Reconstruction:** If you have the raw CSV files, place them in `data/raw/` and run research notebooks `01` to `08`.
 
-### 🛠️ Dépendances
-- `requirements.txt` : Dépendances critiques pour la production et le dashboard.
-- `requirements-dev.txt` : Outils de développement (Pytest, Black, Jupyter).
+### 🛠️ Dependencies
+- `requirements.txt`: Critical dependencies for production and the dashboard.
+- `requirements-dev.txt`: Development tools (Pytest, Black, Jupyter).
 
 ### ⌨️ Makefile
-| Cible | Description |
+| Target | Description |
 | :--- | :--- |
-| `make install` | Installe l'environnement et les dépendances. |
-| `make run` | Exécute le pipeline complet sur le bloc 1024. |
-| `make verify` | Vérifie l'intégrité physique (conservation de masse). |
-| `make test` | Lance la suite de tests unitaires. |
-| `make lint` | Analyse statique et formatage du code. |
-| `make clean` | Nettoie les caches et fichiers temporaires. |
+| `make install` | Installs the environment and dependencies. |
+| `make run` | Runs the full pipeline on the 1024 block. |
+| `make verify` | Verifies physical integrity (mass conservation). |
+| `make test` | Runs the unit test suite. |
+| `make lint` | Static analysis and code formatting. |
+| `make clean` | Cleans caches and temporary files. |
 
 ---
 
-## 🗂️ Architecture du repo
+## 🗂️ Repository Architecture
 
 ```text
 spatial-son-milp/
-├── docs/                   # Documentation technique et guide interactif
-├── scripts/                # Dashboards et utilitaires
-│   └── dashboard/          # Code source de l'application Streamlit
-├── src/                    # CODE SOURCE PRODUCTION (Moteur MILP, ML)
-├── research/               # TRAVAUX DE R&D
-│   ├── notebooks/          # Parcours de recherche (01 à 15)
-│   ├── models/             # Modèles sérialisés (XGBoost q80, LGBM)
-│   └── offline/            # Matrices de transfert géométriques
-├── tests/                  # Tests unitaires et intégration
-├── check_environment.py    # Validateur de configuration
-└── Makefile                # Automatisation des tâches
+├── docs/                   # Technical documentation and interactive guide
+├── scripts/                # Dashboards and utilities
+│   └── dashboard/          # Streamlit application source code
+├── src/                    # PRODUCTION SOURCE CODE (MILP Engine, ML)
+├── research/               # R&D WORK
+│   ├── notebooks/          # Research path (01 to 15)
+│   ├── models/             # Serialized models (XGBoost q80, LGBM)
+│   └── offline/            # Geometric transfer matrices
+├── tests/                  # Unit and integration tests
+├── check_environment.py    # Configuration validator
+└── Makefile                # Task automation
 ```
 
 ---
 
-## 🖥️ Lancer l'application Streamlit
+## 🖥️ Launching the Streamlit Application
 
-L'application doit toujours être lancée depuis la racine du projet :
+The application must always be launched from the project root:
 
 ```bash
 python -m streamlit run scripts/dashboard/app.py
 ```
 
-- **URL :** `http://localhost:8501`
-- **Option .env :** Vous pouvez créer un fichier `.env` avec `PYTHONPATH=.` pour simplifier les imports.
+- **URL:** `http://localhost:8501`
+- **.env Option:** You can create a `.env` file with `PYTHONPATH=.` to simplify imports.
 
-### 🆘 FAQ anti-erreur
-- **`ModuleNotFoundError: src`** : Assurez-vous de lancer la commande depuis la racine avec `python -m streamlit`.
-- **`FileNotFoundError`** sur un fichier `.parquet` ou `.pkl` : Vous avez oublié de récupérer les assets. Exécutez `bash scripts/download_assets.sh`.
-- **`ModuleNotFoundError: scripts.dashboard.app`** : Ne lancez pas la commande depuis l'intérieur du dossier `scripts/`.
+### 🆘 Troubleshooting FAQ
+- **`ModuleNotFoundError: src`**: Ensure you launch the command from the root using `python -m streamlit`.
+- **`FileNotFoundError`** on a `.parquet` or `.pkl` file: You may be missing assets. Run `bash scripts/download_assets.sh`.
+- **`ModuleNotFoundError: scripts.dashboard.app`**: Do not launch the command from inside the `scripts/` folder.
 
 ---
 
-## 📓 Notebooks de recherche
+## 📓 Research Notebooks
 
-Consultez le **[Guide Interactif en ligne](https://rawcdn.githack.com/samya818/spatial-son-milp/main/docs/PIPELINE_GUIDE.html)** pour une explication scientifique détaillée de chaque phase.
+Consult the **[Online Interactive Guide](https://rawcdn.githack.com/samya818/spatial-son-milp/main/docs/PIPELINE_GUIDE.html)** for a detailed scientific explanation of each phase.
 
 | Phase | Notebook | Description |
 |-------|----------|-------------|
-| 01 | `01_ingestion.ipynb` | ✅ Ingestion & nettoyage Telecom Italia Milan (10 min → 30 min) |
-| 02 | `02_eda.ipynb` | ✅ EDA : STL, ADF, ACF/PACF, détection outliers |
-| 03 | `03_features.ipynb` | ✅ Feature Engineering (31 variables causales) |
-| 04 | `04_modelling.ipynb` | ✅ Baselines XGBoost, LSTM, Prophet, SARIMA |
-| 05 | `05_improvements.ipynb` | ✅ Quantile q80 + TiDE + correcteur LightGBM L2 |
-| 06 | `06_topology.ipynb` | ✅ Architecture 1024 cellules, antennes hétérogènes |
-| 07 | `07_user_simulator.ipynb` | ✅ Simulation n_users par cellule (saisonnalité + bruit) |
-| 08 | `08_spatial_simulator.ipynb` | ✅ Précalcul offline des matrices de transfert path-loss |
-| 09 | `09_milp_decision_engine.ipynb` | ✅ Moteur MILP Pyomo (optimalité globale) |
-| 10 | `10_monitoring.ipynb` | ✅ Détection de drift (Page-Hinkley, rolling MAE) |
-| 11 | `11_closed_loop.ipynb` | ✅ Validation boucle fermée (gain 73,53%) |
-| 12 | `12_comparison_report.ipynb` | ✅ Rapport comparatif intermédiaire |
-| 13 | `13_full_scale_simulation.ipynb` | ✅ Simulation à l'échelle complète |
-| 14 | `14_final_benchmark_report.ipynb` | ✅ Rapport de benchmark final |
-| 15 | `15_greedy_comparison.ipynb` | ✅ Benchmark MILP vs Greedy (+52,5% vs heuristique) |
+| 01 | `01_ingestion.ipynb` | ✅ Ingestion & cleaning Telecom Italia Milan (10 min → 30 min) |
+| 02 | `02_eda.ipynb` | ✅ EDA: STL, ADF, ACF/PACF, outlier detection |
+| 03 | `03_features.ipynb` | ✅ Feature Engineering (31 causal variables) |
+| 04 | `04_modelling.ipynb` | ✅ Baselines: XGBoost, LSTM, Prophet, SARIMA |
+| 05 | `05_improvements.ipynb` | ✅ Quantile q80 + TiDE + LightGBM L2 corrector |
+| 06 | `06_topology.ipynb` | ✅ 1024-cell architecture, heterogeneous antennas |
+| 07 | `07_user_simulator.ipynb` | ✅ User per cell simulation (seasonality + noise) |
+| 08 | `08_spatial_simulator.ipynb` | ✅ Offline pre-computation of path-loss transfer matrices |
+| 09 | `09_milp_decision_engine.ipynb` | ✅ Pyomo MILP Engine (global optimality) |
+| 10 | `10_monitoring.ipynb` | ✅ Drift detection (Page-Hinkley, rolling MAE) |
+| 11 | `11_closed_loop.ipynb` | ✅ Closed-loop validation (73.53% gain) |
+| 12 | `12_comparison_report.ipynb` | ✅ Intermediate comparative report |
+| 13 | `13_full_scale_simulation.ipynb` | ✅ Full-scale simulation |
+| 14 | `14_final_benchmark_report.ipynb` | ✅ Final benchmark report |
+| 15 | `15_greedy_comparison.ipynb` | ✅ MILP vs Greedy benchmark (+52.5% vs heuristic) |
 
 ---
 
-## 🧪 Tests & Qualité
+## 🧪 Tests & Quality
 
-Nous maintenons une suite de tests rigoureuse pour garantir la validité physique des transferts de charge.
+We maintain a rigorous test suite to ensure the physical validity of load transfers.
 ```bash
-# Lancer les tests unitaires
+# Run unit tests
 pytest tests/unit/ -v
 
-# Vérification pré-flight
+# Pre-flight verification
 python check_environment.py --verify
 ```
 
 ---
 
-## 📊 Benchmarks (Bloc 1024 cellules)
+## 📊 Benchmarks (1024-cell Block)
 
-| Politique de Décision | Volume Insatisfait (Mo) | Gain vs Statique |
+| Decision Policy | Unsatisfied Volume (MB) | Gain vs Static |
 | :--- | :---: | :---: |
-| **Statique** (Baseline) | 160 237 Mo | 0% |
-| **Greedy Heuristic** | 89 375 Mo | 44,22% |
-| **MILP Global** (SON) | **42 419 Mo** | **73,53%** |
+| **Static** (Baseline) | 160,237 MB | 0% |
+| **Greedy Heuristic** | 89,375 MB | 44.22% |
+| **Global MILP** (SON) | **42,419 MB** | **73.53%** |
 
 ---
 
-## ⚠️ Résolution des problèmes courants
-- **FileNotFound (data)** : Les modèles et matrices ne sont pas inclus dans le repo de base (Git LFS). Utilisez `bash scripts/download_assets.sh` pour vérifier leur présence locale.
-- **Documentation complète** : Pour une explication scientifique détaillée et un guide interactif complet de chaque phase, consultez impérativement **`docs/PIPELINE_GUIDE.html`**.
-- **PYTHONPATH** : Si vos scripts ne trouvent pas le module `src`, exportez le chemin : `export PYTHONPATH=$PYTHONPATH:.` (ou `$env:PYTHONPATH="."` sur PowerShell).
-- **Performance MILP** : Le solveur par défaut est CBC. Pour des performances industrielles sur > 10 000 cellules, nous recommandons Gurobi ou CPLEX.
+## ⚠️ Troubleshooting
+- **FileNotFound (data)**: Models and matrices are not included in the base repo (Git LFS). Use `bash scripts/download_assets.sh` to verify their local presence.
+- **Full Documentation**: For a detailed scientific explanation and a complete interactive guide for each phase, it is imperative to consult **`docs/PIPELINE_GUIDE.html`**.
+- **PYTHONPATH**: If your scripts cannot find the `src` module, export the path: `export PYTHONPATH=$PYTHONPATH:.` (or `$env:PYTHONPATH="."` on PowerShell).
+- **MILP Performance**: The default solver is CBC. For industrial performance on > 10,000 cells, we recommend Gurobi or CPLEX.
 
 ---
 
-## 📚 Références
-- **[1] Wang et al. (2015)** : Q-Learning Approach for SON with A3 Offset.
-- **[2] Zhang et al. (2023)** : Self-Organizing Network Load Balancing Survey.
-- **[3] Huang et al. (2024)** : MILP Formulation for Load Balancing.
-- **[4] Das et al. (2023)** : TiDE: Time-series Dense Encoder.
-- **[5] 3GPP TS 36.331** : Radio Resource Control (RRC) Specification.
+## 📚 References
+- **[1] Wang et al. (2015)**: Q-Learning Approach for SON with A3 Offset.
+- **[2] Zhang et al. (2023)**: Self-Organizing Network Load Balancing Survey.
+- **[3] Huang et al. (2024)**: MILP Formulation for Load Balancing.
+- **[4] Das et al. (2023)**: TiDE: Time-series Dense Encoder.
+- **[5] 3GPP TS 36.331**: Radio Resource Control (RRC) Specification.
 
 ---
 
-## 👥 Auteurs
+## 👥 Authors
 - **Loukili Samya**
 - **Kenza El Khaniri**
-- Encadré par **M. Toufik Massrour** (ENSAM Meknès).
+- Supervised by **Mr. Toufik Massrour** (ENSAM Meknès).
 
 ---
 *Developed for R&D purposes using the Telecom Italia Big Data Challenge dataset.*
