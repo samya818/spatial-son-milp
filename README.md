@@ -119,7 +119,9 @@ python -m streamlit run scripts/dashboard/app.py
 
 ## 📓 Research Notebooks
 
-Consult the **[Online Interactive Guide](https://rawcdn.githack.com/samya818/spatial-son-milp/main/docs/PIPELINE_GUIDE.html)** for a detailed scientific explanation of each phase.
+Consult the interactive scientific documentation for a detailed explanation of each phase:
+- 🇬🇧 **[English Interactive Guide](https://rawcdn.githack.com/samya818/spatial-son-milp/main/docs/PIPELINE_GUIDE_EN.html)**
+- 🇫🇷 **[Guide Interactif en Français](https://rawcdn.githack.com/samya818/spatial-son-milp/main/docs/PIPELINE_GUIDE_FR.html)**
 
 | Phase | Notebook | Description |
 |-------|----------|-------------|
