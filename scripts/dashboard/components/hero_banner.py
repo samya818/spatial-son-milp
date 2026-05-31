@@ -50,7 +50,7 @@ def render_hero(gain_milp: float, total_static: float, total_milp: float):
             <div class="hero-big-number">{gain_milp:.1f}%</div>
             <div class="hero-label">Efficacité de redistribution</div>
             <div class="hero-tech-note">
-                📊 <b>Load Shifting :</b> Réduction relative de la surcharge non satisfaite par rapport à la baseline statique sur 24h.
+                📊 <b>Load Shifting :</b> Réduction relative de la surcharge non satisfaite pour le <b>créneau sélectionné</b>.
             </div>
         </div>
         """, unsafe_allow_html=True)

@@ -140,6 +140,10 @@ def render(traffic_df: pl.DataFrame, topology: dict, fractions: pl.DataFrame, ca
     res_s = current_res["static"]
     res_g = current_res["greedy"]
 
+    if "error" in res_m.status:
+        st.error(f"❌ **Erreur du moteur de simulation :** {res_m.status}")
+        st.stop()
+
     # Global metrics calculated from the current real-time simulation (Snapshot KPIs)
     # Gain based on unsatisfied volume reduction for the current snapshot
     gain_milp = 100 * (1 - res_m.unsatisfied / (res_s.unsatisfied + 1e-6))
@@ -149,6 +153,9 @@ def render(traffic_df: pl.DataFrame, topology: dict, fractions: pl.DataFrame, ca
     if res_s.unsatisfied < 0.1:
         gain_milp = 0.0
         gain_greedy = 0.0
+        st.info("💡 **Note :** Aucun pic de congestion n'est détecté pour ce créneau avec les paramètres actuels. L'efficacité est donc de 0% car le réseau est déjà optimal.")
+    elif gain_milp < 0.1 and res_s.unsatisfied > 1.0:
+        st.warning("⚠️ **Attention :** Le solveur n'a pas trouvé d'amélioration pour ce scénario extrême. Essayez d'augmenter δ ou de réduire le facteur de capacité.")
 
     # 2. HERO BANNER (Dynamic: reacts to slider and δ)
     render_hero(gain_milp, res_s.unsatisfied, res_m.unsatisfied)

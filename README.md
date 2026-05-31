@@ -38,20 +38,24 @@ cd spatial-son-milp
 # 2. Create and activate virtual environment
 python -m venv .venv
 # On Windows:
-.\venv\Scripts\activate
+.\.venv\Scripts\activate
 # On Linux/macOS:
 source .venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Verify environment
+# 4. Install MILP Solver (Required for Optimization)
+# The project uses CBC. On Ubuntu: sudo apt-get install cbc-solver
+# On Windows: Included in pulp or download from https://github.com/coin-or/Cbc
+
+# 5. Verify environment
 python check_environment.py
 
-# 5. Launch the dashboard
+# 6. Launch the dashboard
 python -m streamlit run scripts/dashboard/app.py
 ```
-
+We built an interactive Streamlit dashboard where you can simulate your own network scenarios — adjust handover intensity, stress-test capacity,
 ---
 
 ## 📦 Full Installation

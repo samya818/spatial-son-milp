@@ -55,11 +55,15 @@ class MILPConnector:
             
         except Exception as e:
             logger.error(f"Simulation Engine Failure: {e}")
-            # Retour gracieux en cas d'erreur
+            
+            # Calculer le volume total pour le fallback si possible
+            total_vol = slot_df["internet_volume"].sum() if not slot_df.is_empty() else 0.0
+            
+            # Retour gracieux : On montre au moins le volume de base si on peut pas optimiser
             return SimulationResult(
                 policy=policy,
                 status=f"error: {str(e)}",
-                unsatisfied=0.0,
+                unsatisfied=0.0, 
                 unsatisfied_baseline=0.0,
                 n_congested=0,
                 n_congested_baseline=0,
@@ -67,7 +71,7 @@ class MILPConnector:
                 leakage=0.0,
                 decisions=0,
                 antenna_results=pl.DataFrame(),
-                total_vol=slot_df["internet_volume"].sum() if not slot_df.is_empty() else 0.0
+                total_vol=total_vol
             )
 
     @telemetry.track_latency("milp")

@@ -1,5 +1,6 @@
 import numpy as np
 import polars as pl
+from pathlib import Path
 from pyomo.environ import (ConcreteModel, RangeSet, Var, Binary,
                           NonNegativeReals, Objective, Constraint,
                           minimize, value, SolverFactory)
@@ -109,17 +110,24 @@ def solve_congestion_milp(antennas, antenna_stats, H_deleste, H_recv, delta_leve
     
     # Résolution
     try:
-        # Essayer de trouver cbc dans le PATH d'abord (pour Docker/Linux/Autres machines)
         import shutil
         cbc_exec = shutil.which('cbc')
-        
+
+        if not cbc_exec:
+            try:
+                import pulp
+                cbc_exec = pulp.PULP_CBC_CMD().path
+                if not Path(cbc_exec).exists():
+                    cbc_exec = None
+            except ImportError:
+                cbc_exec = None
+
         if cbc_exec:
             solver = SolverFactory('cbc', executable=cbc_exec)
         else:
-            # Fallback sur le chemin spécifique Windows si cbc n'est pas dans le PATH
-            cbc_path = r'C:\Users\hp\AppData\Local\Programs\Python\Python313\Lib\site-packages\pulp\solverdir\cbc\win\i64\cbc.exe'
-            solver = SolverFactory('cbc', executable=cbc_path)
-            
+            # Fallback final : on espère qu'il est dans le PATH sans executable explicite
+            solver = SolverFactory('cbc')
+
         solver.options['sec'] = time_limit
         results = solver.solve(model, tee=False)
         

@@ -30,26 +30,41 @@ def check_venv():
 def check_dependencies():
     critical = [
         "polars", "numpy", "xgboost", "lightgbm", "pyomo", 
-        "streamlit", "sklearn", "matplotlib", "plotly", "pytest"
+        "streamlit", "sklearn", "matplotlib", "plotly", "pytest",
+        "psutil", "loguru", "pulp", "pandera"
     ]
     missing = []
     for lib in critical:
         if importlib.util.find_spec(lib) is None:
             # sklearn is actually 'scikit-learn' in pip but 'sklearn' in import
-            if lib == "sklearn" and importlib.util.find_spec("sklearn") is None:
-                missing.append(lib)
+            if lib == "sklearn":
+                 if importlib.util.find_spec("sklearn") is None:
+                    missing.append(lib)
             else:
-                pass # Found
-        else:
-            pass # Found
+                missing.append(lib)
             
-    # Re-check sklearn/scikit-learn
-    if "sklearn" in missing and importlib.util.find_spec("sklearn") is not None:
-        missing.remove("sklearn")
-
     success = len(missing) == 0
     msg = "" if success else f"{RED}Missing: {', '.join(missing)}{RESET}"
     return print_check("Critical Dependencies", success, msg)
+
+def check_solver():
+    """Checks if the CBC solver is available for MILP optimization."""
+    import shutil
+    cbc_path = shutil.which("cbc")
+    
+    # Also check via pulp fallback
+    if not cbc_path:
+        try:
+            import pulp
+            path = pulp.PULP_CBC_CMD().path
+            if Path(path).exists():
+                cbc_path = path
+        except:
+            pass
+            
+    success = cbc_path is not None
+    msg = f"{GREEN}(Found at {cbc_path}){RESET}" if success else f"{YELLOW}Warning: CBC solver not found. MILP will fail.{RESET}"
+    return print_check("MILP Solver (CBC)", success, msg)
 
 def check_critical_files():
     files = [
@@ -77,6 +92,7 @@ def main():
         check_python_version(),
         check_venv(),
         check_dependencies(),
+        check_solver(),
         check_critical_files(),
         check_project_structure()
     ]
