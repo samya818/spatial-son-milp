@@ -43,16 +43,14 @@ python -m venv .venv
 source .venv/bin/activate
 
 # 3. Install dependencies
+# (Smart: Skips unstable research libs on Python 3.13+ automatically)
 pip install -r requirements.txt
 
-# 4. Install MILP Solver (Required for Optimization)
-# The project uses CBC. On Ubuntu: sudo apt-get install cbc-solver
-# On Windows: Included in pulp or download from https://github.com/coin-or/Cbc
-
-# 5. Verify environment
+# 4. Verify environment
+# Checks if CBC solver and assets are ready
 python check_environment.py
 
-# 6. Launch the dashboard
+# 5. Launch the dashboard
 python -m streamlit run scripts/dashboard/app.py
 ```
 We built an interactive Streamlit dashboard where you can simulate your own network scenarios — adjust handover intensity, stress-test capacity,

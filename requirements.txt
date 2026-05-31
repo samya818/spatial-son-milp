@@ -1,4 +1,4 @@
-# --- CORE DASHBOARD & ENGINE (Highly Stable) ---
+# --- CORE DASHBOARD & ENGINE (Universal) ---
 polars>=0.19.0
 numpy>=1.24.0
 scipy>=1.10.0
@@ -18,8 +18,7 @@ pandera>=0.17.0
 matplotlib>=3.7.0
 tqdm>=4.65.0
 
-# --- RESEARCH & FORECASTING (Note: May have issues on Python 3.13+) ---
-prophet>=1.1.0
-neuralforecast>=1.6.0
-# pickle5 is only for very old python, keeping it for compatibility
+# --- RESEARCH & FORECASTING (Optional: Skipped on Python 3.13+ for stability) ---
+prophet>=1.1.0; python_version < "3.13"
+neuralforecast>=1.6.0; python_version < "3.13"
 pickle5; python_version < "3.8"
