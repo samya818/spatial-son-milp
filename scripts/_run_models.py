@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 
-root = Path(r'c:\Users\hp\OneDrive\Desktop\projectTimeSeries')
+root = Path(__file__).resolve().parents[1]
 reports = root / 'reports'
 reports.mkdir(parents=True, exist_ok=True)
 

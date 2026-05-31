@@ -18,7 +18,14 @@ The dashboard follows a modular design pattern to ensure maintainability and hig
 pip install -r requirements-dashboard.txt
 ```
 
-### 2. Launch the dashboard
+### 2. Generate Data Assets
+The dashboard requires pre-processed data. If you are running this for the first time, execute the pipeline:
+```bash
+python scripts/run_pipeline.py
+```
+*Note: This might take a few minutes as it processes 1024 cells traffic.*
+
+### 3. Launch the dashboard
 ```bash
 streamlit run scripts/dashboard/app.py
 ```

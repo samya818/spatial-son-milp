@@ -10,7 +10,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-ROOT = Path(r'C:\Users\hp\OneDrive\Desktop\projectTimeSeries')
+ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / 'data' / 'processed' / 'features_target_600cells.parquet'
 
 print("--- Chargement des données ---")

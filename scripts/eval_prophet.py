@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.metrics import mean_absolute_error, r2_score
 from pathlib import Path
 
-ROOT = Path(r'C:\Users\hp\OneDrive\Desktop\projectTimeSeries')
+ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / 'data' / 'processed' / 'features_target_600cells.parquet'
 
 df = pl.read_parquet(DATA_PATH).sort(['square_id', 'slot_30m'])
