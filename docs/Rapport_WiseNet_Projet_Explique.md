@@ -12,10 +12,12 @@ Le projet **WiseNet** (nom de dépôt technique : `spatial-son-milp`) construit 
 
 ### Deux notions clés à comprendre : le Handover et l'Offset
 
-Pour bien comprendre le fonctionnement de WiseNet, deux concepts fondamentaux de la téléphonie mobile sont utilisés partout dans ce projet :
+Pour bien comprendre le fonctionnement de WiseNet, deux concepts fondamentaux sont utilisés partout dans ce projet :
 
-- **Le Handover (transfert intercellulaire) :** C'est le mécanisme automatique et invisible par lequel un smartphone connecté bascule d'une antenne à une autre sans aucune coupure de communication. En temps normal, un mobile se connecte simplement à l'antenne qui émet le signal radio le plus fort.
-- **L'Offset de Handover (ou CIO — Cell Individual Offset) :** C'est un paramètre logiciel (exprimé en décibels, dB) qui permet à l'opérateur de modifier artificiellement ce seuil de basculement. En appliquant un offset, on rend une antenne voisine « virtuellement plus séduisante » pour les smartphones situés en périphérie de couverture. Cela permet de **délester une antenne saturée en transférant une partie de ses utilisateurs vers sa voisine**, sans modifier physiquement les antennes.
+- **Le Handover (le basculement d'un utilisateur d'une antenne vers une autre) :** se produit lorsque la condition suivante est vérifiée :  
+  **Qualité de signal depuis l'antenne voisine + une marge (l'offset) > Qualité de signal de l'antenne actuelle**  
+  C'est le mécanisme automatique par lequel un smartphone change d'antenne sans couper la communication.
+- **L'Offset de Handover (la marge en dB) :** C'est un paramètre logiciel réglable à distance par l'opérateur. En augmentant cette marge en faveur d'une antenne voisine, on force les utilisateurs situés en zone frontière à basculer vers elle, ce qui permet de **délester l'antenne principale saturée** sans toucher physiquement aux équipements.
 
 Ce rapport est construit en deux parties :
 
