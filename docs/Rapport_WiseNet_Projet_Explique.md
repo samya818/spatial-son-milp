@@ -350,6 +350,59 @@ avec  PL(d, f) = 32,4 + 36,7·log₁₀(d) + 20·log₁₀(f)
 
 où `P_tx` est la puissance d'émission de l'antenne, `PL(d, f)` est l'affaiblissement de parcours standard 3GPP dépendant de la distance `d` et de la fréquence de la porteuse `f`, et `G(Δθ)` est le gain directionnel du secteur calculé à l'étape 3.
 « Notre P_tx en V1.5 est exactement la puissance nominale déclarée par le fabricant que définit le 3GPP dans TS 36.104 et TS 38.104. Elle est fixe par secteur et par porteuse, configurée comme un paramètre de topologie — exactement comme un opérateur configure ses eNodeB. Nous ne l'inférons pas des données car les données Milan ne contiennent aucune mesure radio, et surtout car la convention télécom ne l'infère pas non plus : c'est une constante hardware. La seule différence avec la réalité est que nous ne modélisons pas la répartition fine de puissance par sous-porteuse (power allocation par RE), ce qui est une simplification standard des simulateurs académiques et n'affecte pas la validité du modèle de handover. »
+
+### 2.3.3 La formulation du MILP en V1.5 : l'optimisation par couple `(Secteur, Porteuse)`
+
+Une question fondamentale se pose lors du passage à la V1.5 : **le moteur d'optimisation MILP et sa fonction objectif doivent-ils être formulés par secteur ou par porteuse ?**
+
+La réponse technique et physique est : **ni l'un ni l'autre isolément, mais au niveau du couple indissociable `(Secteur, Porteuse)`, c'est-à-dire par Cellule Radio Élémentaire $(s, f)$.**
+
+```
+                     SITE PHYSIQUE (Station de base / gNodeB)
+                     ┌───────────────────┬───────────────────┐
+                     │                   │                   │
+               SECTEUR 1 (0°)      SECTEUR 2 (120°)    SECTEUR 3 (240°)
+               ┌──────┴──────┐     ┌──────┴──────┐     ┌──────┴──────┐
+               │             │     │             │     │             │
+            Porteuse 1    Porteuse 2
+            (1.8 GHz)     (3.5 GHz)
+               │             │
+               ▼             ▼
+       Cellule (s1, f1)   Cellule (s1, f2)
+       [Couverture large] [Très haut débit]
+```
+
+#### 1. Pourquoi le couple `(s, f)` est l'unité physique réelle de congestion ?
+Dans un gNodeB 5G moderne :
+* Un site physique comporte généralement **3 secteurs physiques** (chacun couvrant $120^\circ$).
+* Chaque secteur émet sur **plusieurs porteuses fréquentielles** (par exemple $f_1 = 1,8\text{ GHz}$ pour la couverture générale et $f_2 = 3,5\text{ GHz}$ pour le très haut débit capacitif).
+* **Une station de base = $3\text{ secteurs} \times 2\text{ porteuses} = 6\text{ cellules radio logiques distinctes}$.**
+
+Chaque cellule $(s, f)$ possède ses propres ressources radio indépendantes (bande passante, blocs de ressources PRBs) et donc sa **propre capacité maximale finie $C_{s, f}$**. La saturation ne frappe pas une antenne entière en bloc, mais une cellule radio précise $(s, f)$ (par exemple, la bande 3,5 GHz du secteur Sud pendant un pic d'affluence).
+
+#### 2. La double dimension d'optimisation débloquée : Délestage Horizontal vs Vertical
+
+Raisonner au niveau du couple $(s, f)$ permet au solveur MILP de déclencher deux types de délestages intelligents et complémentaires :
+
+1. **Le délestage Horizontal (Spatial / Inter-secteurs sur la même fréquence) :**  
+   Si la cellule $(s_1, f_1)$ est saturée, le solveur augmente son offset pour basculer les utilisateurs situés en bordure spatiale vers le secteur voisin $(s_2, f_1)$.
+2. **Le délestage Vertical (Inter-fréquences / Inter-porteuses au sein du même secteur) :**  
+   Si la porteuse haute capacité $(s_1, f_2)$ est surchargée, le solveur peut déverser le surplus vers la porteuse basse fréquence $(s_1, f_1)$ **du même secteur**, sans même déplacer l'utilisateur vers une autre antenne géographique !
+
+#### 3. La formulation mathématique rigoureuse du MILP V1.5
+
+* **Variables de décision :** Pour chaque cellule $(s, f)$, le solveur choisit un niveau d'offset $k$ via une variable binaire $z_{s, f, k} \in \{0, 1\}$ (avec $\sum_k z_{s, f, k} = 1$).
+* **Bilan de charge après délestage :**
+  $$\text{Charge finale}(s, f) = V_{\text{prédit}}(s, f) - \text{Délesté}(s, f, k) + \sum_{(s', f') \in \text{Voisins}} \text{Reçu}(s' \to s, f' \to f, k)$$
+* **Surplus insatisfait (variable d'écart) :**
+  $$e_{s, f} \ge \text{Charge finale}(s, f) - C_{s, f} \quad \text{et} \quad e_{s, f} \ge 0$$
+* **Fonction Objectif globale du MILP :**  
+  Le solveur minimise la somme totale de la congestion résiduelle sur **l'ensemble des secteurs ET de toutes les porteuses** du réseau :
+
+$$\min \sum_{s \in \text{Secteurs}} \sum_{f \in \text{Porteuses}} e_{s, f}$$
+
+Cette structure garantit une modélisation 100 % fidèle à la gestion des ressources d'un réseau 4G/5G moderne (Carrier Aggregation et coordination inter-cellulaire).
+
 ---
 
 ## 2.4 Élément 2 — Des scénarios réalistes pour la région MENA
