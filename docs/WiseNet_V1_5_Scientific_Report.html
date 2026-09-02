@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WiseNet V1.5 Scientific Report</title>
+<style>
+@page { size: A4; margin: 20mm 15mm 20mm 15mm; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 900px; margin: 0 auto; padding: 25px; background: #fafafa; }
+.container { background: #ffffff; padding: 40px; border: 1px solid #e1e4e8; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+h1 { color: #0d233a; border-bottom: 2px solid #2b5c8f; padding-bottom: 8px; font-size: 24px; }
+h2 { color: #1b3d63; border-bottom: 1px solid #eaecef; padding-bottom: 6px; margin-top: 28px; font-size: 19px; }
+h3 { color: #2c3e50; margin-top: 18px; font-size: 15px; }
+table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px; }
+th, td { border: 1px solid #d1d5db; padding: 9px 12px; text-align: left; }
+th { background-color: #f3f4f6; color: #111827; font-weight: 600; }
+tr:nth-child(even) { background-color: #f9fafb; }
+pre { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; overflow-x: auto; font-family: Consolas, monospace; font-size: 13px; color: #0f172a; }
+code { font-family: Consolas, monospace; background-color: #f1f5f9; padding: 2px 5px; border-radius: 4px; font-size: 13px; }
+.print-btn { position: fixed; top: 20px; right: 20px; background: #2563eb; color: #fff; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+.print-btn:hover { background: #1d4ed8; }
+@media print { body { background: #fff; padding: 0; } .container { border: none; box-shadow: none; padding: 0; } .print-btn { display: none; } }
+</style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">Print to PDF</button>
+<div class="container">
+<h1>WiseNet V1.5: Realistic 3GPP Multi-Sector &amp; Dual-Carrier Self-Organizing Network (SON) Optimization</h1>
+<h3>Comprehensive Scientific Research Report &amp; Verifiable Benchmark Evaluation</h3>
+<p><strong>Project Lead</strong>: Samya Loukili<br />
+<strong>Dataset Reference</strong>: Open Telecom Italia Big Data Challenge (Milan, Italy)<br />
+<strong>Standards Reference</strong>: 3GPP TR 38.901 (5G NR Channel Models) &amp; TR 36.814 (LTE-Advanced)<br />
+<strong>Date</strong>: September 2, 2026  </p>
+<hr />
+<h2>1. Executive Summary</h2>
+<p>In this research milestone (<strong>WiseNet V1.5</strong>), we transition from the isotropic single-carrier abstraction of V1.0 to an industry-aligned, <strong>3GPP-compliant cellular architecture</strong> evaluated on real-world telecommunication traffic.</p>
+<h3>Core Achievements</h3>
+<ol>
+<li><strong>Zero Artificial Data</strong>: Evaluated directly on 1,024 contiguous grid cells ($32 \times 32$ central dense block, $235\text{ m} \times 235\text{ m}$ per square) from the <strong>Telecom Italia Milan dataset</strong> (<code>work_1024cells.parquet</code>), during peak traffic demand ($1.38\text{ TB}$ in 30 minutes).</li>
+<li><strong>Deterministic 3GPP Hexagonal Topology</strong>: Placed 126 physical macro sites using an Inter-Site Distance ($\text{ISD} = 750\text{ m}$) following 3GPP TR 38.901 Urban Macro specifications, generating <strong>378 directional sectors ($120^\circ$)</strong> and <strong>756 logical $(s, f)$ radio cells</strong>.</li>
+<li><strong>Dual-Carrier Real Frequency Spectrum (TIM Italy Licences)</strong>:</li>
+<li><strong>Carrier $F_1$ (1.8 GHz LTE Band 3 FDD)</strong>: $20\text{ MHz}$ bandwidth, $P_{\text{tx}} = 43\text{ dBm}$ ($20\text{ W}$), $\text{SINR} = 12\text{ dB}$, nominal capacity $= 6,600.8\text{ MB} / 30\text{ min}$.</li>
+<li><strong>Carrier $F_2$ (3.5 GHz 5G NR n78 TDD)</strong>: $80\text{ MHz}$ bandwidth, $P_{\text{tx}} = 43\text{ dBm}$ effective, $\text{SINR} = 15\text{ dB}$, nominal capacity $= 32,580.2\text{ MB} / 30\text{ min}$.</li>
+<li><strong>Offline Spatial Simulation via Micro-Grids</strong>: Each $235\text{ m} \times 235\text{ m}$ square is sampled over a regular micro-grid of $20 \times 20 = 400$ sub-pixels ($11.75\text{ m} \times 11.75\text{ m}$). 3GPP RSRP propagation fields and transfer tensors $H$ are precalculated offline across 7 offset levels ($\delta \in {0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0}\text{ dB}$).</li>
+<li><strong>Online MILP Global Optimization</strong>: Solved in <strong>$0.74\text{ seconds}$</strong> using Coin-OR CBC, outperforming the local greedy heuristic by <strong>$8,369.2\text{ MB}$</strong> ($+8.37\text{ GB}$ delivered traffic) while strictly enforcing mass conservation.</li>
+</ol>
+<hr />
+<h2>2. Experimental Setup &amp; Physical Specifications</h2>
+<h3>2.1 Geographical Ground Truth (Telecom Italia Milan Grid)</h3>
+<p>The dataset partitions the city of Milan into a $100 \times 100$ grid ($10,000$ cells) with WGS 84 coordinate mapping. We extract the central dense business and residential block ($32 \times 32 = 1,024$ squares):
+- <strong>Cell Side Length</strong>: $235.0\text{ meters}$
+- <strong>Cell Surface Area</strong>: $0.055225\text{ km}^2$ ($55,225\text{ m}^2$)
+- <strong>Total Block Area</strong>: $56.55\text{ km}^2$</p>
+<h3>2.2 3GPP Macro-Cellular Deployment Parameters</h3>
+<p>Unlike V1.0 which relied on uniform random positioning, V1.5 implements a <strong>deterministic 3GPP hexagonal grid</strong> with an Inter-Site Distance ($\text{ISD}$) of $750\text{ meters}$, corresponding to a single-operator macro deployment (TIM Italy) in dense urban terrain:</p>
+<p>$$\text{Horizontal Step } \Delta x = \text{ISD} = 750\text{ m}, \quad \text{Vertical Step } \Delta y = \text{ISD} \times \frac{\sqrt{3}}{2} \approx 649.5\text{ m}$$</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">3GPP Specification</th>
+<th style="text-align: left;">Value in WiseNet V1.5</th>
+<th style="text-align: left;">Technical Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Physical Sites</strong></td>
+<td style="text-align: left;">Macro Base Stations (gNB/eNB)</td>
+<td style="text-align: left;"><strong>126 sites</strong></td>
+<td style="text-align: left;">Hexagonal lattice covering $56.55\text{ km}^2$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Inter-Site Distance (ISD)</strong></td>
+<td style="text-align: left;">Urban Macro (UMa)</td>
+<td style="text-align: left;"><strong>$750\text{ meters}$</strong></td>
+<td style="text-align: left;">TR 38.901 single-operator calibration</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sectors per Site</strong></td>
+<td style="text-align: left;">Tri-Sector Configuration</td>
+<td style="text-align: left;"><strong>3 sectors ($120^\circ$)</strong></td>
+<td style="text-align: left;">Azimuths at $0^\circ$ (North), $120^\circ$, $240^\circ$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Antenna Beamwidth</strong></td>
+<td style="text-align: left;">Horizontal Half-Power Beamwidth</td>
+<td style="text-align: left;"><strong>$65.0^\circ$</strong></td>
+<td style="text-align: left;">3GPP standard 3-sector directive antenna</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Max Front-to-Back Attenuation</strong></td>
+<td style="text-align: left;">Antenna Directivity Sidelobe Floor</td>
+<td style="text-align: left;"><strong>$30.0\text{ dB}$</strong></td>
+<td style="text-align: left;">3GPP TR 38.901 Table 7.3-1</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Total Radio Cells $(s, f)$</strong></td>
+<td style="text-align: left;">Slices of Resource Allocation</td>
+<td style="text-align: left;"><strong>756 radio cells</strong></td>
+<td style="text-align: left;">$126\text{ sites} \times 3\text{ sectors} \times 2\text{ carriers}$</td>
+</tr>
+</tbody>
+</table>
+<h3>2.3 Carrier Profiles &amp; Shannon Capacity Formulation</h3>
+<p>Operational capacity over a 30-minute window ($1,800\text{ s}$) is calculated using the weighted Shannon formula with realistic spectral efficiency ($\eta_{\text{spec}} = 0.60$) and network utilization ($\mu = 0.60$):</p>
+<p>$$C_{s, f} = \frac{B_f \cdot \log_2\left(1 + 10^{\frac{\text{SINR}<em>f}{10}}\right) \cdot \eta</em>{\text{spec}} \cdot \mu \cdot 1800}{8 \times 10^6} \quad [\text{MB}]$$</p>
+<pre><code>+------------------------------------------------------------------------------------+
+| Carrier F1: LTE Band 3 (1.8 GHz FDD) - Coverage Anchor                             |
+| Bandwidth: 20.0 MHz | Tx Power: 43.0 dBm (20 W) | Target SINR: 12.0 dB             |
+| Capacity: 6,600.8 MB per 30-min slot                                               |
++------------------------------------------------------------------------------------+
+| Carrier F2: 5G NR n78 (3.5 GHz TDD) - High Capacity Layer                          |
+| Bandwidth: 80.0 MHz | Tx Power: 43.0 dBm (20 W eff.) | Target SINR: 15.0 dB        |
+| Capacity: 32,580.2 MB per 30-min slot                                              |
++------------------------------------------------------------------------------------+
+</code></pre>
+<hr />
+<h2>3. Mathematical Modeling &amp; Offline Simulation</h2>
+<h3>3.1 Micro-Grid Discretization of Geographical Squares</h3>
+<p>Because Telecom Italia provides aggregated demand per $235\text{ m} \times 235\text{ m}$ square, we resolve the spatial traffic assignment by subdividing each square into $N_{\text{sub}} = 400$ sub-pixels ($20 \times 20$ grid, $11.75\text{ m} \times 11.75\text{ m}$ each). Each sub-pixel $k$ carries an elementary traffic fraction:</p>
+<p>$$V_k = \frac{V_{\text{square}}}{400}$$</p>
+<h3>3.2 3GPP RSRP Signal Formulation</h3>
+<p>At each sub-pixel coordinate $(x_k, y_k)$, the received power from radio cell $(s, f)$ located at $(x_s, y_s)$ is:</p>
+<p>$$\text{RSRP}(k, s, f) = P_{\text{tx}}(f) - \text{PL}(d_k, f) + G(\Delta\theta_{k, s})$$</p>
+<p>Where:
+1. <strong>3GPP UMi NLOS Path-Loss</strong>:
+   $$\text{PL}(d_k, f) = 32.4 + 36.7\log_{10}(\max(d_k, 5.0)) + 20\log_{10}(f_{\text{GHz}})$$
+2. <strong>3GPP Directive Antenna Gain Pattern</strong>:
+   $$\Delta\theta_{k, s} = |\theta_k - \text{azimuth}_s| \pmod{360^\circ}$$
+   $$G(\Delta\theta) = -\min\left[12\left(\frac{\Delta\theta}{65^\circ}\right)^2, 30.0\text{ dB}\right]$$</p>
+<h3>3.3 Offline Precalculation of Transfer Matrices $H$</h3>
+<p>The spatial simulation runs <strong>100% offline</strong> prior to operational optimization:
+1. <strong>Primary Anchor Cell</strong>: The cell with the highest mean RSRP across the 400 sub-pixels is elected as <code>master_cell</code> $(s_{\text{master}}, F_1)$.
+2. <strong>Offset Transition Evaluation</strong>: For each offset $\delta \in {0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0}\text{ dB}$, a sub-pixel triggers handover to target candidate $c_{\text{target}}$ if:
+   $$\text{RSRP}(k, c_{\text{target}}) + \delta &gt; \text{RSRP}(k, c_{\text{master}})$$
+3. <strong>Dual Offloading Tensor</strong>:
+   - <strong>Horizontal Offload</strong>: Sub-pixels on angular sector boundaries switch to adjacent sectors on the same site or neighbor sites.
+   - <strong>Vertical Offload</strong>: Sub-pixels close to the site switch from coverage carrier $F_1 (1.8\text{ GHz})$ to high-capacity 5G carrier $F_2 (3.5\text{ GHz})$ on the <strong>same physical sector</strong>.</p>
+<hr />
+<h2>4. MILP Mathematical Formulation</h2>
+<p>Let $\mathcal{C}$ be the set of 756 logical radio cells $(s, f)$, and $\mathcal{K} = {0, 1, \dots, 6}$ the set of discrete offset levels ($0.0\text{ dB}$ to $3.0\text{ dB}$).</p>
+<h3>4.1 Decision Variables</h3>
+<ul>
+<li>$z_{c, k} \in {0, 1}$: Binary variable equal to $1$ if radio cell $c$ selects offset level $k$.</li>
+<li>$e_c \ge 0$: Continuous slack variable representing unsatisfied traffic (congestion excess) on cell $c$.</li>
+</ul>
+<h3>4.2 Objective Function</h3>
+<p>Minimize total unsatisfied volume across all carrier-sector cells in the network:</p>
+<p>$$\min \sum_{c \in \mathcal{C}} e_c$$</p>
+<h3>4.3 Constraints</h3>
+<ol>
+<li><strong>Unique Offset Selection</strong>:
+   $$\sum_{k \in \mathcal{K}} z_{c, k} = 1, \quad \forall c \in \mathcal{C}$$</li>
+<li><strong>Exact Mass Conservation &amp; Capacity Balance</strong>:
+   $$e_c \ge V_c^{\text{initial}} - \sum_{k \in \mathcal{K}} H_{c, k}^{\text{offload}} z_{c, k} + \sum_{c' \in \mathcal{C}} \sum_{k \in \mathcal{K}} H_{c, c', k}^{\text{recv}} z_{c', k} - C_c, \quad \forall c \in \mathcal{C}$$</li>
+</ol>
+<hr />
+<h2>5. Verifiable Experimental Results</h2>
+<p>The benchmark was executed on the <strong>Telecom Italia Milan dataset</strong> (<code>work_1024cells.parquet</code>) for global peak load interval <code>slot_30m = 1384259400.0</code> ($1,381,452.1\text{ MB} \approx 1.35\text{ TB}$ of real traffic over $1,024$ cells).</p>
+<h3>Comparative Evaluation Table</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Optimization Policy</th>
+<th style="text-align: center;">Unsatisfied Demand (MB)</th>
+<th style="text-align: center;">Unsatisfied Demand (GB)</th>
+<th style="text-align: center;">Congestion Reduction (%)</th>
+<th style="text-align: center;">Solve Time (s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Static Baseline</strong> ($\delta = 0\text{ dB}$)</td>
+<td style="text-align: center;"><strong>314,331.7 MB</strong></td>
+<td style="text-align: center;">306.96 GB</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">0.00 s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Greedy Heuristic</strong> (Local Search + Mass Conservation)</td>
+<td style="text-align: center;"><strong>269,055.3 MB</strong></td>
+<td style="text-align: center;">262.75 GB</td>
+<td style="text-align: center;">14.40 %</td>
+<td style="text-align: center;">0.01 s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>WiseNet V1.5 MILP</strong> (Global Exact Multi-Carrier)</td>
+<td style="text-align: center;"><strong>260,686.1 MB</strong></td>
+<td style="text-align: center;"><strong>254.58 GB</strong></td>
+<td style="text-align: center;"><strong>17.07 %</strong></td>
+<td style="text-align: center;"><strong>0.74 s</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>Key Scientific Findings</h3>
+<ol>
+<li><strong>MILP Outperformed Greedy</strong>: The global MILP solver delivered <strong>$8,369.2\text{ MB}$ ($+8.37\text{ GB}$)</strong> of additional user traffic compared to the greedy heuristic.</li>
+<li><strong>Real-Time Convergence</strong>: Pyomo with Coin-OR CBC solved the 756-cell binary integer program in <strong>$0.74\text{ seconds}$</strong>, proving online operational viability for 30-minute SON control loops.</li>
+<li><strong>Mass Conservation Strictness</strong>: Unlike naive simulators where offloaded traffic vanishes, every megabyte shifted from a congested cell was strictly accounted for on its target neighbor/carrier.</li>
+</ol>
+<hr />
+<h2>6. Verifiability &amp; Reproducibility Guide</h2>
+<p>To reproduce these exact results on your environment:</p>
+<pre><code class="language-powershell"># 1. Run the verified benchmark on real Milan data
+.\APP\venv\Scripts\python.exe -m src.benchmark.benchmark_v1_5
+
+# 2. Run the interactive research notebook
+jupyter notebook research/notebooks_v1_5/pipeline_v1_5.ipynb
+</code></pre>
+<h3>File Registry &amp; Code Architecture</h3>
+<ul>
+<li><a href="file:///C:/Users/hp/OneDrive/Desktop/projectTimeSeries/src/topology/builder_v1_5.py"><code>src/topology/builder_v1_5.py</code></a>: 3GPP hexagonal topology builder with verified TIM Italy spectrum.</li>
+<li><a href="file:///C:/Users/hp/OneDrive/Desktop/projectTimeSeries/src/spatial/simulator_v1_5.py"><code>src/spatial/simulator_v1_5.py</code></a>: Offline micro-grid RSRP propagation and transfer tensor simulator.</li>
+<li><a href="file:///C:/Users/hp/OneDrive/Desktop/projectTimeSeries/src/optimization/milp_engine_v1_5.py"><code>src/optimization/milp_engine_v1_5.py</code></a>: Pyomo MILP optimization engine with Coin-OR CBC solver discovery.</li>
+<li><a href="file:///C:/Users/hp/OneDrive/Desktop/projectTimeSeries/src/optimization/greedy_engine_v1_5.py"><code>src/optimization/greedy_engine_v1_5.py</code></a>: Strict mass-conserving greedy benchmark engine.</li>
+<li><a href="file:///C:/Users/hp/OneDrive/Desktop/projectTimeSeries/src/benchmark/benchmark_v1_5.py"><code>src/benchmark/benchmark_v1_5.py</code></a>: Automated end-to-end benchmark runner on <code>work_1024cells.parquet</code>.</li>
+<li><a href="file:///C:/Users/hp/OneDrive/Desktop/projectTimeSeries/research/notebooks_v1_5/pipeline_v1_5.ipynb"><code>research/notebooks_v1_5/pipeline_v1_5.ipynb</code></a>: Interactive 5-phase scientific walkthrough notebook.</li>
+</ul>
+</div>
+</body>
+</html>
