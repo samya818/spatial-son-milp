@@ -349,7 +349,7 @@ avec  PL(d, f) = 32,4 + 36,7·log₁₀(d) + 20·log₁₀(f)
 ```
 
 où `P_tx` est la puissance d'émission de l'antenne, `PL(d, f)` est l'affaiblissement de parcours standard 3GPP dépendant de la distance `d` et de la fréquence de la porteuse `f`, et `G(Δθ)` est le gain directionnel du secteur calculé à l'étape 3.
-
+« Notre P_tx en V1.5 est exactement la puissance nominale déclarée par le fabricant que définit le 3GPP dans TS 36.104 et TS 38.104. Elle est fixe par secteur et par porteuse, configurée comme un paramètre de topologie — exactement comme un opérateur configure ses eNodeB. Nous ne l'inférons pas des données car les données Milan ne contiennent aucune mesure radio, et surtout car la convention télécom ne l'infère pas non plus : c'est une constante hardware. La seule différence avec la réalité est que nous ne modélisons pas la répartition fine de puissance par sous-porteuse (power allocation par RE), ce qui est une simplification standard des simulateurs académiques et n'affecte pas la validité du modèle de handover. »
 ---
 
 ## 2.4 Élément 2 — Des scénarios réalistes pour la région MENA
@@ -419,6 +419,20 @@ Le projet dispose déjà d'un tableau de bord interactif (Streamlit) permettant 
 ## 2.8 Ce qui reste pour plus tard : les perspectives V2 et au-delà
 
 Le plan V2 complet — interférences dynamiques entre secteurs, modèle SINR complet conforme aux standards 3GPP (et non plus seulement RSRP), solveur Gurobi — n'est pas abandonné, seulement reporté. Il reste pertinent comme **prochaine étape après le hackathon**, dans un contexte où le temps de calcul plus long (15 à 25 minutes par cycle) et le besoin d'une licence de solveur commercial ne posent plus de contrainte de démonstration en temps réel. Des extensions encore plus poussées sont également envisagées à plus long terme : un modèle d'offset par relation individuelle entre chaque secteur et chaque voisin (au lieu d'un offset global par antenne), l'utilisation de réseaux de neurones sur graphes pour réduire la taille du problème d'optimisation, et une validation sur un simulateur réseau événementiel de référence (ns-3) avant tout déploiement réel chez un opérateur.
+
+---
+
+## 2.9 Agnosticisme technologique (4G/5G) et passage au déploiement réel
+
+Le moteur **WiseNet est agnostique à la technologie radio**. En 4G (LTE) comme en 5G (NR), la gestion de la mobilité et le handover reposent sur les mêmes mécanismes fondamentaux standardisés par le 3GPP : le critère d'**événement A3** et la métrique de puissance reçue **RSRP**. 
+
+L'évolution V1.5, avec sa modélisation fine par secteurs et porteuses fréquentielles, correspond exactement à l'architecture physique d'un **gNodeB 5G**. 
+
+Dès lors, la seule différence fondamentale entre une simulation et un déploiement réel sur le terrain réside dans les interfaces de branchement :
+- **En entrée :** remplacer le jeu de données historique (Milan) par un flux de télémétrie en temps réel issu d'une API standardisée telle que **CAMARA Network Insights** ;
+- **En sortie :** pousser les décisions d'offsets optimaux calculées par le solveur vers les stations de base via l'**interface de gestion SON / O-RAN (Non-RT RIC)** de l'opérateur.
+
+**L'algorithme de décision mathématique et le cœur du moteur d'optimisation (MILP), eux, restent rigoureusement identiques.**
 
 ---
 
