@@ -3,30 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WiseNet — Comprendre le projet de A à Z</title>
+<title>Rapport WiseNet — Optimisation Radio & SON MILP</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Charter:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* ==========================================================================
+   Base & Clean Paper Theme
+   ========================================================================== */
 :root {
-  --bg-main: #0B0F19;
-  --bg-card: #111827;
-  --bg-sidebar: #070B14;
-  --bg-code: #030712;
-  --border-color: #1F2937;
-  --border-subtle: #374151;
-  --text-main: #F3F4F6;
-  --text-muted: #9CA3AF;
-  --text-dim: #6B7280;
-  --primary: #3B82F6;
-  --primary-glow: rgba(59, 130, 246, 0.15);
-  --accent-cyan: #06B6D4;
-  --accent-green: #10B981;
-  --accent-amber: #F59E0B;
-  --accent-purple: #8B5CF6;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-heading: 'Space Grotesk', sans-serif;
+  --font-serif: 'Charter', Georgia, Cambria, 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, Monaco, monospace;
+  --text-color: #1a1a1a;
+  --text-muted: #555555;
+  --bg-page: #f8f9fa;
+  --bg-sheet: #ffffff;
+  --border-color: #d1d5db;
+  --primary-color: #1e3a8a;
+  --accent-color: #0284c7;
 }
 
 * {
@@ -35,387 +30,378 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  line-height: 1.8;
+  background-color: var(--bg-page);
+  color: var(--text-color);
+  font-family: var(--font-serif);
   font-size: 15px;
-  display: flex;
-  min-height: 100vh;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Layout */
-.sidebar {
-  width: 320px;
-  height: 100vh;
+/* Top Control Bar for Screen */
+.screen-actions {
   position: sticky;
   top: 0;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-color);
-  padding: 2rem 1.25rem;
-  overflow-y: auto;
-  flex-shrink: 0;
+  z-index: 1000;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  font-family: var(--font-sans);
 }
-
-.sidebar::-webkit-scrollbar {
-  width: 5px;
-}
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-
-.main-content {
-  flex: 1;
-  max-width: 980px;
-  margin: 0 auto;
-  padding: 3.5rem 3rem 6rem;
-}
-
-/* Sidebar Nav */
-.sidebar-header {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-.sidebar-header h3 {
-  font-family: var(--font-heading);
-  font-size: 1.1rem;
-  color: #fff;
-  margin-top: 0.5rem;
-}
-.badge {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--accent-cyan);
-  background: rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.25);
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-.toc-list {
-  list-style: none;
-}
-.toc-list li {
-  margin-bottom: 0.4rem;
-}
-.toc-list a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-  display: block;
-  line-height: 1.4;
-}
-.toc-list a:hover {
-  color: var(--accent-cyan);
-  transform: translateX(3px);
-}
-.toc-level-1 {
-  margin-top: 1.25rem;
-  padding-top: 0.5rem;
-  border-top: 1px dashed var(--border-color);
-}
-.toc-level-1 a {
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-.toc-level-2 {
-  padding-left: 0.75rem;
-}
-.toc-level-2 a {
+.action-info {
+  font-size: 14px;
+  color: #4b5563;
   font-weight: 500;
 }
-.toc-level-3 {
-  padding-left: 1.5rem;
-  font-size: 0.8rem;
+.print-btn {
+  background: #1e3a8a;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.print-btn:hover {
+  background: #1d4ed8;
 }
 
-/* Document Header */
-.doc-header {
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border-color);
+/* Page Sheet Container */
+.page-container {
+  max-width: 860px;
+  margin: 30px auto 60px;
+  background: var(--bg-sheet);
+  padding: 60px 70px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
 }
-.main-title {
-  font-family: var(--font-heading);
-  font-size: 2.6rem;
+
+/* Cover & Meta */
+.cover-page {
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid #1e3a8a;
+}
+.main-doc-title {
+  font-family: var(--font-sans);
+  font-size: 30px;
   font-weight: 800;
-  color: #FFFFFF;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #FFFFFF 0%, #93C5FD 50%, #38BDF8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #0f172a;
+  line-height: 1.25;
+  margin-bottom: 12px;
 }
-.subtitle {
-  font-size: 1.15rem;
-  color: var(--accent-cyan);
+.doc-subtitle {
+  font-size: 17px;
+  color: #334155;
   font-style: italic;
-  font-weight: 400;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.doc-meta {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
-/* Major Part Banner */
-.part-banner {
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(17, 24, 39, 0.8) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  border-left: 5px solid var(--primary);
-  padding: 1.75rem 2rem;
-  border-radius: 12px;
-  margin: 3.5rem 0 2rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+/* Table of Contents */
+.toc-container {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 24px 28px;
+  margin: 30px 0 40px;
+}
+.toc-heading {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 8px;
+}
+.toc-tree {
+  list-style: none;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+}
+.toc-tree li {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.toc-tree a {
+  color: #2563eb;
+  text-decoration: none;
+}
+.toc-tree a:hover {
+  text-decoration: underline;
+}
+.toc-p-level-1 {
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 10px;
+}
+.toc-p-level-2 {
+  padding-left: 14px;
+  font-weight: 500;
+}
+.toc-p-level-3 {
+  padding-left: 28px;
+  color: #475569;
+}
+
+/* Section Titles */
+.part-break {
+  margin-top: 50px;
+  padding-top: 20px;
+  border-top: 2px solid #0f172a;
+}
+.part-header {
+  background: #f1f5f9;
+  border-left: 5px solid #1e3a8a;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  border-radius: 0 4px 4px 0;
 }
 .part-tag {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 2px;
-  color: #60A5FA;
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 11px;
   font-weight: 700;
+  color: #1e3a8a;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  display: block;
 }
 .part-title {
-  font-family: var(--font-heading);
-  font-size: 1.8rem;
-  color: #fff;
-  margin-top: 0.25rem;
+  font-family: var(--font-sans);
+  font-size: 22px;
+  color: #0f172a;
+  margin-top: 4px;
 }
 
-/* Headings */
 .section-title {
-  font-family: var(--font-heading);
-  font-size: 1.55rem;
+  font-family: var(--font-sans);
+  font-size: 19px;
   font-weight: 700;
-  color: #FFFFFF;
-  margin: 2.5rem 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #0f172a;
+  margin: 32px 0 14px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 6px;
 }
 .subsection-title {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 16px;
   font-weight: 600;
-  color: #E2E8F0;
-  margin: 1.8rem 0 0.75rem;
+  color: #1e293b;
+  margin: 24px 0 10px;
 }
 .sub-subsection-title {
-  font-size: 1.05rem;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
   font-weight: 600;
-  color: #93C5FD;
-  margin: 1.25rem 0 0.5rem;
+  color: #334155;
+  margin: 16px 0 8px;
 }
 
-/* Paragraph & Text */
+/* Paragraphs & Lists */
 .paragraph {
-  margin-bottom: 1.2rem;
-  color: #D1D5DB;
-  font-size: 15px;
+  margin-bottom: 14px;
+  text-align: justify;
+  color: #1e293b;
 }
 strong {
-  color: #F9FAFB;
-  font-weight: 600;
+  color: #000000;
+  font-weight: 700;
 }
-em {
-  color: #93C5FD;
-}
-
-/* Lists */
 ul, ol {
-  margin: 1rem 0 1.5rem 1.75rem;
-  color: #D1D5DB;
+  margin: 12px 0 16px 24px;
+  color: #1e293b;
 }
 li {
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
+  margin-bottom: 6px;
 }
 
 /* Code & ASCII blocks */
 .code-block {
-  background: var(--bg-code);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 1.25rem 1.5rem;
-  margin: 1.5rem 0;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin: 18px 0;
   overflow-x: auto;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
 .code-block pre {
   font-family: var(--font-mono);
-  font-size: 13px;
-  color: #38BDF8;
-  line-height: 1.6;
+  font-size: 12px;
+  color: #0f172a;
+  line-height: 1.5;
 }
 code {
   font-family: var(--font-mono);
-  font-size: 0.9em;
-  background: rgba(31, 41, 55, 0.7);
-  color: #38BDF8;
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid rgba(56, 189, 248, 0.2);
+  font-size: 13px;
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid #e2e8f0;
 }
 
 /* Tables */
 .table-container {
+  margin: 22px 0;
   overflow-x: auto;
-  margin: 1.75rem 0;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  background: var(--bg-card);
 }
-.custom-table {
+.pdf-table {
   width: 100%;
   border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 13px;
   text-align: left;
-  font-size: 14px;
+  border: 1px solid #cbd5e1;
 }
-.custom-table th {
-  background: #1E293B;
-  color: #F8FAFC;
-  font-weight: 600;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
+.pdf-table th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
 }
-.custom-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  color: #CBD5E1;
+.pdf-table td {
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  color: #334155;
 }
-.custom-table tr:last-child td {
-  border-bottom: none;
-}
-.custom-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+.pdf-table tr:nth-child(even) {
+  background: #f8fafc;
 }
 
-/* Callouts */
+/* Callouts / Notes */
 .callout {
-  border-radius: 10px;
-  padding: 1.25rem 1.5rem;
-  margin: 1.5rem 0;
-  line-height: 1.7;
+  border-radius: 4px;
+  padding: 14px 18px;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.6;
 }
 .callout-note {
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-left: 4px solid var(--primary);
-  color: #BFDBFE;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #2563eb;
+  color: #1e3a8a;
 }
 .callout-tech {
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-left: 4px solid var(--accent-green);
-  color: #A7F3D0;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-left: 4px solid #16a34a;
+  color: #14532d;
 }
-.callout-content strong {
-  color: #FFFFFF;
+.callout-info {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #64748b;
+  color: #1e293b;
 }
 
 /* Math Block */
 .math-block {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  padding: 0.75rem 1.25rem;
-  margin: 1rem 0;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  margin: 14px 0;
   text-align: center;
+  border-radius: 4px;
 }
 .math-block code {
   background: transparent;
   border: none;
-  font-size: 1.05rem;
-  color: #FCD34D;
+  font-size: 14px;
+  color: #0f172a;
 }
 
 .divider {
   border: none;
-  border-top: 1px solid var(--border-color);
-  margin: 3rem 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 32px 0;
 }
 
-@media (max-width: 900px) {
+/* ==========================================================================
+   Print / PDF Export Styles (@media print)
+   ========================================================================== */
+@page {
+  size: A4;
+  margin: 18mm 16mm 18mm 16mm;
+}
+
+@media print {
   body {
-    flex-direction: column;
+    background: #ffffff !important;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #000000 !important;
   }
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    border-right: none;
-    border-bottom: 1px solid var(--border-color);
+  .screen-actions {
+    display: none !important;
   }
-  .main-content {
-    padding: 2rem 1.5rem;
+  .page-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .part-break {
+    page-break-before: always;
+    break-before: page;
+  }
+  .section-title, .subsection-title, .part-title, h1, h2, h3, h4 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  .table-container, .callout, .code-block, .pdf-table {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  a {
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+  .callout-note, .callout-tech, .part-header {
+    border-left: 3px solid #000000 !important;
+    background: #f8f8f8 !important;
   }
 }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
-<nav class="sidebar-nav">
-<div class="sidebar-header"><span class="badge">WiseNet Docs</span><h3>Table des Matières</h3></div>
-<ul class="toc-list">
-  <li class="toc-level-2"><a href="#avant-de-commencer-le-problème-posé">Avant de commencer : le problème posé</a></li>
-  <li class="toc-level-1"><a href="#partie-1-le-projet-actuel-v1-comment-il-fonctionne">PARTIE 1 — Le projet actuel (V1) : comment il fonctionne</a></li>
-  <li class="toc-level-2"><a href="#11-la-logique-générale-en-une-phrase">1.1 La logique générale, en une phrase</a></li>
-  <li class="toc-level-2"><a href="#12-brique-1-les-données-sur-quoi-le-système-apprend">1.2 Brique 1 — Les données : sur quoi le système apprend</a></li>
-  <li class="toc-level-3"><a href="#ce-quest-une-cellule-dans-ce-projet">Ce qu&#x27;est une « cellule » dans ce projet</a></li>
-  <li class="toc-level-3"><a href="#de-la-donnée-brute-à-lunité-utilisée-par-le-projet">De la donnée brute à l&#x27;unité utilisée par le projet</a></li>
-  <li class="toc-level-3"><a href="#la-topologie-du-réseau-simulé">La topologie du réseau simulé</a></li>
-  <li class="toc-level-2"><a href="#13-brique-2-la-prédiction-deviner-le-trafic-avant-quil-narrive">1.3 Brique 2 — La prédiction : deviner le trafic avant qu&#x27;il n&#x27;arrive</a></li>
-  <li class="toc-level-3"><a href="#pourquoi-prédire-et-pas-juste-réagir">Pourquoi prédire, et pas juste réagir ?</a></li>
-  <li class="toc-level-3"><a href="#comment-la-prédiction-fonctionne">Comment la prédiction fonctionne</a></li>
-  <li class="toc-level-2"><a href="#14-brique-3-le-modèle-spatial-qui-peut-réellement-aider-qui">1.4 Brique 3 — Le modèle spatial : qui peut réellement aider qui</a></li>
-  <li class="toc-level-3"><a href="#141-lidée-physique-simplifiée">1.4.1 L&#x27;idée physique simplifiée</a></li>
-  <li class="toc-level-3"><a href="#142-le-calcul-étape-par-étape-construire-les-matrices-de-fractions">1.4.2 Le calcul, étape par étape : construire les matrices de fractions</a></li>
-  <li class="toc-level-3"><a href="#143-des-fractions-aux-volumes-réels-les-matrices-h">1.4.3 Des fractions aux volumes réels : les matrices H</a></li>
-  <li class="toc-level-2"><a href="#15-brique-4-le-cerveau-décisionnel-pyomo-le-milp-et-le-solveur-cbc">1.5 Brique 4 — Le cerveau décisionnel : Pyomo, le MILP et le solveur CBC</a></li>
-  <li class="toc-level-3"><a href="#dabord-une-clarification-essentielle-modéliser-nest-pas-résoudre">D&#x27;abord, une clarification essentielle : modéliser n&#x27;est pas résoudre</a></li>
-  <li class="toc-level-3"><a href="#quest-ce-quun-milp-précisément">Qu&#x27;est-ce qu&#x27;un « MILP », précisément</a></li>
-  <li class="toc-level-3"><a href="#la-formulation-exacte-du-milp-dans-ce-projet">La formulation exacte du MILP dans ce projet</a></li>
-  <li class="toc-level-2"><a href="#16-brique-5-la-boucle-fermée-comment-tout-senchaîne-dans-le-temps">1.6 Brique 5 — La boucle fermée : comment tout s&#x27;enchaîne dans le temps</a></li>
-  <li class="toc-level-2"><a href="#17-les-résultats-mesurés-ce-que-le-projet-prouve">1.7 Les résultats mesurés — ce que le projet prouve</a></li>
-  <li class="toc-level-2"><a href="#18-récapitulatif-logique-global-comment-tout-est-connecté">1.8 Récapitulatif logique global — comment tout est connecté</a></li>
-  <li class="toc-level-2"><a href="#19-une-question-légitime-et-lhétérogénéité-des-utilisateurs">1.9 Une question légitime : et l&#x27;hétérogénéité des utilisateurs ?</a></li>
-  <li class="toc-level-1"><a href="#partie-2-les-améliorations-visées-la-version-v15">PARTIE 2 — Les améliorations visées : la version V1.5</a></li>
-  <li class="toc-level-2"><a href="#21-pourquoi-pas-une-v2-complète">2.1 Pourquoi pas une V2 complète ?</a></li>
-  <li class="toc-level-2"><a href="#22-le-principe-de-la-v15-garder-ce-qui-marche-raffiner-ce-qui-compte">2.2 Le principe de la V1.5 : garder ce qui marche, raffiner ce qui compte</a></li>
-  <li class="toc-level-2"><a href="#23-élément-1-le-modèle-secteurs-porteuses-et-la-logique-de-handover-par-rsrp">2.3 Élément 1 — Le modèle secteurs + porteuses, et la logique de handover par RSRP</a></li>
-  <li class="toc-level-3"><a href="#231-pourquoi-ce-raffinement-en-langage-naturel">2.3.1 Pourquoi ce raffinement, en langage naturel</a></li>
-  <li class="toc-level-3"><a href="#232-les-équations">2.3.2 Les équations</a></li>
-  <li class="toc-level-3"><a href="#233-la-formulation-du-milp-en-v15-loptimisation-par-couple-secteur-porteuse">2.3.3 La formulation du MILP en V1.5 : l&#x27;optimisation par couple `(Secteur, Porteuse)`</a></li>
-  <li class="toc-level-4"><a href="#1-pourquoi-le-couple-s-f-est-lunité-physique-réelle-de-congestion">1. Pourquoi le couple `(s, f)` est l&#x27;unité physique réelle de congestion ?</a></li>
-  <li class="toc-level-4"><a href="#2-la-double-dimension-doptimisation-débloquée-délestage-horizontal-vs-vertical">2. La double dimension d&#x27;optimisation débloquée : Délestage Horizontal vs Vertical</a></li>
-  <li class="toc-level-4"><a href="#3-la-formulation-mathématique-rigoureuse-du-milp-v15">3. La formulation mathématique rigoureuse du MILP V1.5</a></li>
-  <li class="toc-level-2"><a href="#24-élément-2-des-scénarios-réalistes-pour-la-région-mena">2.4 Élément 2 — Des scénarios réalistes pour la région MENA</a></li>
-  <li class="toc-level-2"><a href="#25-élément-3-lintégration-camara-le-vrai-différenciateur">2.5 Élément 3 — L&#x27;intégration CAMARA : le vrai différenciateur</a></li>
-  <li class="toc-level-3"><a href="#quest-ce-que-camara-en-langage-clair">Qu&#x27;est-ce que CAMARA, en langage clair</a></li>
-  <li class="toc-level-3"><a href="#les-deux-api-pertinentes-pour-ce-projet">Les deux API pertinentes pour ce projet</a></li>
-  <li class="toc-level-3"><a href="#comment-cela-se-connecte-au-pipeline-existant">Comment cela se connecte au pipeline existant</a></li>
-  <li class="toc-level-2"><a href="#26-élément-4-un-tableau-de-bord-prêt-pour-la-présentation">2.6 Élément 4 — Un tableau de bord prêt pour la présentation</a></li>
-  <li class="toc-level-2"><a href="#27-feuille-de-route-dans-le-temps">2.7 Feuille de route dans le temps</a></li>
-  <li class="toc-level-2"><a href="#28-ce-qui-reste-pour-plus-tard-les-perspectives-v2-et-au-delà">2.8 Ce qui reste pour plus tard : les perspectives V2 et au-delà</a></li>
-  <li class="toc-level-2"><a href="#29-agnosticisme-technologique-4g5g-et-passage-au-déploiement-réel">2.9 Agnosticisme technologique (4G/5G) et passage au déploiement réel</a></li>
-  <li class="toc-level-2"><a href="#conclusion-le-message-à-retenir">Conclusion — le message à retenir</a></li>
-</ul></nav>
-</aside>
+<div class="screen-actions">
+  <div class="action-info">
+    📄 <strong>WiseNet — Rapport de Projet</strong> &nbsp;|&nbsp; Optimisé pour affichage clair &amp; export PDF
+  </div>
+  <button class="print-btn" onclick="window.print()">
+    🖨️ Imprimer / Enregistrer en PDF
+  </button>
+</div>
 
-<main class="main-content">
-<header class="doc-header"><h1 class="main-title" id="wisenet-comprendre-le-projet-de-a-à-z">WiseNet — Comprendre le projet de A à Z</h1>
-<p class="subtitle">Un système qui apprend à un réseau mobile à se réorganiser tout seul quand certaines zones sont surchargées.</p></header>
+<div class="page-container">
+<div class="cover-page"><h1 class="main-doc-title" id="wisenet-comprendre-le-projet-de-a-à-z">WiseNet — Comprendre le projet de A à Z</h1>
+<p class="doc-subtitle">Un système qui apprend à un réseau mobile à se réorganiser tout seul quand certaines zones sont surchargées.</p><div class="doc-meta"><span>Projet : WiseNet (spatial-son-milp)</span> • <span>Hackathon MENA Ignite 2026</span> • <span>Document d'Ingénierie</span></div></div>
 <hr class="divider"/>
 <h2 class="section-title" id="avant-de-commencer-le-problème-posé">Avant de commencer : le problème posé</h2>
 <p class="paragraph">Un réseau mobile (4G/5G) est découpé en petites zones géographiques, chacune couverte par une antenne. À certains moments, une antenne est saturée par la demande de ses utilisateurs (trop d'appels, trop de vidéos, trop de data) alors que l'antenne juste à côté, elle, a de la place disponible. Le réseau perd alors de la qualité de service dans la zone saturée, alors que de la capacité existe à quelques centaines de mètres — simplement mal répartie.</p>
@@ -426,7 +412,7 @@ code {
   <li><strong>Partie 2</strong> explique les améliorations visées pour la suite, dans une version intermédiaire appelée <strong>V1.5</strong>, pensée spécifiquement pour le hackathon MENA Ignite 2026 (GSMA + Nokia) — et pourquoi ce choix de V1.5 remplace une version V2 plus ambitieuse qui avait été envisagée au départ.</li>
 </ul>
 <hr class="divider"/>
-<div class="part-banner" id="partie-1-le-projet-actuel-v1-comment-il-fonctionne"><span class="part-tag">SECTION MAJEURE</span><h1 class="part-title">PARTIE 1 — Le projet actuel (V1) : comment il fonctionne</h1></div>
+<div class="part-break" id="partie-1-le-projet-actuel-v1-comment-il-fonctionne"><div class="part-header"><span class="part-tag">RAPPORT TECHNIQUE</span><h1 class="part-title">PARTIE 1 — Le projet actuel (V1) : comment il fonctionne</h1></div></div>
 <h2 class="section-title" id="11-la-logique-générale-en-une-phrase">1.1 La logique générale, en une phrase</h2>
 <p class="paragraph">Le système observe le passé récent, <strong>prédit</strong> le trafic futur de chaque zone ie dans chaque cellule géographique en GB/30 minutes, <strong>simule à l'avance</strong> comment ce trafic pourrait se répartir entre entennes si on decide d'appliquer une combinaison d'offset donnée ( ces offsets influencent la decision d'accepter le handover ou pas )  , puis un <strong>module de décision mathématique</strong> choisit, parmi toutes les redirections possibles, la combinaison qui minimise la saturation globale du réseau — et applique cette décision.</p>
 <p class="paragraph">Quatre grandes briques s'enchaînent :</p>
@@ -547,7 +533,7 @@ code {
 <hr class="divider"/>
 <h2 class="section-title" id="17-les-résultats-mesurés-ce-que-le-projet-prouve">1.7 Les résultats mesurés — ce que le projet prouve</h2>
 <p class="paragraph">Le projet a comparé les résultats de trois politiques de gestion du réseau, sur les mêmes données et dans les mêmes conditions sur une <strong>période de test de 24 heures</strong> (soit <strong>48 créneaux temporels / <em>slots</em> de 30 minutes</strong>) sur le <strong>bloc dense de 1 024 cellules</strong> ($32 \times 32$ mailles) :</p>
-<div class="table-container"><table class="custom-table">
+<div class="table-container"><table class="pdf-table">
   <thead><tr>
     <th>Politique</th>
     <th>Volume de trafic resté insatisfait (Mo / MB)</th>
@@ -621,7 +607,7 @@ Topologie du réseau (antennes prioritaires, capacités, voisinage)
 <p class="paragraph"><strong>La conséquence pratique de ce choix est directement rassurante face à l'objection initiale :</strong> les utilisateurs très proches du centre d'une antenne, dont la qualité de signal est très largement supérieure à celle de toute voisine, ne basculeront jamais, quel que soit l'offset appliqué — la marge ne suffira jamais à combler un tel écart. Seuls les utilisateurs situés <strong>à la frontière</strong> entre deux zones de couverture, là où les qualités de signal sont naturellement proches, sont concernés par un basculement. Cela réduit fortement le risque associé à une éventuelle erreur de prédiction sur un cas individuel atypique, et cela simplifie considérablement le problème d'optimisation à résoudre.</p>
 <p class="paragraph"><strong>Enfin, un filet de sécurité est prévu pour les cas résiduels.</strong> Pour les utilisateurs qui resteraient malgré tout dans une zone qui reste en congestion meme après optimisation et les cas exceptionnels que le système n'aurait pas pu anticiper  le projet prévoit, dans le cadre du hackathon, de s'appuyer sur l'API CAMARA <strong>Quality on Demand (QoD)</strong> pour leur permettre de demander explicitement un signal de meilleure qualité à la demande (détail complet en Partie 2, section 2.5).</p>
 <hr class="divider"/>
-<div class="part-banner" id="partie-2-les-améliorations-visées-la-version-v15"><span class="part-tag">SECTION MAJEURE</span><h1 class="part-title">PARTIE 2 — Les améliorations visées : la version V1.5</h1></div>
+<div class="part-break" id="partie-2-les-améliorations-visées-la-version-v15"><div class="part-header"><span class="part-tag">RAPPORT TECHNIQUE</span><h1 class="part-title">PARTIE 2 — Les améliorations visées : la version V1.5</h1></div></div>
 <h2 class="section-title" id="21-pourquoi-pas-une-v2-complète">2.1 Pourquoi pas une V2 complète ?</h2>
 <p class="paragraph">Un plan d'amélioration plus ambitieux, appelé V2, avait été envisagé. Il consistait à rendre le modèle physique du signal beaucoup plus réaliste : au lieu d'une antenne isotrope, chaque antenne aurait été découpée en <strong>3 secteurs directionnels</strong> imaginez les comme des paraboles, chacun émettant selon un diagramme de rayonnement concentré dans une direction précise plutôt que de façon uniforme, chaque secteur aurait porté <strong>plusieurs fréquences radio</strong> (porteuses) distinctes, et le calcul du signal aurait intégré un modèle d'<strong>interférences dynamiques</strong> — c'est-à-dire le bruit que les antennes voisines se causent mutuellement, recalculé à chaque cycle en fonction de la charge réelle prédite et au lieu de 'un offest pour la dessision de déléstage depuis un antenne" on aurait " un offset pour un paire de secteurs" . Ce plan impliquait aussi de passer à un solveur commercial plus puissant (Gurobi) pour gérer un problème d'environ <strong>12 600 variables</strong> au lieu de 1400, avec un temps de recalcul des matrices spatiales de 15 à 25 minutes à chaque cycle.</p>
 <p class="paragraph">Après évaluation, ce plan V2 a été jugé <strong>disproportionné pour le contexte actuel</strong>, qui est un hackathon de deux semaines (MENA Ignite 2026, organisé par GSMA et Nokia) et non un travail de recherche de long terme. Trois raisons concrètes justifient ce choix :</p>
@@ -738,7 +724,7 @@ avec  PL(d, f) = 32,4 + 36,7·log₁₀(d) + 20·log₁₀(f)</code></pre></div>
 </ul>
 <hr class="divider"/>
 <h2 class="section-title" id="27-feuille-de-route-dans-le-temps">2.7 Feuille de route dans le temps</h2>
-<div class="table-container"><table class="custom-table">
+<div class="table-container"><table class="pdf-table">
   <thead><tr>
     <th>Période</th>
     <th>Action prioritaire</th>
@@ -789,7 +775,7 @@ avec  PL(d, f) = 32,4 + 36,7·log₁₀(d) + 20·log₁₀(f)</code></pre></div>
 <hr class="divider"/>
 <h2 class="section-title" id="conclusion-le-message-à-retenir">Conclusion — le message à retenir</h2>
 <p class="paragraph">Le projet WiseNet répond à un problème concret des réseaux mobiles — la saturation localisée alors que de la capacité existe juste à côté — par un système en boucle fermée qui <strong>prédit</strong> (machine learning), <strong>simule</strong> (modèle spatial, des matrices de fractions offline aux matrices de volumes H recalculées à chaque cycle) et <strong>décide</strong> (optimisation mathématique globale, via Pyomo et CBC) automatiquement. La version actuelle, validée sur des données réelles, réduit la congestion de 73,5 % par rapport à un réseau figé, et repose sur une logique de handover pensée pour rester fiable même face à l'hétérogénéité individuelle des utilisateurs. L'étape suivante, la V1.5, ne cherche pas à rendre le modèle physique plus précis pour le plaisir de la précision : elle raffine le calcul de qualité de signal vers un RSRP standard par secteurs et porteuses, et connecte ce moteur déjà prouvé à des scénarios réalistes de la région MENA et à une véritable interface réseau standardisée (CAMARA), pour transformer une preuve de concept scientifique en un prototype tangible, compréhensible en quelques minutes par un jury — la précision physique maximale (V2 complète, avec interférences dynamiques) restant un objectif légitime, mais pour une étape ultérieure du projet.</p>
-</main>
+</div>
 
 </body>
 </html>
