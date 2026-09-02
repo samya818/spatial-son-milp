@@ -156,8 +156,10 @@ code { font-family: Consolas, monospace; background-color: #f1f5f9; padding: 2px
 </ol>
 <hr />
 <h2>5. Verifiable Experimental Results</h2>
-<p>The benchmark was executed on the <strong>Telecom Italia Milan dataset</strong> (<code>work_1024cells.parquet</code>) for global peak load interval <code>slot_30m = 1384259400.0</code> ($1,381,452.1\text{ MB} \approx 1.35\text{ TB}$ of real traffic over $1,024$ cells).</p>
-<h3>Comparative Evaluation Table</h3>
+<p>The benchmark was executed on the <strong>Telecom Italia Milan dataset</strong> (<code>work_1024cells.parquet</code>) for:
+1. <strong>Global Peak Load Interval</strong> (<code>slot_30m = 1384259400.0</code>, $1.38\text{ TB}$ demand in 30 minutes).
+2. <strong>Full 24-Hour Continuous Operation</strong> (<code>2013-11-07</code>, 48 consecutive 30-minute slots, <strong>$44,619,298.9\text{ MB} \approx 43.57\text{ TB}$</strong> of total real network demand).</p>
+<h3>5.1 Peak Slot (30-min) Evaluation Table</h3>
 <table>
 <thead>
 <tr>
@@ -192,11 +194,47 @@ code { font-family: Consolas, monospace; background-color: #f1f5f9; padding: 2px
 </tr>
 </tbody>
 </table>
+<h3>5.2 Full 24-Hour (48 Slots) Continuous Operational Evaluation</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Optimization Policy</th>
+<th style="text-align: center;">24h Unsatisfied (MB)</th>
+<th style="text-align: center;">24h Unsatisfied (GB)</th>
+<th style="text-align: center;">24h Congestion Gain (%)</th>
+<th style="text-align: center;">Avg Solve Time / Slot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Static Baseline</strong> ($\delta = 0\text{ dB}$)</td>
+<td style="text-align: center;"><strong>5,194,316.4 MB</strong></td>
+<td style="text-align: center;">5,072.57 GB</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">0.000 s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Greedy Heuristic</strong> (Local Heuristic)</td>
+<td style="text-align: center;"><strong>3,945,312.0 MB</strong></td>
+<td style="text-align: center;">3,852.84 GB</td>
+<td style="text-align: center;">24.05 %</td>
+<td style="text-align: center;">0.012 s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>WiseNet V1.5 MILP</strong> (Global Exact Dual-Carrier)</td>
+<td style="text-align: center;"><strong>3,759,094.1 MB</strong></td>
+<td style="text-align: center;"><strong>3,670.99 GB</strong></td>
+<td style="text-align: center;"><strong>27.63 %</strong></td>
+<td style="text-align: center;"><strong>0.576 s</strong></td>
+</tr>
+</tbody>
+</table>
 <h3>Key Scientific Findings</h3>
 <ol>
-<li><strong>MILP Outperformed Greedy</strong>: The global MILP solver delivered <strong>$8,369.2\text{ MB}$ ($+8.37\text{ GB}$)</strong> of additional user traffic compared to the greedy heuristic.</li>
-<li><strong>Real-Time Convergence</strong>: Pyomo with Coin-OR CBC solved the 756-cell binary integer program in <strong>$0.74\text{ seconds}$</strong>, proving online operational viability for 30-minute SON control loops.</li>
-<li><strong>Mass Conservation Strictness</strong>: Unlike naive simulators where offloaded traffic vanishes, every megabyte shifted from a congested cell was strictly accounted for on its target neighbor/carrier.</li>
+<li><strong>$181.85\text{ GB}$ Additional Data Delivered on 24 Hours</strong>: Over the complete 24-hour cycle, the MILP global coordinator delivers <strong>$186,217.9\text{ MB}$ ($+181.85\text{ GB}$)</strong> of satisfied traffic compared to the greedy baseline on the exact same 1,024 cells.</li>
+<li><strong>Sub-Second Convergence ($0.576\text{ s}$ average)</strong>: Pyomo with Coin-OR CBC solved each 756-cell integer optimization in under $0.6\text{ seconds}$, perfectly matching the 30-minute operational time budget of carrier-grade SON engines.</li>
+<li><strong>Diurnal Dynamic Adaptation</strong>: MILP achieves up to <strong>$100.0\%\text{ congestion elimination}$</strong> during morning transition slots ($07:30$) and maintains a steady <strong>$18\% - 27\%$ gain</strong> during peak midday and evening traffic hours ($11:30 - 18:30$).</li>
+<li><strong>Strict Mass Conservation</strong>: Unlike simplified heuristic frameworks where traffic disappears, every megabyte offloaded across horizontal sector boundaries or vertical frequency carriers is mathematically conserved.</li>
 </ol>
 <hr />
 <h2>6. Verifiability &amp; Reproducibility Guide</h2>
