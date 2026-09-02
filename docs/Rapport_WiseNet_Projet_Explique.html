@@ -406,6 +406,12 @@ code {
 <h2 class="section-title" id="avant-de-commencer-le-problème-posé">Avant de commencer : le problème posé</h2>
 <p class="paragraph">Un réseau mobile (4G/5G) est découpé en petites zones géographiques, chacune couverte par une antenne. À certains moments, une antenne est saturée par la demande de ses utilisateurs (trop d'appels, trop de vidéos, trop de data) alors que l'antenne juste à côté, elle, a de la place disponible. Le réseau perd alors de la qualité de service dans la zone saturée, alors que de la capacité existe à quelques centaines de mètres — simplement mal répartie.</p>
 <p class="paragraph">Le projet <strong>WiseNet</strong> (nom de dépôt technique : <code>spatial-son-milp</code>) construit un système qui corrige ce déséquilibre automatiquement, sans intervention humaine : il <strong>prédit</strong> où la saturation va se produire, <strong>calcule</strong> où le trafic en excès peut être redirigé, et <strong>décide</strong> quelles antennes doivent transférer une partie de leurs utilisateurs vers leurs voisines. C'est ce qu'on appelle dans le jargon télécom un <strong>SON — Self-Organizing Network</strong>, un réseau auto-organisant.</p>
+<h3 class="subsection-title" id="deux-notions-clés-à-comprendre-le-handover-et-loffset">Deux notions clés à comprendre : le Handover et l'Offset</h3>
+<p class="paragraph">Pour bien comprendre le fonctionnement de WiseNet, deux concepts fondamentaux de la téléphonie mobile sont utilisés partout dans ce projet :</p>
+<ul>
+  <li><strong>Le Handover (transfert intercellulaire) :</strong> C'est le mécanisme automatique et invisible par lequel un smartphone connecté bascule d'une antenne à une autre sans aucune coupure de communication. En temps normal, un mobile se connecte simplement à l'antenne qui émet le signal radio le plus fort.</li>
+  <li><strong>L'Offset de Handover (ou CIO — Cell Individual Offset) :</strong> C'est un paramètre logiciel (exprimé en décibels, dB) qui permet à l'opérateur de modifier artificiellement ce seuil de basculement. En appliquant un offset, on rend une antenne voisine « virtuellement plus séduisante » pour les smartphones situés en périphérie de couverture. Cela permet de <strong>délester une antenne saturée en transférant une partie de ses utilisateurs vers sa voisine</strong>, sans modifier physiquement les antennes.</li>
+</ul>
 <p class="paragraph">Ce rapport est construit en deux parties :</p>
 <ul>
   <li><strong>Partie 1</strong> explique le projet tel qu'il existe aujourd'hui, validé et mesuré (ci-après appelé <strong>V1</strong>).</li>

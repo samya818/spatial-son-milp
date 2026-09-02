@@ -10,6 +10,13 @@ Un réseau mobile (4G/5G) est découpé en petites zones géographiques, chacune
 
 Le projet **WiseNet** (nom de dépôt technique : `spatial-son-milp`) construit un système qui corrige ce déséquilibre automatiquement, sans intervention humaine : il **prédit** où la saturation va se produire, **calcule** où le trafic en excès peut être redirigé, et **décide** quelles antennes doivent transférer une partie de leurs utilisateurs vers leurs voisines. C'est ce qu'on appelle dans le jargon télécom un **SON — Self-Organizing Network**, un réseau auto-organisant.
 
+### Deux notions clés à comprendre : le Handover et l'Offset
+
+Pour bien comprendre le fonctionnement de WiseNet, deux concepts fondamentaux de la téléphonie mobile sont utilisés partout dans ce projet :
+
+- **Le Handover (transfert intercellulaire) :** C'est le mécanisme automatique et invisible par lequel un smartphone connecté bascule d'une antenne à une autre sans aucune coupure de communication. En temps normal, un mobile se connecte simplement à l'antenne qui émet le signal radio le plus fort.
+- **L'Offset de Handover (ou CIO — Cell Individual Offset) :** C'est un paramètre logiciel (exprimé en décibels, dB) qui permet à l'opérateur de modifier artificiellement ce seuil de basculement. En appliquant un offset, on rend une antenne voisine « virtuellement plus séduisante » pour les smartphones situés en périphérie de couverture. Cela permet de **délester une antenne saturée en transférant une partie de ses utilisateurs vers sa voisine**, sans modifier physiquement les antennes.
+
 Ce rapport est construit en deux parties :
 
 - **Partie 1** explique le projet tel qu'il existe aujourd'hui, validé et mesuré (ci-après appelé **V1**).
@@ -356,21 +363,7 @@ où `P_tx` est la puissance d'émission de l'antenne, `PL(d, f)` est l'affaiblis
 Une question fondamentale se pose lors du passage à la V1.5 : **le moteur d'optimisation MILP et sa fonction objectif doivent-ils être formulés par secteur ou par porteuse ?**
 
 La réponse technique et physique est : **ni l'un ni l'autre isolément, mais au niveau du couple indissociable `(Secteur, Porteuse)`, c'est-à-dire par Cellule Radio Élémentaire $(s, f)$.**
-
-```
-                     SITE PHYSIQUE (Station de base / gNodeB)
-                     ┌───────────────────┬───────────────────┐
-                     │                   │                   │
-               SECTEUR 1 (0°)      SECTEUR 2 (120°)    SECTEUR 3 (240°)
-               ┌──────┴──────┐     ┌──────┴──────┐     ┌──────┴──────┐
-               │             │     │             │     │             │
-            Porteuse 1    Porteuse 2
-            (1.8 GHz)     (3.5 GHz)
-               │             │
-               ▼             ▼
-       Cellule (s1, f1)   Cellule (s1, f2)
-       [Couverture large] [Très haut débit]
-```
+(remarque cellule radio ici n'est pas la cellule géographique comme définit précedemment)
 
 #### 1. Pourquoi le couple `(s, f)` est l'unité physique réelle de congestion ?
 Dans un gNodeB 5G moderne :
