@@ -23,14 +23,24 @@
 
 ---
 
+> [!NOTE]
+> ### ⏪ Vous cherchez la Version 1.0 telle qu'elle était à l'origine ? / Looking for Version 1.0 as it was?
+> Vous pouvez accéder à l'intégralité du **dépôt v1.0 d'origine intact**, avec son **code source initial et son README original affiché sur GitHub** :
+> - 🌿 **[👉 Consulter le Dépôt v1.0 & son README Original sur GitHub (Branche `v1-stable`)](https://github.com/samya818/spatial-son-milp/tree/v1-stable)**
+> - 🏷️ **[Tag Officiel Release v1.0 (`v1.0-validated`)](https://github.com/samya818/spatial-son-milp/tree/v1.0-validated)**
+> - 📄 **[Lire la copie archivée du README v1.0 dans cette branche (`docs/README_v1.md`)](docs/README_v1.md)**
+> - 💻 **En ligne de commande :** `git checkout v1-stable` *(ou `git clone -b v1-stable https://github.com/samya818/spatial-son-milp.git`)*
+
+---
+
 ### 📌 Navigation Rapide des Versions & Ressources
 
 | Ressource | Ce que vous y trouverez | Lien d'accès direct |
 | :--- | :--- | :--- |
 | **WiseNet v1.5 (Actuel)** | Architecture 3GPP multi-secteurs, double-porteuse $(s, f)$, boucle 24h, CAMARA API | **Ce document (README.md)** |
-| **Le Guide de Référence** | L'explication pédagogique totale de A à Z (philosophie, physique, télécom) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
-| **README v1.0 (Archivé)** | La documentation d'origine de la version 1.0 (modèle préliminaire isotrope) | [📄 `docs/README_v1.md`](docs/README_v1.md) |
-| **Branche Git v1-stable** | Dépôt Git figé et validé de la première version historique | [🌿 Branche `v1-stable`](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
+| **Version 1.0 (Dépôt & README Original)** | Accès direct au dépôt figé v1.0 tel qu'il était avec son README d'origine | [🌿 **Accéder à la v1.0 sur GitHub**](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
+| **Le Guide de Référence (FR)** | L'explication pédagogique totale de A à Z (philosophie, physique, télécom) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
+| **README v1.0 (Copie Archivée)** | La documentation d'origine de la version 1.0 conservée dans `docs/` | [📄 `docs/README_v1.md`](docs/README_v1.md) |
 | **Release v1.0-validated** | Tag officiel de la release V1 sur GitHub | [🏷️ Tag `v1.0-validated`](https://github.com/samya818/spatial-son-milp/releases/tag/v1.0-validated) |
 | **Rapport Scientifique (EN)** | Benchmark vérifié, formulations mathématiques formelles & protocole | [🔬 `docs/WiseNet_V1_5_Scientific_Report.html`](docs/WiseNet_V1_5_Scientific_Report.html) |
 
