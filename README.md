@@ -3,377 +3,442 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![3GPP TR 38.901](https://img.shields.io/badge/3GPP-TR%2038.901%20Compliant-purple.svg)](https://www.3gpp.org/specifications-technologies)
 [![Pyomo](https://img.shields.io/badge/Pyomo-MILP%20Engine-green)](http://www.pyomo.org/)
-[![Coin-OR CBC](https://img.shields.io/badge/Solver-Coin--OR%20CBC-informational)](https://github.com/coin-or/Cbc)
+[![Coin-OR CBC](https://img.shields.io/badge/Solver-Coin--OR%20CBC%20(Open%20Source)-informational)](https://github.com/coin-or/Cbc)
 [![XGBoost](https://img.shields.io/badge/XGBoost-Quantile%20q80-orange)](https://xgboost.readthedocs.io/)
 [![CAMARA Ready](https://img.shields.io/badge/GSMA-CAMARA%20Open%20Gateway-blueviolet)](https://camaraproject.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Interactive%20App-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Système Prédictif d'Auto-Organisation de Réseau (SON) par Optimisation Mathématique Globale (MILP) et Modélisation Radio 3GPP Multi-Secteurs & Multi-Porteuses.**
+> **Un réseau mobile qui anticipe sa saturation et se réorganise tout seul.**  
+> Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) en moins d'une seconde.
 
 ---
 
-### 📌 Navigation des Versions & Documentation
+### 📌 Navigation Rapide des Versions & Ressources
 
-| Document | Description | Lien d'accès |
+| Ressource | Ce que vous y trouverez | Lien d'accès direct |
 | :--- | :--- | :--- |
-| **WiseNet v1.5 (Actuel)** | Topologie 3GPP 3-secteurs, multi-porteuses $(s, f)$, boucle 24h, CAMARA API | **Ce README** |
-| **README v1.0 (Archivé)** | Documentation d'origine de la version 1.0 (modèle isotrope) | [📄 `docs/README_v1.md`](docs/README_v1.md) |
-| **Branche Git v1-stable** | Code source original figé et validé de la V1.0 | [🌿 Branche `v1-stable`](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
-| **Release v1.0-validated** | Tag Git officiel de la première version validée | [🏷️ Tag `v1.0-validated`](https://github.com/samya818/spatial-son-milp/releases/tag/v1.0-validated) |
-| **Rapport Explicatif de A à Z** | Guide pédagogique complet en français (théorie, physique, métaphores) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
-| **Rapport Scientifique V1.5** | Benchmark complet, preuves reproductibles & formulation mathématique | [🔬 `docs/WiseNet_V1_5_Scientific_Report.html`](docs/WiseNet_V1_5_Scientific_Report.html) |
+| **WiseNet v1.5 (Actuel)** | Architecture 3GPP multi-secteurs, double-porteuse $(s, f)$, boucle 24h, CAMARA API | **Ce document (README.md)** |
+| **README v1.0 (Archivé)** | La documentation intégrale d'origine de la version 1.0 (modèle isotrope préliminaire) | [📄 `docs/README_v1.md`](docs/README_v1.md) |
+| **Branche Git v1-stable** | Dépôt Git figé et testé de la première version validée | [🌿 Branche `v1-stable`](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
+| **Release v1.0-validated** | Tag officiel de la release V1 sur GitHub | [🏷️ Tag `v1.0-validated`](https://github.com/samya818/spatial-son-milp/releases/tag/v1.0-validated) |
+| **Rapport Pédagogique (FR)** | Le grand rapport explicatif de A à Z (théorie vulgarisée, métaphores, décisions) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
+| **Rapport Scientifique (EN)** | Benchmark vérifié, formulations mathématiques formelles & protocole | [🔬 `docs/WiseNet_V1_5_Scientific_Report.html`](docs/WiseNet_V1_5_Scientific_Report.html) |
 
 ---
 
 ## 📑 Sommaire
-1. [🎯 Le Problème Télécom & L'Intuition](#-le-problème-télécom--lintuition)
-2. [🔄 Évolution : Quoi de Neuf dans la V1.5 ?](#-évolution--quoi-de-neuf-dans-la-v15-)
-3. [🧠 Architecture Globale & Dualité Offline / Online](#-architecture-globale--dualité-offline--online)
-4. [📐 Modélisation Physique 3GPP & Calcul du RSRP](#-modélisation-physique-3gpp--calcul-du-rsrp)
-5. [⚙️ Le Cerveau Décisionnel : Formulation MILP $(s, f)$](#%EF%B8%8F-le-cerveau-décisionnel--formulation-milp-s-f)
-6. [📊 Résultats Scientifiques & Benchmarks Vérifiables](#-résultats-scientifiques--benchmarks-vérifiables)
-7. [🌐 Agnosticisme 4G/5G & Intégration CAMARA Open Gateway](#-agnosticisme-4g5g--intégration-camara-open-gateway)
-8. [🛡️ Cas des Utilisateurs & Robustesse aux Frontières](#%EF%B8%8F-cas-des-utilisateurs--robustesse-aux-frontières)
-9. [🚀 Démarrage Rapide & Reproductibilité](#-démarrage-rapide--reproductibilité)
-10. [🗂️ Arborescence du Dépôt](#%EF%B8%8F-arborescence-du-dépôt)
-11. [👥 Auteurs & Références](#-auteurs--références)
+1. [🌟 Le Problème Télécom : Pourquoi ce Projet Existe ?](#-le-problème-télécom--pourquoi-ce-projet-existe-)
+2. [📖 L'Histoire de la V1.5 : Pourquoi cette Version et Pas Directement une V2 ?](#-lhistoire-de-la-v15--pourquoi-cette-version-et-pas-directement-une-v2-)
+3. [🚀 Tout ce que Nous Avons Construit dans la V1.5 (Et Pourquoi)](#-tout-ce-que-nous-avons-construit-dans-la-v15-et-pourquoi)
+   - [Brique 1 : La Topologie Hexagonale 3GPP Tri-Secteurs](#brique-1--la-topologie-hexagonale-3gpp-tri-secteurs)
+   - [Brique 2 : Le Spectre Double-Porteuse & L'Unité $(s, f)$](#brique-2--le-spectre-double-porteuse--lunité-s-f)
+   - [Brique 3 : La Simulation Spatiale Micro-Grille & le RSRP Directif](#brique-3--la-simulation-spatiale-micro-grille--le-rsrp-directif)
+   - [Brique 4 : Le Double Délestage (Horizontal vs Vertical)](#brique-4--le-double-délestage-horizontal-vs-vertical)
+   - [Brique 5 : La Séparation Révolutionnaire Offline / Online](#brique-5--la-séparation-révolutionnaire-offline--online)
+   - [Brique 6 : Le Cerveau Décisionnel MILP Exact (< 0.8s)](#brique-6--le-cerveau-décisionnel-milp-exact--08s)
+   - [Brique 7 : La Boucle Fermée Prédictive 24h & ML Quantile $q_{80}$](#brique-7--la-boucle-fermée-prédictive-24h--ml-quantile-q_80)
+   - [Brique 8 : L'Interface Industrielle CAMARA Open Gateway](#brique-8--linterface-industrielle-camara-open-gateway)
+4. [📐 Le Pipeline de Bout en Bout en un Schéma](#-le-pipeline-de-bout-en-bout-en-un-schéma)
+5. [📊 Les Preuves Scientifiques : Résultats Mesurés sur les Données de Milan](#-les-preuves-scientifiques--résultats-mesurés-sur-les-données-de-milan)
+6. [🛡️ Pourquoi les Utilisateurs ne Subissent Jamais de Dégradation ?](#%EF%B8%8F-pourquoi-les-utilisateurs-ne-subissent-jamais-de-dégradation-)
+7. [⚡ Démarrage Rapide & Commandes de Reproduction](#-démarrage-rapide--commandes-de-reproduction)
+8. [🗂️ Organisation Détaillée du Code](#%EF%B8%8F-organisation-détaillée-du-code)
+9. [👥 Crédits & Remerciements](#-crédits--remerciements)
 
 ---
 
-## 🎯 Le Problème Télécom & L'Intuition
+## 🌟 Le Problème Télécom : Pourquoi ce Projet Existe ?
 
-Dans les réseaux mobiles (4G/5G), le trafic des utilisateurs fluctue fortement dans l'espace et dans le temps. Fréquemment, **une antenne se retrouve saturée** (saturation vidéo, streaming, foule) alors que **l'antenne immédiatement voisine dispose de capacité inutilisée** à quelques centaines de mètres.
+Imaginez un vendredi soir au centre-ville : des milliers de personnes sortent de bureaux ou assistent à un concert. Leurs téléphones saturent complètement l'antenne relais du quartier. Les appels coupent, les vidéos figent.  
+Pourtant, à **300 mètres de là**, dans un quartier de bureaux désert, une autre antenne dispose de **70% de capacité libre et inutilisée**.
 
 ```
-Situation de Congestion Non-Optimisée :
-+--------------------------+         +--------------------------+
-|  Site A (Centre-Ville)   |         |   Site B (Zone Résid.)   |
-|   Charge : 130% [SATURÉ] |         |   Charge : 35% [LIBRE]   |
-|   >>> Pertes d'appels    |         |   >>> Capacité dormante  |
-|   >>> Débit dégradé      |         |                          |
-+--------------------------+         +--------------------------+
+LA SITUATION CLASSIQUE (GASPILLAGE & SATURATION) :
++-----------------------------------+             +-----------------------------------+
+|     Antenne A (Centre-Ville)      |             |     Antenne B (Zone Bureaux)      |
+|    Charge : 130% [SATURATION]     |             |      Charge : 30% [SOUS-UTILISÉE] |
+|   >>> Appels coupés, débits nuls  |             |   >>> Bande passante gaspillée    |
++-----------------------------------+             +-----------------------------------+
 ```
 
-### Le Mécanisme Clé : Handover et Offset de Décharge (A3 Offset)
-Un smartphone bascule d'une antenne vers une autre (Handover) selon la règle standardisée 3GPP (Événement A3) :
+### Le Levier Magique : Le Handover et l'Offset A3
+Dans les réseaux mobiles standardisés (4G LTE et 5G NR), un smartphone décide de basculer vers une autre antenne (*Handover*) selon la formule standard 3GPP (Événement A3) :
 
 $$\text{RSRP}_{\text{voisin}} + \delta > \text{RSRP}_{\text{actuel}}$$
 
-* **Le RSRP** (*Reference Signal Received Power*) est la puissance reçue en dBm mesurant la qualité physique du signal.
-* **L'Offset $\delta$ (en dB)** est une marge logicielle ajustable à distance par l'opérateur.
-* En augmentant artificiellement $\delta$, **l'antenne saturée incite ses utilisateurs situés en bordure à basculer vers l'antenne voisine disponible**, absorbant ainsi le surplus de trafic **sans couper la communication et sans déployer de matériel physique**.
+* **Le RSRP** (*Reference Signal Received Power*) mesure la puissance radio brute reçue par le mobile (en dBm).
+* **L'Offset $\delta$** est une marge logicielle réglable à distance par l'opérateur (en dB).
 
-**WiseNet** automatise ce réglage en boucle fermée (*Self-Organizing Network*) : il anticipe les pics de charge via Machine Learning, simule la propagation spatiale fine, et calcule en moins d'une seconde les offsets optimaux pour l'ensemble du réseau grâce à la programmation linéaire en nombres entiers (**MILP**).
+Si l'opérateur augmente artificiellement cet offset $\delta$ sur l'antenne A en faveur de l'antenne B, **les smartphones situés dans la zone frontière basculent automatiquement vers l'antenne B**, sans couper les appels et **sans dépenser un seul centime en nouveau matériel**.
 
----
-
-## 🔄 Évolution : Quoi de Neuf dans la V1.5 ?
-
-La version 1.0 validait le concept avec une antenne isotrope (omnidirectionnelle) sur une seule porteuse fictive.  
-La **version 1.5** franchit un cap industriel en adoptant les standards stricts **3GPP TR 38.901** et les spectres réels d'un opérateur national (Telecom Italia - TIM) :
-
-| Dimension | Version 1.0 (Legacy) | Version 1.5 (Actuelle) | Impact Industriel |
-| :--- | :--- | :--- | :--- |
-| **Topologie Antennaire** | 200 sites aléatoires, isotropes (émission en cercle) | **Grille hexagonale déterministe 3GPP (126 sites, 378 secteurs à $120^\circ$)** | Conforme aux schémas réels de déploiement macro urbain (ISD = 750m) |
-| **Spectre Fréquentiel** | 1 bande abstraite | **Double-porteuse réelle : LTE Band 3 (1.8 GHz) + 5G NR n78 (3.5 GHz)** | Prise en compte de la Carrier Aggregation et des bandes mixtes FDD/TDD |
-| **Unité d'Optimisation** | Antenne globale | **Cellule Radio Élémentaire $(s, f)$ (756 cellules logiques)** | Optimisation fine par secteur directionnel ET par fréquence |
-| **Type de Décharge** | Uniquement horizontal spatial | **Double délestage : Horizontal (spatial) + Vertical (inter-porteuses)** | Permet de basculer le trafic 3.5 GHz vers le 1.8 GHz sur le *même site* |
-| **Physique du Signal** | Affaiblissement simple $d^{-3.76}$ | **RSRP 3GPP complet : Path-loss NLOS + Diagramme de rayonnement directif** | Évaluation rigoureuse de l'angle d'azimut ($\Delta\theta$) et du lobe |
-| **Discrétisation Spatiale** | Barycentre de cellule | **Micro-grille de 400 sous-pixels par carré ($11.75\text{ m} \times 11.75\text{ m}$)** | Précision spatiale métrique de la bascule d'utilisateurs |
-| **Interface Opérateur** | Simulation isolée | **Client API CAMARA Open Gateway (Network Insights & QoD)** | Prêt pour le branchement O-RAN / Non-RT RIC |
+### Le Défi : Pourquoi les Humains n'y arrivent pas ?
+Un réseau urbain compte des centaines d'antennes interconnectées. Si l'antenne A décharge sur l'antenne B, l'antenne B risque de saturer à son tour et de devoir décharger sur C. C'est un **effet domino complexe**.  
+**WiseNet** résout ce casse-tête de manière autonome : il **prédit** les congestions futures, **simule** la physique du signal et **calcule la combinaison mathématique parfaite de tous les offsets du réseau simultanément**, en moins d'une seconde.
 
 ---
 
-## 🧠 Architecture Globale & Dualité Offline / Online
+## 📖 L'Histoire de la V1.5 : Pourquoi cette Version et Pas Directement une V2 ?
 
-La force maîtresse de WiseNet est sa **séparation stricte entre le calcul physique géométrique lourd (réalisé une seule fois, Offline)** et **la décision mathématique temps réel (exécutée en boucle fermée toutes les 30 min, Online)** :
+À la fin de la V1 (qui prouvait le concept avec 73.53% de réduction de congestion sur un modèle simplifié), une question d'ingénierie majeure s'est posée : **Que construire ensuite ?**
+
+### Le Piège du "Plan V2 Trop Ambitieux"
+Une version "V2 ultra-théorique" avait d'abord été imaginée :
+- Modéliser les micro-interférences dynamiques instantanées entre tous les téléphones.
+- Recalculer les matrices physiques du réseau à chaque cycle (15 à 25 minutes de calcul continu).
+- Déployer un solveur commercial lourd sous licence payante propriétaire (Gurobi).
+- Résoudre un problème de 12 600 variables non-linéaires.
+
+### L'Arbitrage Pragmatique : Pourquoi la V1.5 est un Choix Gagnant
+Dans le cadre de projets d'innovation et de compétitions technologiques (notamment le hackathon **GSMA + Nokia MENA Ignite 2026**), ce plan V2 présentait des défauts rédhibitoires :
+1. **Un temps de démonstration trop court :** Devant un jury ou un directeur technique, une démo dure 5 minutes. Un système qui fait patienter 20 minutes pour calculer un cycle est inutilisable.
+2. **Une barrière de licence artificielle :** Dépendre de licences privées à plusieurs milliers d'euros (Gurobi) brise l'accessibilité open-source.
+3. **Une déconnexion du monde réel :** Les opérateurs valorisent l'interopérabilité standardisée (API GSMA CAMARA) bien avant une équation d'interférence académique.
+
+> 🎯 **Le Choix WiseNet V1.5 :**  
+> *"Garder ce qui marche parfaitement (la rapidité sub-seconde, la programmation linéaire MILP, le solveur gratuit Coin-OR CBC, la boucle fermée), mais rendre le modèle radio 100% fidèle aux normes industrielles 3GPP et connecter le système aux vraies API des opérateurs télécoms."*
+
+---
+
+## 🚀 Tout ce que Nous Avons Construit dans la V1.5 (Et Pourquoi)
+
+Voici le détail chronologique et fonctionnel des avancées majeures apportées dans la V1.5 :
+
+---
+
+### Brique 1 : La Topologie Hexagonale 3GPP Tri-Secteurs
+*Fichier : [`src/topology/builder_v1_5.py`](src/topology/builder_v1_5.py)*
+
+* **Dans la V1 :** Les antennes étaient positionnées de façon aléatoire et émettaient en cercle uniforme (antenne isotrope). En réalité, aucune antenne urbaine n'émet en rond !
+* **Ce qu'on a fait en V1.5 :** Nous avons déployé une **grille hexagonale déterministe 3GPP TR 38.901** sur les $56.55\text{ km}^2$ de la ville de Milan (1 024 cellules réelles) :
+  * **126 sites macro physiques** espacés d'une distance inter-site stricte ($\text{ISD} = 750\text{ mètres}$).
+  * Chaque site est découpé en **3 secteurs directionnels de $120^\circ$** orientés précisément à $0^\circ$ (Nord), $120^\circ$ (Sud-Est) et $240^\circ$ (Sud-Ouest), comme 3 parts de pizza couvrant l'espace.
+* **Pourquoi ce choix ?** Cela reproduit fidèlement la géométrie réelle du réseau déployé par un opérateur comme Telecom Italia (TIM) en milieu urbain dense.
+
+---
+
+### Brique 2 : Le Spectre Double-Porteuse & L'Unité $(s, f)$
+*Fichier : [`src/topology/builder_v1_5.py`](src/topology/builder_v1_5.py)*
+
+* **Le Constat Réel :** Un pylône de télécommunication n'a pas une seule fréquence magique. Il superpose plusieurs couches fréquentielles.
+* **Ce qu'on a fait en V1.5 :** Nous avons injecté les licences spectrales officielles de l'opérateur TIM Italie :
+  1. **Porteuse $F_1$ (LTE Band 3 - 1.8 GHz FDD, 20 MHz) :** La bande d'ancrage, qui porte loin et traverse bien les murs, avec une capacité nominale de **$6\,600.8\text{ Mo} / 30\text{ min}$**.
+  2. **Porteuse $F_2$ (5G NR n78 - 3.5 GHz TDD, 80 MHz) :** La bande ultra-capacitaire haut débit, avec une capacité massive de **$32\,580.2\text{ Mo} / 30\text{ min}$**.
+* **L'Unité Élémentaire $(s, f)$ :**  
+  Chaque site physique comporte $3\text{ secteurs} \times 2\text{ porteuses} = \mathbf{6\text{ cellules radio logiques distinctes}}$.  
+  Sur les 126 sites du réseau de Milan, cela crée **756 cellules radio $(s, f)$ indépendantes**.
+* **Pourquoi ce choix ?** La saturation ne frappe jamais un pylône entier en bloc : elle touche par exemple la fréquence 3.5 GHz du secteur Nord pendant un match. Optimiser par couple $(s, f)$ est la seule manière d'obtenir un contrôle de niveau chirurgical.
+
+---
+
+### Brique 3 : La Simulation Spatiale Micro-Grille & le RSRP Directif
+*Fichier : [`src/spatial/simulator_v1_5.py`](src/spatial/simulator_v1_5.py)*
+
+* **Le Problème de la Donnée Milan :** Le jeu de données de Milan fournit le trafic global sur des carrés de $235\text{ m} \times 235\text{ m}$. Si on traite ce carré comme un point unique, on perd toute la finesse de ce qui se passe à ses bords.
+* **Ce qu'on a fait en V1.5 :**
+  1. **Micro-discrétisation :** Chaque carré de $235\text{m}$ est découpé en une grille de **$20 \times 20 = 400\text{ sous-pixels}$** de $11.75\text{ m} \times 11.75\text{ m}$ chacun.
+  2. **Calcul RSRP 3GPP conforme aux normes :** Pour chaque sous-pixel, nous calculons la puissance reçue selon la formule officielle :
+     $$\text{RSRP} = P_{\text{tx}} - \text{PathLoss}(d, f) + G(\Delta\theta)$$
+     où $G(\Delta\theta) = -\min[12 \cdot (\Delta\theta / 65^\circ)^2, 30\text{ dB}]$ est le gain d'antenne directive selon l'écart angulaire avec l'axe du secteur.
+* **Pourquoi ce choix ?** Un utilisateur situé exactement dans l'axe d'un secteur reçoit un signal puissant, alors qu'à même distance mais sur le côté, le signal chute de 15 à 30 dB. Prendre en compte l'azimut $\Delta\theta$ est indispensable pour ne pas faire basculer des utilisateurs dans le vide.
+
+---
+
+### Brique 4 : Le Double Délestage (Horizontal vs Vertical)
+*Fichiers : [`src/spatial/simulator_v1_5.py`](src/spatial/simulator_v1_5.py) & [`src/optimization/milp_engine_v1_5.py`](src/optimization/milp_engine_v1_5.py)*
+
+Raisonner au niveau $(s, f)$ a permis de débloquer une capacité d'optimisation inédite en deux dimensions :
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                          1. PHASE HORS-LIGNE (OFFLINE)                      │
-│             Calculé UNE FOIS pour la topologie (Indépendant du trafic)      │
-└─────────────────────────────────────────────────────────────────────────────┘
-          │
-          ├─► Topologie 3GPP (126 sites, 378 secteurs, 756 cellules s,f)
-          ├─► Discrétisation de la grille de Milan en 409 600 micro-pixels (400 / carré)
-          ├─► Calcul des champs RSRP 3GPP : P_tx - PL(d,f) + G(Δθ)
-          └─► Évaluation des transitions d'offsets (δ ∈ [0.0; 3.0] dB)
-                   │
-                   ▼
-          [Tenseurs de Fractions de Transfert Massiques H] (Conservatifs)
+                        ┌──────────────────────────────────────────────┐
+                        │      DÉLESTAGE VERTICAL (INTER-BANDES)       │
+                        │ Bascule 3.5 GHz -> 1.8 GHz sur le MÊME SITE  │
+                        └──────────────────────┬───────────────────────┘
+                                               │
+                                               ▼
++------------------------------------+                   +------------------------------------+
+|         SITE 1 - SECTEUR 0         |                   |         SITE 2 - SECTEUR 2         |
+| Porteuse F2 (3.5 GHz) [Saturée]    |                   |                                    |
+|              ▲                     |   DÉLESTAGE       |                                    |
+|  (Vertical)  │                     |  HORIZONTAL       |                                    |
+|              ▼                     | (Inter-Secteurs)  |                                    |
+| Porteuse F1 (1.8 GHz) [Capacité]   | ════════════════► | Porteuse F1 (1.8 GHz) [Disponible] |
++------------------------------------+                   +------------------------------------+
+```
 
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                          2. PHASE EN LIGNE (ONLINE)                         │
-│               Exécutée à chaque cycle opérationnel de 30 minutes            │
-└─────────────────────────────────────────────────────────────────────────────┘
-  Données Réelles de Trafic (Milan) ou Télémétrie CAMARA Network Insights
-          │
-          ▼
-  [Brique ML - XGBoost Quantile q80]
-  Prédiction prudente : "Quel est le pire scénario raisonnable à t+1 ?"
-          │
-          ▼
-  [Instanciation Dynamique des Volumes H]
-  Volume(s, f, δ) = Trafic Prédit × Fraction Hors-Ligne
-          │
-          ▼
-  [Solveur MILP - Pyomo + Coin-OR CBC]
-  Résolution globale en ~0.74 seconde sur 756 cellules
-  Choix optimal des offsets z_{s, f, k} minimisant la congestion résiduelle
-          │
-          ▼
-  [Action Réseau & Bouclage Fermé]
-  Application des offsets + Monitoring de dérive statistique (Page-Hinkley)
+1. **Délestage Horizontal (Spatial) :** Les utilisateurs situés en bordure géographique d'un secteur basculent vers le secteur voisin (sur le même site ou un site adjacent).
+2. **Délestage Vertical (Fréquentiel) :** Si la porteuse 5G (3.5 GHz) est saturée alors que la 4G (1.8 GHz) du **même secteur physique** a de la marge, les utilisateurs basculent de fréquence **sans même changer d'antenne géographique** !
+
+---
+
+### Brique 5 : La Séparation Révolutionnaire Offline / Online
+*Fichier : [`src/spatial/simulator_v1_5.py`](src/spatial/simulator_v1_5.py)*
+
+* **Pourquoi le calcul radio est-il lent d'ordinaire ?** Parce que calculer la propagation radio sur 409 600 sous-pixels pour 756 cellules et 7 niveaux d'offset demande des dizaines de millions d'opérations trigonométriques.
+* **Le Coup de Génie Architectural :**  
+  La position des immeubles et des antennes ne bouge pas toutes les 30 minutes !  
+  Nous avons donc calculé les fractions de transfert **une seule fois pour toutes en mode Offline** et sauvegardé les tenseurs massiques normalisés (`fractions_v1_5.parquet`).
+* **En Mode Online (Temps Réel) :**  
+  À chaque créneau de 30 minutes, il suffit de multiplier ces fractions précalculées par le volume de trafic prédit pour obtenir instantanément les matrices de délestage $H$. Ce calcul prend **moins de 0.05 seconde** !
+
+---
+
+### Brique 6 : Le Cerveau Décisionnel MILP Exact (< 0.8s)
+*Fichier : [`src/optimization/milp_engine_v1_5.py`](src/optimization/milp_engine_v1_5.py)*
+
+* **Pyomo + Coin-OR CBC :**  
+  Pyomo formule le problème sous forme linéaire et le solveur open-source **CBC** (gratuit, sans clé de licence restrictive) le résout.
+* **Pourquoi le MILP écrase les algorithmes gloutons ("Greedy") ?**  
+  Une règle gloutonne raisonne antenne par antenne de façon égoïste : *"je suis saturé, je déverse tout sur ma voisine de droite"*. Mais si la voisine de droite s'apprête elle aussi à saturer, l'heuristique crée une catastrophe en cascade.  
+  Le MILP, lui, regarde **les 756 cellules en un seul bloc matriciel** et trouve l'optimum global qui maximise le bien-être de l'ensemble du réseau.
+* **Temps d'exécution mesuré :** **$0.74\text{ seconde}$** pour résoudre 5 292 variables binaires sous contrainte stricte de conservation de la masse.
+
+---
+
+### Brique 7 : La Boucle Fermée Prédictive 24h & ML Quantile $q_{80}$
+*Fichier : [`src/simulation/closed_loop_v1_5.py`](src/simulation/closed_loop_v1_5.py)*
+
+* **Dans la réalité, on ne connaît pas le futur :** Décider à $t$ pour la période $t+1$ nécessite d'anticiper le trafic.
+* **XGBoost Quantile $q_{80}$ :**  
+  Prédire une moyenne est une erreur en télécom : si vous sous-estimez le pic, le réseau s'effondre. Nous entraînons un modèle XGBoost sur le **quantile 80%**. C'est un choix d'ingénierie volontairement prudent : *"préparons le réseau au niveau de charge du pire cas raisonnable"*.
+* **Validation Continue sur 24 Heures :**  
+  Nous avons simulé une journée entière (48 créneaux de 30 minutes consécutifs) sur le jeu de données réel de Milan (**43.57 Terabytes de données transitées**). Le système prend ses décisions sur la prédiction ML, puis ces décisions sont confrontées à la vérité terrain mesurée.
+* **Résultat :** Le système capture **98.7% de l'efficacité d'un Oracle théorique parfait** (qui connaîtrait l'avenir par magie).
+
+---
+
+### Brique 8 : L'Interface Industrielle CAMARA Open Gateway
+*Fichier : [`src/camara/client.py`](src/camara/client.py)*
+
+Pour que WiseNet ne reste pas un simulateur de laboratoire mais s'insère dans l'architecture télécom standardisée mondiale (initiative **GSMA Open Gateway** / **O-RAN Non-RT RIC**) :
+1. **API CAMARA Network Insights :** Permet à WiseNet d'ingérer le trafic et la télémétrie de n'importe quel opérateur compatible via des requêtes REST JSON standardisées.
+2. **API CAMARA Quality on Demand (QoD) :** Agit comme un **filet de sécurité**. Si, même après l'optimisation mathématique globale, un résidu microscopique de congestion persiste dans une cellule, WiseNet déclenche une session QoD prioritaire pour garantir la bande passante des services d'urgence ou critiques.
+3. **Connecteur universel :** Fonctionne avec authentification OAuth2 `client_credentials`, avec bascule instantanée entre Sandbox réel et Mock haute-fidélité.
+
+---
+
+## 📐 Le Pipeline de Bout en Bout en un Schéma
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 1. PHASE HORS-LIGNE (OFFLINE)                           │
+│                       Calculé 1 seule fois à la configuration du réseau                 │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+                                             │
+      ┌──────────────────────────────────────┴──────────────────────────────────────┐
+      ▼                                                                             ▼
+[Topologie Hexagonale 3GPP]                                              [Grille de Milan 1024]
+126 sites x 3 secteurs x 2 porteuses                                     400 micro-pixels par carré
+= 756 cellules radio logiques (s, f)                                     Résolution spatiale : 11.75 m
+      │                                                                             │
+      └──────────────────────────────────────┬──────────────────────────────────────┘
+                                             ▼
+                          [Simulation RSRP Directif 3GPP]
+                         P_tx - PL(d,f) + G(Δθ) sur 400 pts
+                                             │
+                                             ▼
+                     [Matrices de Fractions Précalculées H]
+                      Fractions délestées / reçues conservées
+                      (Sauvegardées dans fractions_v1_5.parquet)
+
+═══════════════════════════════════════════════════════════════════════════════════════════
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 2. PHASE EN LIGNE (ONLINE)                              │
+│                         Exécutée en boucle fermée toutes les 30 minutes                 │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+                                             │
+                                             ▼
+                      [Télémétrie Télécom Italia / CAMARA Insights]
+                           Trafic historique récent observé
+                                             │
+                                             ▼
+                          [Modèle Prédictif XGBoost Quantile q80]
+                         Prédiction prudente du trafic futur à t+1
+                                             │
+                                             ▼
+                        [Instanciation Dynamique des Volumes H]
+                         Volume H = Fractions Offline x Trafic Prédit
+                                             │
+                                             ▼
+                       [Cerveau Mathématique MILP (Pyomo + CBC)]
+                       Optimisation globale exacte sur 756 cellules
+                       Temps de résolution : 0.74 seconde (< 1s)
+                                             │
+                                             ▼
+                      [Application des Décisions d'Offsets (0 à 3 dB)]
+                     Délestage Horizontal (spatial) + Vertical (bande)
+                                             │
+                                             ▼
+                   [Vérification Terrain & Filet de Sécurité CAMARA QoD]
+                   Mesure de la charge réelle + sessions QoD résiduelles
+                                             │
+                                             ▼
+                           [Prochain Cycle (Boucle Continue)]
 ```
 
 ---
 
-## 📐 Modélisation Physique 3GPP & Calcul du RSRP
+## 📊 Les Preuves Scientifiques : Résultats Mesurés sur les Données de Milan
 
-Pour chaque sous-pixel $k$ à la position $(x_k, y_k)$ et chaque cellule radio élémentaire $(s, f)$ :
+Toutes les mesures sont reproductibles via les scripts du dépôt et s'appuient sur le jeu de données réel **Telecom Italia Big Data Challenge** (`work_1024cells.parquet`).
 
-### 1. Affaiblissement de Parcours (3GPP UMi NLOS)
-$$\text{PL}(d_k, f) = 32.4 + 36.7 \cdot \log_{10}(\max(d_k, 5.0)) + 20 \cdot \log_{10}(f_{\text{GHz}})$$
+### 1. Au Pic Maximal de Congestion (Créneau de 30 min - $1.38\text{ To}$ de trafic)
+*Exécution : `python -m src.benchmark.benchmark_v1_5`*
 
-### 2. Diagramme de Rayonnement Directif du Secteur
-Pour un secteur d'azimut $\theta_s$ ($0^\circ, 120^\circ, 240^\circ$) et un angle utilisateur $\theta_k$ :
-$$\Delta\theta_{k, s} = |\theta_k - \theta_s| \pmod{360^\circ}$$
-$$G(\Delta\theta) = -\min \left[ 12 \left( \frac{\Delta\theta}{65^\circ} \right)^2, \; 30.0\text{ dB} \right]$$
-
-### 3. Puissance Reçue Finale (RSRP)
-$$\text{RSRP}(k, s, f) = P_{\text{tx}}(f) - \text{PL}(d_k, f) + G(\Delta\theta_{k, s})$$
-
-### 4. Capacité Shannon Réaliste par Porteuse
-Calculée sur la fenêtre de 30 minutes ($1\,800\text{ s}$) avec une efficacité spectrale $\eta_{\text{spec}} = 0.60$ et un facteur d'utilisation $\mu = 0.60$ :
-
-$$C_{s, f} = \frac{B_f \cdot \log_2\left(1 + 10^{\frac{\text{SINR}_f}{10}}\right) \cdot \eta_{\text{spec}} \cdot \mu \cdot 1800}{8 \times 10^6} \quad [\text{Mo / 30 min}]$$
-
-* **Porteuse $F_1$ (1.8 GHz LTE - Ancrage Couverture)** : Bande $20\text{ MHz}$, $P_{\text{tx}} = 43\text{ dBm}$ ($20\text{ W}$), $\text{SINR} = 12\text{ dB} \implies \mathbf{6\,600.8\text{ Mo / 30 min}}$.
-* **Porteuse $F_2$ (3.5 GHz 5G NR - Couche Capacitaire)** : Bande $80\text{ MHz}$, $P_{\text{tx}} = 43\text{ dBm}$ eff., $\text{SINR} = 15\text{ dB} \implies \mathbf{32\,580.2\text{ Mo / 30 min}}$.
-
----
-
-## ⚙️ Le Cerveau Décisionnel : Formulation MILP $(s, f)$
-
-L'optimisation globale ne se fait ni par antenne globale, ni par fréquence seule, mais au niveau du **couple indissociable $(s, f)$**.
-
-### Variables de Décision
-* $z_{c, k} \in \{0, 1\}$ : Variable binaire activant le niveau d'offset $k \in \{0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0\}\text{ dB}$ pour la cellule radio $c = (s, f)$.
-* $e_c \ge 0$ : Variable continue d'écart représentant le surplus de trafic insatisfait (congestion) sur la cellule $c$.
-
-### Fonction Objectif Globale
-Minimiser la congestion résiduelle totale cumulée sur **l'ensemble des secteurs ET des porteuses** du réseau :
-
-$$\min \sum_{c \in \mathcal{C}} e_c \quad \text{avec } \mathcal{C} = \{ (s, f) \mid s \in \text{Secteurs}, f \in \{F_1, F_2\} \}$$
-
-### Contraintes Mathématiques Fondamentales
-1. **Unicité de la Décision :**
-   $$\sum_{k \in \mathcal{K}} z_{c, k} = 1, \quad \forall c \in \mathcal{C}$$
-
-2. **Bilan de Charge & Conservation Exacte de la Masse :**
-   Le volume final sur une cellule $c$ après délestage doit satisfaire :
-   $$e_c \ge V_c^{\text{initial}} - \sum_{k \in \mathcal{K}} H_{c, k}^{\text{offload}} z_{c, k} + \sum_{c' \in \mathcal{C}} \sum_{k \in \mathcal{K}} H_{c, c', k}^{\text{recv}} z_{c', k} - C_c, \quad \forall c \in \mathcal{C}$$
-
-> 💡 **Le Double Délestage Activé :**
-> - **Délestage Horizontal :** Une cellule $(s_1, F_1)$ saturée déverse vers $(s_2, F_1)$ sur la même fréquence en bordure spatiale.
-> - **Délestage Vertical :** Une cellule $(s_1, F_2)$ saturée déverse directement vers $(s_1, F_1)$ sur le **même secteur physique**, exploitant la flexibilité fréquentielle sans aucun déplacement géographique.
-
----
-
-## 📊 Résultats Scientifiques & Benchmarks Vérifiables
-
-Toutes les évaluations sont exécutées sur les données réelles du **Telecom Italia Big Data Challenge** (bloc dense de **1 024 cellules** de Milan, $56.55\text{ km}^2$, fichier vérifié `work_1024cells.parquet`).
-
-### 1. Benchmark au Pic de Trafic (Slot 30 min - $1.38\text{ To}$ de demande)
-*Fichier de test : [`src/benchmark/benchmark_v1_5.py`](src/benchmark/benchmark_v1_5.py)*
-
-| Politique de Décision | Trafic Insatisfait (Mo) | Équivalent (Go) | Réduction Congestion | Temps de Résolution |
+| Stratégie Testée | Trafic Perdu / Congestionné | Équivalent Go | Gain vs Réseau Figé | Temps de Calcul |
 | :--- | :---: | :---: | :---: | :---: |
-| **Base Statique** ($\delta = 0\text{ dB}$) | 314 331.7 Mo | 306.96 Go | Référence (0.0 %) | 0.00 s |
-| **Heuristique Gloutonne** (Local Heuristic) | 269 055.3 Mo | 262.75 Go | 14.40 % | 0.01 s |
-| **WiseNet V1.5 MILP** (Global Exact $(s, f)$) | **260 686.1 Mo** | **254.58 Go** | **17.07 %** | **0.74 s** |
+| **Réseau Statique (Figé)** ($\delta = 0\text{ dB}$) | 314 331.7 Mo | 306.96 Go | Référence (0.0 %) | 0.00 s |
+| **Heuristique Gloutonne** (Locale, cellule par cellule) | 269 055.3 Mo | 262.75 Go | 14.40 % | 0.01 s |
+| **WiseNet V1.5 MILP** (Optimisation Globale Exacte) | **260 686.1 Mo** | **254.58 Go** | **17.07 %** | **0.74 s** |
 
-*Gain net du MILP sur le glouton : **+8 369.2 Mo (+8.37 Go)** de trafic supplémentaire délivré en un seul créneau.*
-
----
-
-### 2. Évaluation Continue sur 24 Heures (48 Slots Consécutifs - $43.57\text{ To}$ de trafic réel)
-*Fichier de test : [`src/benchmark/benchmark_24h_v1_5.py`](src/benchmark/benchmark_24h_v1_5.py)*
-
-| Politique de Gestion | Volume Insatisfait 24h (Mo) | Volume Insatisfait (Go) | Réduction Congestion 24h | Temps Moyen / Slot |
-| :--- | :---: | :---: | :---: | :---: |
-| **Base Statique** ($\delta = 0\text{ dB}$) | 5 194 316.4 Mo | 5 072.57 Go | Référence (0.0 %) | 0.000 s |
-| **Heuristique Gloutonne** (Locale) | 3 945 312.0 Mo | 3 852.84 Go | 24.05 % | 0.012 s |
-| **WiseNet V1.5 MILP** (Global Multi-Porteuse) | **3 759 094.1 Mo** | **3 670.99 Go** | **27.63 %** | **0.576 s** |
+*Résultat : Le MILP sauve **+8 369.2 Mo (+8.37 Go)** de données supplémentaires par rapport au glouton en un seul créneau.*
 
 ---
 
-### 3. Boucle Fermée Prédictive Complète (XGBoost Quantile $q_{80}$ + MILP)
-*Fichier de test : [`src/simulation/closed_loop_v1_5.py`](src/simulation/closed_loop_v1_5.py)*  
-Évaluation en conditions réelles d'incertitude : les décisions à $t$ sont prises uniquement d'après la prédiction $\hat{V}(t+1) = \text{XGBoost}_{q80}(X(t))$ et appliquées strictement sur le ground-truth réel du réseau :
+### 2. Évaluation sur une Journée Complète de 24 Heures (48 Créneaux - $43.57\text{ To}$ de trafic)
+*Exécution : `python -m src.benchmark.benchmark_24h_v1_5`*
 
-| Stratégie en Boucle Fermée | Volume Réel Insatisfait (Mo) | Gain Réel vs Statique | Capture de l'Oracle Idéal |
+| Stratégie Opérationnelle | Saturation Cumulée 24h (Go) | Réduction de Congestion | Temps Moyen par Cycle |
 | :--- | :---: | :---: | :---: |
-| **Base Statique** (Aucun contrôle) | 5 237 032.6 Mo | — | — |
-| **Glouton Prédictif** (ML $\to$ Glouton) | 4 027 345.0 Mo | 23.10 % | 86.0 % |
-| **WiseNet MILP Prédictif** (ML $\to$ MILP) | **3 900 818.1 Mo** | **25.51 %** | **98.7 %** |
-| **Oracle Clairvoyant** (Théorique maximum avec futur parfait) | 3 831 104.0 Mo | 26.85 % | 100.0 % |
-
-#### 🔑 Découvertes Clés
-1. **+123.56 Go d'information sauvée** : Sous incertitude ML, le MILP délivre **126 526.9 Mo (+123.56 Go)** de trafic de plus que l'approche gloutonne sur 24 heures.
-2. **Efficacité Oracle de 98.7%** : L'utilisation de la régression quantile ($q_{80}$) absorbe les micro-variations de trafic et permet au MILP d'égaler presque la perfection théorique d'un oracle connaissant le futur.
-3. **Résolution ultra-rapide (0.57s)** : Le problème sur 756 cellules et 5 292 variables binaires est résolu en une fraction de seconde avec le solveur open-source CBC, s'insérant parfaitement dans le budget opérationnel de 30 minutes.
+| **Réseau Statique** (Non géré) | 5 072.57 Go (~5.07 To) | Référence | — |
+| **Heuristique Gloutonne** (Local) | 3 852.84 Go | 24.05 % | 0.012 s |
+| **WiseNet V1.5 MILP** (Multi-Porteuses) | **3 670.99 Go** | **27.63 %** | **0.576 s** |
 
 ---
 
-## 🌐 Agnosticisme 4G/5G & Intégration CAMARA Open Gateway
+### 3. Boucle Fermée Prédictive (Incertitude ML Réelle sur 24h)
+*Exécution : `python -m src.simulation.closed_loop_v1_5`*
 
-### Agnosticisme Technologique
-Le moteur WiseNet est nativement **indépendant de la technologie sous-jacente (4G ou 5G)** :
-* En 4G (LTE, TS 36.331) comme en 5G (NR, TS 38.331), le mécanisme de handover repose sur la même mesure normalisée (**RSRP**) et le même déclencheur (**Événement A3**).
-* L'architecture multi-secteurs et multi-porteuses modélise fidèlement un site d'antennes moderne (**eNodeB / gNodeB**).
-
-### Intégration Standardisée CAMARA Open Gateway (GSMA)
-WiseNet s'interface avec les API réseaux standardisées de l'industrie :
+Dans ce test ultime, le solveur ne triche pas : il ne voit pas les données futures et optimise uniquement sur ce que le modèle XGBoost $q_{80}$ lui prédit :
 
 ```
-                          ┌──────────────────────────┐
-                          │   CAMARA Open Gateway    │
-                          └─────────────┬────────────┘
-                                        │
-                 ┌──────────────────────┴──────────────────────┐
-                 ▼                                             ▼
-     [API Network Insights]                         [API Quality on Demand]
-     Lecture télémétrique temps réel                Filet de sécurité résiduel
-     (Charge cellules, latence, débit)              (Priorisation de flux critique)
-                 │                                             ▲
-                 ▼                                             │
-      WiseNet Prédiction ML                         Surplus résiduel non absorbé
-                 │                                             │
-                 └──────────────► WiseNet MILP ────────────────┘
+EFFICACITÉ RELATIVE PAR RAPPORT À L'ORACLE CLAIRVOYANT IDÉAL (100%) :
+Oracle Théorique Parfait  [████████████████████████████████████████] 100.0% (Plafond théorique)
+WiseNet MILP Prédictif    [███████████████████████████████████████ ]  98.7% (Capture quasi-parfaite !)
+Heuristique Gloutonne     [██──────────────────────────────────────]  86.0% (Pertes d'opportunités)
 ```
 
-1. **CAMARA Network Insights** : Permet de lire l'état du trafic en temps réel pour alimenter le modèle de prédiction ML.
-2. **CAMARA Quality on Demand (QoD)** : Sert de filet de sécurité activé pour les flux prioritaires résiduels si une cellule reste saturée même après l'optimisation par offset.
-3. **Connecteur Python Intégré** : Implémenté dans [`src/camara/client.py`](src/camara/client.py) avec support OAuth2 Client Credentials et bascule transparente Sandbox / Mock.
+* **+123.56 Go d'information délivrée en plus** par rapport à l'heuristique prédictive.
+* **Conservation stricte de la masse** vérifiée mathématiquement à $10^{-6}$ près : aucun mégaoctet n'est détruit ou créé par erreur.
 
 ---
 
-## 🛡️ Cas des Utilisateurs & Robustesse aux Frontières
+## 🛡️ Pourquoi les Utilisateurs ne Subissent Jamais de Dégradation ?
 
-> **Question légitime :** *Si les utilisateurs d'une cellule consomment des volumes de données différents, le système risque-t-il de dégrader la connexion de certains d'entre eux ?*
+Une inquiétude fréquente est : *"Si un utilisateur consomme beaucoup de données au milieu de la cellule, le système va-t-il le forcer à basculer et détruire sa connexion ?"*
 
-La réponse physique et algorithmique est **non**, pour trois raisons structurelles :
-
-1. **La granularité spatiale fine :** Une cellule de Milan mesure $235\text{ m} \times 235\text{ m}$ (quelques pâtés de maisons). La variance interne est négligeable par rapport aux écarts inter-cellules, et notre discrétisation en **400 sous-pixels de $11.75\text{ m}$** isole précisément la localisation de chaque utilisateur.
-2. **Le RSRP est une grandeur purement physique :** Le calcul de qualité du signal dépend de la distance, de la fréquence et de l'angle d'azimut. **Il ne dépend pas de la charge de l'antenne**. Aucun utilisateur ne peut être basculé vers une antenne dont le signal radio est physiquement médiocre.
-3. **Seuls les utilisateurs de bordure sont concernés :** Les utilisateurs situés au centre de leur cellule reçoivent un signal prépondérant : aucun offset raisonnable ($\le 3\text{ dB}$) ne peut les faire basculer. Seuls les utilisateurs situés dans la zone de chevauchement où deux signaux sont quasi-équivalents sont migrés, garantissant une transition imperceptible et sans coupure.
+La conception de WiseNet apporte une **garantie physique absolue** en trois points :
+1. **La qualité radio est purement physique :** Le RSRP dépend de la distance et de l'angle directif du secteur. Il ne dépend pas de la charge de l'antenne. Le système ne peut jamais prétendre qu'un mauvais signal est bon.
+2. **Le centre de cellule est protégé :** Un smartphone proche de son antenne reçoit un signal très fort (ex. $-75\text{ dBm}$). L'antenne voisine arrive à $-105\text{ dBm}$. Un offset maximal de $3\text{ dB}$ ne comblera jamais un écart de $30\text{ dB}$. Ces utilisateurs ne basculent **jamais**.
+3. **Seule la frange frontière bascule :** Seuls les utilisateurs situés là où les signaux des deux antennes sont presque égaux (écart $< 3\text{ dB}$) sont invités à changer. Pour eux, le changement est totalement transparent et imperceptible.
 
 ---
 
-## 🚀 Démarrage Rapide & Reproductibilité
+## ⚡ Démarrage Rapide & Commandes de Reproduction
 
-### 1. Installation de l'Environnement
+### 1. Installation en 2 Minutes
 
 ```bash
-# Cloner le dépôt
+# Cloner le projet
 git clone https://github.com/samya818/spatial-son-milp.git
 cd spatial-son-milp
 
-# Créer et activer l'environnement virtuel
+# Créer l'environnement virtuel Python
 python -m venv .venv
 
-# Windows (PowerShell) :
+# Activer l'environnement :
+# Sur Windows :
 .\.venv\Scripts\activate
-# Linux / macOS :
+# Sur Linux / macOS :
 source .venv/bin/activate
 
 # Installer les dépendances
 pip install -r requirements.txt
 ```
 
-### 2. Exécuter les Benchmarks V1.5 en Ligne de Commande
+### 2. Reproduire les Benchmarks V1.5 Immédiatement
 
 ```bash
-# 1. Benchmark au Pic de Charge (Slot 30-min sur 1024 cellules)
+# Lancer le benchmark officiel au pic de charge (0.74s)
 python -m src.benchmark.benchmark_v1_5
 
-# 2. Benchmark Complet 24 Heures (48 slots continus)
+# Lancer le benchmark complet sur 24 heures (48 slots)
 python -m src.benchmark.benchmark_24h_v1_5
 
-# 3. Simulation Boucle Fermée Prédictive (ML XGBoost q80 + MILP)
+# Lancer la boucle fermée prédictive complète (ML + MILP)
 python -m src.simulation.closed_loop_v1_5
 ```
 
-### 3. Explorer le Notebook de Recherche Interactif V1.5
+### 3. Explorer le Cahier de Recherche Interactif V1.5
 
 ```bash
-# Lancer Jupyter Notebook pour explorer les 5 phases de validation
+# Ouvrir le notebook pas-à-pas avec visualisations graphiques
 jupyter notebook research/notebooks_v1_5/pipeline_v1_5.ipynb
 ```
 
-### 4. Lancer le Tableau de Bord Interactif
+### 4. Lancer le Tableau de Bord Visuel
 
 ```bash
 python -m streamlit run scripts/dashboard/app.py
 ```
-Accédez à l'interface via votre navigateur sur `http://localhost:8501`.
+Ouvrez votre navigateur sur `http://localhost:8501`.
 
 ---
 
-## 🗂️ Arborescence du Dépôt
+## 🗂️ Organisation Détaillée du Code
+
+L'arborescence du projet a été pensée pour faire cohabiter l'historique V1 et la nouvelle architecture V1.5 en toute clarté :
 
 ```text
 spatial-son-milp/
 ├── docs/                                   # DOCUMENTATION & RAPPORTS
-│   ├── README_v1.md                        # 📄 README original archivé de la v1.0
-│   ├── Rapport_WiseNet_Projet_Explique.html # 📘 Guide explicatif de A à Z (HTML interactif)
-│   ├── WiseNet_V1_5_Scientific_Report.html # 🔬 Rapport scientifique officiel V1.5 (HTML)
-│   ├── WiseNet_V1_5_Scientific_Report.md   # 📝 Rapport scientifique V1.5 (Markdown)
-│   └── make_v1_5_html.py                   # Script de génération du rapport HTML
-├── src/                                    # CODE SOURCE DE PRODUCTION
+│   ├── README_v1.md                        # 📄 README d'origine de la v1.0 (sauvegardé)
+│   ├── Rapport_WiseNet_Projet_Explique.html # 📘 Guide explicatif illustré de A à Z (HTML)
+│   ├── WiseNet_V1_5_Scientific_Report.html # 🔬 Rapport scientifique V1.5 complet (HTML)
+│   └── WiseNet_V1_5_Scientific_Report.md   # 📝 Version Markdown pour consultation GitHub
+│
+├── src/                                    # CODE SOURCE EN PRODUCTION
 │   ├── topology/
-│   │   ├── builder.py                      # Topologie v1.0 (antennes isotropes)
-│   │   └── builder_v1_5.py                 # ⭐ Topologie v1.5 (Hexagonale 3GPP, 3 secteurs, double-porteuse)
+│   │   ├── builder.py                      # Topologie v1.0 isotrope
+│   │   └── builder_v1_5.py                 # ⭐ Topologie v1.5 (Hexagonale 3GPP, tri-secteurs, TIM 1.8/3.5GHz)
 │   ├── spatial/
 │   │   ├── simulator.py                    # Simulateur spatial v1.0
-│   │   └── simulator_v1_5.py               # ⭐ Simulateur v1.5 (Micro-grilles, RSRP directif, tenseur H)
+│   │   └── simulator_v1_5.py               # ⭐ Simulateur v1.5 (Micro-grilles 400 pts, RSRP directif, tenseur H)
 │   ├── optimization/
-│   │   ├── milp_engine.py                  # Moteur MILP v1.0
-│   │   ├── milp_engine_v1_5.py             # ⭐ Moteur MILP v1.5 (Pyomo, variables (s,f), Coin-OR CBC)
+│   │   ├── milp_engine.py                  # Solveur v1.0
+│   │   ├── milp_engine_v1_5.py             # ⭐ Cerveau MILP v1.5 (Pyomo, variables (s,f), Coin-OR CBC)
 │   │   └── greedy_engine_v1_5.py           # Heuristique gloutonne conservatrice de référence
 │   ├── simulation/
 │   │   ├── closed_loop_sim.py              # Boucle fermée v1.0
-│   │   └── closed_loop_v1_5.py             # ⭐ Boucle fermée v1.5 (ML XGBoost q80 + MILP sur 24h)
+│   │   └── closed_loop_v1_5.py             # ⭐ Boucle prédictive v1.5 (XGBoost q80 + MILP sur 24h)
 │   ├── benchmark/
-│   │   ├── benchmark_v1_5.py               # Benchmark au pic de charge (1.38 To)
-│   │   └── benchmark_24h_v1_5.py           # Benchmark sur 24 heures (48 slots, 43.57 To)
+│   │   ├── benchmark_v1_5.py               # Script benchmark pic 30 min
+│   │   └── benchmark_24h_v1_5.py           # Script benchmark continu 24h
 │   └── camara/
-│       └── client.py                       # ⭐ Client API CAMARA Open Gateway (Network Insights & QoD)
+│       └── client.py                       # ⭐ Client API CAMARA GSMA (Network Insights & QoD)
+│
 ├── research/
 │   ├── notebooks_v1_5/
-│   │   └── pipeline_v1_5.ipynb             # 📓 Cahier de recherche v1.5 (démonstration pas-à-pas)
-│   └── notebooks/                          # Notebooks originaux v1.0 (phases 01 à 15)
+│   │   └── pipeline_v1_5.ipynb             # 📓 Cahier de recherche reproductible v1.5
+│   └── notebooks/                          # Notebooks exploratoires d'origine (v1.0)
+│
 ├── scripts/
 │   └── dashboard/                          # Application Streamlit interactive
-├── tests/                                  # Tests unitaires et d'intégrité massique
-├── check_environment.py                    # Vérificateur de solveur CBC et de dépendances
-├── requirements.txt                        # Dépendances de production
-└── LICENSE                                 # Licence Open-Source MIT
+├── tests/                                  # Tests de non-régression et de conservation de masse
+├── check_environment.py                    # Script de vérification de l'environnement et du solveur
+└── requirements.txt                        # Liste des bibliothèques nécessaires
 ```
 
 ---
 
-## 👥 Auteurs & Références
+## 👥 Crédits & Remerciements
 
-### Équipe du Projet
-* **Loukili Samya** — Conception algorithmique, modélisation MILP et intégration CAMARA.
-* **Kenza El Khaniri** — Pipeline de données spatio-temporelles et modélisation radio.
-* Projet encadré par **M. Toufik Massrour** (ENSAM Meknès).
+* **Loukili Samya** — Architecte du projet, modélisation mathématique MILP, pipeline 3GPP et intégration CAMARA.
+* **Kenza El Khaniri** — Ingestion des séries temporelles, analyse spatiale et modélisation radio.
+* Sous la direction académique et la supervision de **M. Toufik Massrour** (ENSAM Meknès).
 
-### Références Normalisées & Scientifiques
-* **3GPP TR 38.901** : *Study on channel model for frequencies from 0.5 to 100 GHz (Urban Macro / Urban Micro).*
-* **3GPP TS 36.331 / TS 38.331** : *Radio Resource Control (RRC) Protocol Specification — Event A3 Handover Configuration.*
-* **GSMA Open Gateway & CAMARA Project** : *Network Insights API & Quality on Demand (QoD) API Specifications (2025/2026).*
-* **Telecom Italia Big Data Challenge (2015)** : *Open Spatio-temporal cellular network dataset of the city of Milan.*
+### Références Normalisées
+* **3GPP TR 38.901** : *Channel model for frequencies from 0.5 to 100 GHz (Urban Macro specifications).*
+* **3GPP TS 36.331 / TS 38.331** : *Radio Resource Control (RRC) — Event A3 Handover offset parameters.*
+* **GSMA Open Gateway & CAMARA Project** : *Quality on Demand (QoD) & Network Insights APIs Specifications.*
+* **Telecom Italia Big Data Challenge** : *Open telecommunications density grid of the City of Milan.*
