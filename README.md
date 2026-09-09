@@ -1,4 +1,6 @@
-# 🛰️ WiseNet (Spatial SON-MILP) — Version 1.5
+# 🌐 WiseNet
+### Autonomous Predictive Self-Organizing Network (SON) Optimization
+*(Nom technique du dépôt : `spatial-son-milp` | Version : **v1.5**)*
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![3GPP TR 38.901](https://img.shields.io/badge/3GPP-TR%2038.901%20Compliant-purple.svg)](https://www.3gpp.org/specifications-technologies)
@@ -10,7 +12,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Un réseau mobile qui anticipe sa saturation et se réorganise tout seul.**  
-> Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) en moins d'une seconde.
+> Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) résolue en moins d'une seconde.
+
+---
+
+> ### 🧭 Vous voulez vraiment comprendre toute la logique de A à Z ?
+> Pour les membres de jury, ingénieurs et chercheurs souhaitant comprendre l'intégralité du raisonnement, des métaphores intuitives jusqu'aux équations de propagation et aux choix d'ingénierie, consultez le document interactif central :  
+> 👉 **[📘 Ouvrir le Rapport Explicatif Complet — WiseNet de A à Z (`docs/Rapport_WiseNet_Projet_Explique.html`)](docs/Rapport_WiseNet_Projet_Explique.html)**  
+> *(Un guide complet, sans jargon inutile, optimisé pour lecture sur écran et export PDF direct).*
 
 ---
 
@@ -19,18 +28,19 @@
 | Ressource | Ce que vous y trouverez | Lien d'accès direct |
 | :--- | :--- | :--- |
 | **WiseNet v1.5 (Actuel)** | Architecture 3GPP multi-secteurs, double-porteuse $(s, f)$, boucle 24h, CAMARA API | **Ce document (README.md)** |
-| **README v1.0 (Archivé)** | La documentation intégrale d'origine de la version 1.0 (modèle isotrope préliminaire) | [📄 `docs/README_v1.md`](docs/README_v1.md) |
-| **Branche Git v1-stable** | Dépôt Git figé et testé de la première version validée | [🌿 Branche `v1-stable`](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
+| **Le Guide de Référence** | L'explication pédagogique totale de A à Z (philosophie, physique, télécom) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
+| **README v1.0 (Archivé)** | La documentation d'origine de la version 1.0 (modèle préliminaire isotrope) | [📄 `docs/README_v1.md`](docs/README_v1.md) |
+| **Branche Git v1-stable** | Dépôt Git figé et validé de la première version historique | [🌿 Branche `v1-stable`](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
 | **Release v1.0-validated** | Tag officiel de la release V1 sur GitHub | [🏷️ Tag `v1.0-validated`](https://github.com/samya818/spatial-son-milp/releases/tag/v1.0-validated) |
-| **Rapport Pédagogique (FR)** | Le grand rapport explicatif de A à Z (théorie vulgarisée, métaphores, décisions) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
 | **Rapport Scientifique (EN)** | Benchmark vérifié, formulations mathématiques formelles & protocole | [🔬 `docs/WiseNet_V1_5_Scientific_Report.html`](docs/WiseNet_V1_5_Scientific_Report.html) |
 
 ---
 
 ## 📑 Sommaire
-1. [🌟 Le Problème Télécom : Pourquoi ce Projet Existe ?](#-le-problème-télécom--pourquoi-ce-projet-existe-)
-2. [📖 L'Histoire de la V1.5 : Pourquoi cette Version et Pas Directement une V2 ?](#-lhistoire-de-la-v15--pourquoi-cette-version-et-pas-directement-une-v2-)
-3. [🚀 Tout ce que Nous Avons Construit dans la V1.5 (Et Pourquoi)](#-tout-ce-que-nous-avons-construit-dans-la-v15-et-pourquoi)
+1. [🌟 Le Problème Télécom : Pourquoi WiseNet Existe ?](#-le-problème-télécom--pourquoi-wisenet-existe-)
+2. [💡 La Philosophie WiseNet : L'Ingénierie Pragmatique](#-la-philosophie-wisenet--lingénierie-pragmatique)
+3. [📖 L'Histoire de la V1.5 : Pourquoi cette Version et Pas une V2 ?](#-lhistoire-de-la-v15--pourquoi-cette-version-et-pas-une-v2-)
+4. [🚀 Tout ce que Nous Avons Construit dans WiseNet V1.5 (Et Pourquoi)](#-tout-ce-que-nous-avons-construit-dans-wisenet-v15-et-pourquoi)
    - [Brique 1 : La Topologie Hexagonale 3GPP Tri-Secteurs](#brique-1--la-topologie-hexagonale-3gpp-tri-secteurs)
    - [Brique 2 : Le Spectre Double-Porteuse & L'Unité $(s, f)$](#brique-2--le-spectre-double-porteuse--lunité-s-f)
    - [Brique 3 : La Simulation Spatiale Micro-Grille & le RSRP Directif](#brique-3--la-simulation-spatiale-micro-grille--le-rsrp-directif)
@@ -39,16 +49,16 @@
    - [Brique 6 : Le Cerveau Décisionnel MILP Exact (< 0.8s)](#brique-6--le-cerveau-décisionnel-milp-exact--08s)
    - [Brique 7 : La Boucle Fermée Prédictive 24h & ML Quantile $q_{80}$](#brique-7--la-boucle-fermée-prédictive-24h--ml-quantile-q_80)
    - [Brique 8 : L'Interface Industrielle CAMARA Open Gateway](#brique-8--linterface-industrielle-camara-open-gateway)
-4. [📐 Le Pipeline de Bout en Bout en un Schéma](#-le-pipeline-de-bout-en-bout-en-un-schéma)
-5. [📊 Les Preuves Scientifiques : Résultats Mesurés sur les Données de Milan](#-les-preuves-scientifiques--résultats-mesurés-sur-les-données-de-milan)
-6. [🛡️ Pourquoi les Utilisateurs ne Subissent Jamais de Dégradation ?](#%EF%B8%8F-pourquoi-les-utilisateurs-ne-subissent-jamais-de-dégradation-)
-7. [⚡ Démarrage Rapide & Commandes de Reproduction](#-démarrage-rapide--commandes-de-reproduction)
-8. [🗂️ Organisation Détaillée du Code](#%EF%B8%8F-organisation-détaillée-du-code)
-9. [👥 Crédits & Remerciements](#-crédits--remerciements)
+5. [📐 Le Pipeline de Bout en Bout en un Schéma](#-le-pipeline-de-bout-en-bout-en-un-schéma)
+6. [📊 Les Preuves Scientifiques : Résultats Mesurés sur les Données de Milan](#-les-preuves-scientifiques--résultats-mesurés-sur-les-données-de-milan)
+7. [🛡️ Pourquoi les Utilisateurs ne Subissent Jamais de Dégradation ?](#%EF%B8%8F-pourquoi-les-utilisateurs-ne-subissent-jamais-de-dégradation-)
+8. [⚡ Démarrage Rapide & Commandes de Reproduction](#-démarrage-rapide--commandes-de-reproduction)
+9. [🗂️ Organisation Détaillée du Code](#%EF%B8%8F-organisation-détaillée-du-code)
+10. [👥 Crédits & Remerciements](#-crédits--remerciements)
 
 ---
 
-## 🌟 Le Problème Télécom : Pourquoi ce Projet Existe ?
+## 🌟 Le Problème Télécom : Pourquoi WiseNet Existe ?
 
 Imaginez un vendredi soir au centre-ville : des milliers de personnes sortent de bureaux ou assistent à un concert. Leurs téléphones saturent complètement l'antenne relais du quartier. Les appels coupent, les vidéos figent.  
 Pourtant, à **300 mètres de là**, dans un quartier de bureaux désert, une autre antenne dispose de **70% de capacité libre et inutilisée**.
@@ -78,29 +88,48 @@ Un réseau urbain compte des centaines d'antennes interconnectées. Si l'antenne
 
 ---
 
-## 📖 L'Histoire de la V1.5 : Pourquoi cette Version et Pas Directement une V2 ?
+## 💡 La Philosophie WiseNet : L'Ingénierie Pragmatique
+
+WiseNet repose sur une vision claire de ce que doit être l'intelligence artificielle appliquée aux télécommunications :
+
+* **1. Agilité Temps Réel (< 1s) vs Inertie Théorique :**  
+  Un réseau n'attend pas. Si un algorithme prend 20 minutes à calculer, la foule s'est déjà dispersée et les abonnés ont déjà subi des coupures. WiseNet optimise 756 cellules en **0.74 seconde**.
+* **2. Démocratie Open Source vs Rente Logicielle :**  
+  Pas de solveurs propriétaires à 10 000 € la licence (Gurobi/CPLEX) nécessaires pour tester le projet. WiseNet tourne à 100% avec des briques libres et auditables : Python, Pyomo et **Coin-OR CBC**.
+* **3. Prudence Prédictive ($q_{80}$) vs Moyenne Naïve :**  
+  En réseau mobile, sous-estimer un pic de trafic provoque des coupures d'appels dramatiques. Surestimer légèrement un pic est sans conséquence néfaste. WiseNet dimensionne donc ses décisions sur le pire cas raisonnable (quantile 80%).
+* **4. Séparation Fondamentale Offline / Online :**  
+  Ne jamais recalculer en direct ce qui ne change pas. La géométrie de la ville et les bilans de liaison radio sont précalculés une fois pour toutes hors-ligne, libérant toute la puissance de calcul pour la décision en temps réel.
+* **5. Branchement Industriel Concret (CAMARA) :**  
+  Un modèle mathématique isolé sur un PC n'a que peu de valeur pour un opérateur. WiseNet intègre nativement les API internationales **GSMA Open Gateway** pour être prêt à être déployé sur un cœur de réseau moderne (O-RAN Non-RT RIC).
+
+*(Pour approfondir toute cette démarche conceptuelle, lisez le [Rapport Explicatif WiseNet](docs/Rapport_WiseNet_Projet_Explique.html)).*
+
+---
+
+## 📖 L'Histoire de la V1.5 : Pourquoi cette Version et Pas une V2 ?
 
 À la fin de la V1 (qui prouvait le concept avec 73.53% de réduction de congestion sur un modèle simplifié), une question d'ingénierie majeure s'est posée : **Que construire ensuite ?**
 
 ### Le Piège du "Plan V2 Trop Ambitieux"
-Une version "V2 ultra-théorique" avait d'abord été imaginée :
+Une version "V2 ultra-théorique" avait d'abord été envisagée :
 - Modéliser les micro-interférences dynamiques instantanées entre tous les téléphones.
 - Recalculer les matrices physiques du réseau à chaque cycle (15 à 25 minutes de calcul continu).
-- Déployer un solveur commercial lourd sous licence payante propriétaire (Gurobi).
+- Déployer un solveur commercial lourd sous licence payante propriétaire.
 - Résoudre un problème de 12 600 variables non-linéaires.
 
-### L'Arbitrage Pragmatique : Pourquoi la V1.5 est un Choix Gagnant
+### L'Arbitrage Pragmatique : Pourquoi la V1.5 est un Choix Supérieur
 Dans le cadre de projets d'innovation et de compétitions technologiques (notamment le hackathon **GSMA + Nokia MENA Ignite 2026**), ce plan V2 présentait des défauts rédhibitoires :
-1. **Un temps de démonstration trop court :** Devant un jury ou un directeur technique, une démo dure 5 minutes. Un système qui fait patienter 20 minutes pour calculer un cycle est inutilisable.
-2. **Une barrière de licence artificielle :** Dépendre de licences privées à plusieurs milliers d'euros (Gurobi) brise l'accessibilité open-source.
-3. **Une déconnexion du monde réel :** Les opérateurs valorisent l'interopérabilité standardisée (API GSMA CAMARA) bien avant une équation d'interférence académique.
+1. **Un temps de démonstration trop court :** Devant un jury ou un directeur technique, une démonstration dure quelques minutes. Un système qui fait attendre 20 minutes pour calculer un cycle est inutilisable.
+2. **Une barrière de licence artificielle :** Dépendre de licences privées brise l'accessibilité open-source du projet.
+3. **Une déconnexion des priorités opérateur :** Les opérateurs valorisent l'interopérabilité standardisée (API GSMA CAMARA) bien avant une équation d'interférence académique.
 
 > 🎯 **Le Choix WiseNet V1.5 :**  
 > *"Garder ce qui marche parfaitement (la rapidité sub-seconde, la programmation linéaire MILP, le solveur gratuit Coin-OR CBC, la boucle fermée), mais rendre le modèle radio 100% fidèle aux normes industrielles 3GPP et connecter le système aux vraies API des opérateurs télécoms."*
 
 ---
 
-## 🚀 Tout ce que Nous Avons Construit dans la V1.5 (Et Pourquoi)
+## 🚀 Tout ce que Nous Avons Construit dans WiseNet V1.5 (Et Pourquoi)
 
 Voici le détail chronologique et fonctionnel des avancées majeures apportées dans la V1.5 :
 
@@ -113,7 +142,7 @@ Voici le détail chronologique et fonctionnel des avancées majeures apportées 
 * **Ce qu'on a fait en V1.5 :** Nous avons déployé une **grille hexagonale déterministe 3GPP TR 38.901** sur les $56.55\text{ km}^2$ de la ville de Milan (1 024 cellules réelles) :
   * **126 sites macro physiques** espacés d'une distance inter-site stricte ($\text{ISD} = 750\text{ mètres}$).
   * Chaque site est découpé en **3 secteurs directionnels de $120^\circ$** orientés précisément à $0^\circ$ (Nord), $120^\circ$ (Sud-Est) et $240^\circ$ (Sud-Ouest), comme 3 parts de pizza couvrant l'espace.
-* **Pourquoi ce choix ?** Cela reproduit fidèlement la géométrie réelle du réseau déployé par un opérateur comme Telecom Italia (TIM) en milieu urbain dense.
+* **Pourquoi ce choix ?** Cela reproduit fidèlement la géométrie réelle du réseau déployé par un opérateur comme Telecom Italia (TIM) en milieu urbain dense. *(Voir section 2.3 du [Rapport Explicatif](docs/Rapport_WiseNet_Projet_Explique.html))*.
 
 ---
 
@@ -187,7 +216,7 @@ Raisonner au niveau $(s, f)$ a permis de débloquer une capacité d'optimisation
 *Fichier : [`src/optimization/milp_engine_v1_5.py`](src/optimization/milp_engine_v1_5.py)*
 
 * **Pyomo + Coin-OR CBC :**  
-  Pyomo formule le problème sous forme linéaire et le solveur open-source **CBC** (gratuit, sans clé de licence restrictive) le résout.
+  Pyomo formule le problème sous forme linéaire et le solveur open-source **CBC** le résout sans aucune clé payante.
 * **Pourquoi le MILP écrase les algorithmes gloutons ("Greedy") ?**  
   Une règle gloutonne raisonne antenne par antenne de façon égoïste : *"je suis saturé, je déverse tout sur ma voisine de droite"*. Mais si la voisine de droite s'apprête elle aussi à saturer, l'heuristique crée une catastrophe en cascade.  
   Le MILP, lui, regarde **les 756 cellules en un seul bloc matriciel** et trouve l'optimum global qui maximise le bien-être de l'ensemble du réseau.
@@ -210,7 +239,7 @@ Raisonner au niveau $(s, f)$ a permis de débloquer une capacité d'optimisation
 ### Brique 8 : L'Interface Industrielle CAMARA Open Gateway
 *Fichier : [`src/camara/client.py`](src/camara/client.py)*
 
-Pour que WiseNet ne reste pas un simulateur de laboratoire mais s'insère dans l'architecture télécom standardisée mondiale (initiative **GSMA Open Gateway** / **O-RAN Non-RT RIC**) :
+Pour que WiseNet s'insère dans l'architecture télécom standardisée mondiale (initiative **GSMA Open Gateway** / **O-RAN Non-RT RIC**) :
 1. **API CAMARA Network Insights :** Permet à WiseNet d'ingérer le trafic et la télémétrie de n'importe quel opérateur compatible via des requêtes REST JSON standardisées.
 2. **API CAMARA Quality on Demand (QoD) :** Agit comme un **filet de sécurité**. Si, même après l'optimisation mathématique globale, un résidu microscopique de congestion persiste dans une cellule, WiseNet déclenche une session QoD prioritaire pour garantir la bande passante des services d'urgence ou critiques.
 3. **Connecteur universel :** Fonctionne avec authentification OAuth2 `client_credentials`, avec bascule instantanée entre Sandbox réel et Mock haute-fidélité.
@@ -332,6 +361,8 @@ La conception de WiseNet apporte une **garantie physique absolue** en trois poin
 2. **Le centre de cellule est protégé :** Un smartphone proche de son antenne reçoit un signal très fort (ex. $-75\text{ dBm}$). L'antenne voisine arrive à $-105\text{ dBm}$. Un offset maximal de $3\text{ dB}$ ne comblera jamais un écart de $30\text{ dB}$. Ces utilisateurs ne basculent **jamais**.
 3. **Seule la frange frontière bascule :** Seuls les utilisateurs situés là où les signaux des deux antennes sont presque égaux (écart $< 3\text{ dB}$) sont invités à changer. Pour eux, le changement est totalement transparent et imperceptible.
 
+*(Pour l'analyse approfondie de cette démonstration, voir section 1.9 du [Rapport Explicatif](docs/Rapport_WiseNet_Projet_Explique.html)).*
+
 ---
 
 ## ⚡ Démarrage Rapide & Commandes de Reproduction
@@ -387,13 +418,13 @@ Ouvrez votre navigateur sur `http://localhost:8501`.
 
 ## 🗂️ Organisation Détaillée du Code
 
-L'arborescence du projet a été pensée pour faire cohabiter l'historique V1 et la nouvelle architecture V1.5 en toute clarté :
+L'arborescence du projet fait cohabiter l'historique V1 et la nouvelle architecture V1.5 en toute clarté :
 
 ```text
 spatial-son-milp/
 ├── docs/                                   # DOCUMENTATION & RAPPORTS
+│   ├── Rapport_WiseNet_Projet_Explique.html # 📘 GUIDE CENTRAL : Rapport explicatif de A à Z (HTML)
 │   ├── README_v1.md                        # 📄 README d'origine de la v1.0 (sauvegardé)
-│   ├── Rapport_WiseNet_Projet_Explique.html # 📘 Guide explicatif illustré de A à Z (HTML)
 │   ├── WiseNet_V1_5_Scientific_Report.html # 🔬 Rapport scientifique V1.5 complet (HTML)
 │   └── WiseNet_V1_5_Scientific_Report.md   # 📝 Version Markdown pour consultation GitHub
 │
