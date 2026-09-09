@@ -1,7 +1,7 @@
 # 🌐 WiseNet
 ### Autonomous Predictive Self-Organizing Network (SON) Optimization
 *(Nom technique du dépôt : `spatial-son-milp` | Version : **v1.5**)*  
-**Auteure & Conception de la Version 1.5 : [Samya Loukili](https://github.com/samya818)**
+**Conception & Développement de la Version 1.5 : [Samya Loukili](https://github.com/samya818) & Fatima Zahra Azzi**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![3GPP TR 38.901](https://img.shields.io/badge/3GPP-TR%2038.901%20Compliant-purple.svg)](https://www.3gpp.org/specifications-technologies)
@@ -14,7 +14,7 @@
 
 > **Un réseau mobile qui anticipe sa saturation et se réorganise tout seul.**  
 > Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) résolue en moins d'une seconde.  
-> *Version 1.5 entièrement conçue, développée et évaluée par Samya Loukili.*
+> *Version 1.5 conçue, développée et évaluée par Samya Loukili avec la contribution de Fatima Zahra Azzi.*
 
 ---
 
@@ -574,13 +574,15 @@ spatial-son-milp/
 ## 👥 Crédits & Attribution
 
 ### Version 1.5 (Architecture 3GPP, Formulation $(s, f)$, Double Délestage, CAMARA & Boucle 24h)
-* **Samya Loukili** — **Conception intégrale, recherche, développement et évaluation de la V1.5** :
+* **Samya Loukili** — **Architecte & Lead Développement de la V1.5** :
   * Conception de la topologie hexagonale 3GPP tri-secteurs et du spectre TIM double-porteuse ($F_1/F_2$).
   * Formulation mathématique du MILP par cellule radio élémentaire $(s, f)$ et résolution Coin-OR CBC.
   * Modélisation physique du RSRP directif 3GPP et simulation micro-grille ($400\text{ pts/carré}$).
   * Algorithmes de double délestage horizontal et vertical avec conservation stricte de la masse.
   * Pipeline de boucle fermée prédictive 24h avec ML Quantile $q_{80}$ et intégration client CAMARA Open Gateway.
   * Rédaction des rapports scientifiques et de la documentation d'ingénierie.
+* **Fatima Zahra Azzi** — **Contributrice à la Version 1.5** :
+  * Contribution aux protocoles d'évaluation expérimentale, aux analyses de performance et aux benchmarks.
 
 ### Historique : Version 1.0 (Phase exploratoire préliminaire isotrope)
 * Développée initialement en binôme par **Samya Loukili** et **Kenza El Khaniri**, sous la supervision académique de **M. Toufik Massrour** (ENSAM Meknès).
