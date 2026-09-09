@@ -1,7 +1,6 @@
 # WiseNet V1.5: Realistic 3GPP Multi-Sector & Dual-Carrier Self-Organizing Network (SON) Optimization
 ### Comprehensive Scientific Research Report & Verifiable Benchmark Evaluation
-**Project Lead**: Samya Loukili  
-**Contributor**: Fatima Zahra Azzi  
+**Authors**: Samya Loukili & Fatima Zahra Azzi  
 **Dataset Reference**: Open Telecom Italia Big Data Challenge (Milan, Italy)  
 **Standards Reference**: 3GPP TR 38.901 (5G NR Channel Models) & TR 36.814 (LTE-Advanced)  
 **Date**: September 2, 2026  

@@ -14,7 +14,7 @@
 
 > **Un réseau mobile qui anticipe sa saturation et se réorganise tout seul.**  
 > Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) résolue en moins d'une seconde.  
-> *Version 1.5 conçue, développée et évaluée par Samya Loukili avec la contribution de Fatima Zahra Azzi.*
+> *Version 1.5 conçue, développée et évaluée conjointement par Samya Loukili et Fatima Zahra Azzi.*
 
 ---
 
@@ -574,15 +574,13 @@ spatial-son-milp/
 ## 👥 Crédits & Attribution
 
 ### Version 1.5 (Architecture 3GPP, Formulation $(s, f)$, Double Délestage, CAMARA & Boucle 24h)
-* **Samya Loukili** — **Architecte & Lead Développement de la V1.5** :
+* **Samya Loukili & Fatima Zahra Azzi** — **Conception, recherche, modélisation et développement de la V1.5** :
   * Conception de la topologie hexagonale 3GPP tri-secteurs et du spectre TIM double-porteuse ($F_1/F_2$).
   * Formulation mathématique du MILP par cellule radio élémentaire $(s, f)$ et résolution Coin-OR CBC.
   * Modélisation physique du RSRP directif 3GPP et simulation micro-grille ($400\text{ pts/carré}$).
   * Algorithmes de double délestage horizontal et vertical avec conservation stricte de la masse.
   * Pipeline de boucle fermée prédictive 24h avec ML Quantile $q_{80}$ et intégration client CAMARA Open Gateway.
-  * Rédaction des rapports scientifiques et de la documentation d'ingénierie.
-* **Fatima Zahra Azzi** — **Contributrice à la Version 1.5** :
-  * Contribution aux protocoles d'évaluation expérimentale, aux analyses de performance et aux benchmarks.
+  * Rédaction des rapports scientifiques, benchmarks expérimentaux et documentation d'ingénierie.
 
 ### Historique : Version 1.0 (Phase exploratoire préliminaire isotrope)
 * Développée initialement en binôme par **Samya Loukili** et **Kenza El Khaniri**, sous la supervision académique de **M. Toufik Massrour** (ENSAM Meknès).
