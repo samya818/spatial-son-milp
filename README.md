@@ -1,6 +1,7 @@
 # 🌐 WiseNet
 ### Autonomous Predictive Self-Organizing Network (SON) Optimization
-*(Nom technique du dépôt : `spatial-son-milp` | Version : **v1.5**)*
+*(Nom technique du dépôt : `spatial-son-milp` | Version : **v1.5**)*  
+**Auteure & Conception de la Version 1.5 : [Samya Loukili](https://github.com/samya818)**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![3GPP TR 38.901](https://img.shields.io/badge/3GPP-TR%2038.901%20Compliant-purple.svg)](https://www.3gpp.org/specifications-technologies)
@@ -12,7 +13,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **Un réseau mobile qui anticipe sa saturation et se réorganise tout seul.**  
-> Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) résolue en moins d'une seconde.
+> Pipeline autonome complet (SON - *Self-Organizing Network*) combinant Machine Learning prédictif, propagation radio 3GPP tri-secteurs & multi-porteuses, et optimisation mathématique globale exacte (MILP) résolue en moins d'une seconde.  
+> *Version 1.5 entièrement conçue, développée et évaluée par Samya Loukili.*
 
 ---
 
@@ -569,14 +571,23 @@ spatial-son-milp/
 
 ---
 
-## 👥 Crédits & Remerciements
+## 👥 Crédits & Attribution
 
-* **Loukili Samya** — Architecte du projet, modélisation mathématique MILP, pipeline 3GPP et intégration CAMARA.
-* **Kenza El Khaniri** — Ingestion des séries temporelles, analyse spatiale et modélisation radio.
-* Sous la direction académique et la supervision de **M. Toufik Massrour** (ENSAM Meknès).
+### Version 1.5 (Architecture 3GPP, Formulation $(s, f)$, Double Délestage, CAMARA & Boucle 24h)
+* **Samya Loukili** — **Conception intégrale, recherche, développement et évaluation de la V1.5** :
+  * Conception de la topologie hexagonale 3GPP tri-secteurs et du spectre TIM double-porteuse ($F_1/F_2$).
+  * Formulation mathématique du MILP par cellule radio élémentaire $(s, f)$ et résolution Coin-OR CBC.
+  * Modélisation physique du RSRP directif 3GPP et simulation micro-grille ($400\text{ pts/carré}$).
+  * Algorithmes de double délestage horizontal et vertical avec conservation stricte de la masse.
+  * Pipeline de boucle fermée prédictive 24h avec ML Quantile $q_{80}$ et intégration client CAMARA Open Gateway.
+  * Rédaction des rapports scientifiques et de la documentation d'ingénierie.
+
+### Historique : Version 1.0 (Phase exploratoire préliminaire isotrope)
+* Développée initialement en binôme par **Samya Loukili** et **Kenza El Khaniri**, sous la supervision académique de **M. Toufik Massrour** (ENSAM Meknès).
 
 ### Références Normalisées
 * **3GPP TR 38.901** : *Channel model for frequencies from 0.5 to 100 GHz (Urban Macro specifications).*
 * **3GPP TS 36.331 / TS 38.331** : *Radio Resource Control (RRC) — Event A3 Handover offset parameters.*
 * **GSMA Open Gateway & CAMARA Project** : *Quality on Demand (QoD) & Network Insights APIs Specifications.*
 * **Telecom Italia Big Data Challenge** : *Open telecommunications density grid of the City of Milan.*
+
