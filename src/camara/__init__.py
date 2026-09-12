@@ -8,12 +8,15 @@ Fournit :
 
 from .client import CamaraClient
 from .footfall_client import FootfallClient, lat_lon_to_quadkey, quadkey_to_tile_xy
+from .location_client import VodafoneLocationClient
 from .qod_trigger import QoDTriggerManager
 
 __all__ = [
     "CamaraClient",
     "FootfallClient",
+    "VodafoneLocationClient",
     "QoDTriggerManager",
     "lat_lon_to_quadkey",
     "quadkey_to_tile_xy"
 ]
+

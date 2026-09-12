@@ -349,12 +349,14 @@ Reasoning at the $(s, f)$ level unlocks two-dimensional optimization capabilitie
 ---
 
 ### Building Block 8: Industrial GSMA Open Gateway & Vodafone APIs
-*Source files: [`src/camara/client.py`](src/camara/client.py), [`src/camara/footfall_client.py`](src/camara/footfall_client.py), [`src/camara/qod_trigger.py`](src/camara/qod_trigger.py)*
+*Source files: [`src/camara/client.py`](src/camara/client.py), [`src/camara/footfall_client.py`](src/camara/footfall_client.py), [`src/camara/location_client.py`](src/camara/location_client.py), [`src/camara/qod_trigger.py`](src/camara/qod_trigger.py)*
 
 To seamlessly integrate with global telecommunications standards (**GSMA Open Gateway** / **O-RAN Non-RT RIC**):
 1. **Vodafone Analytics Realtime Footfall & Reference QuadKey:** Ingests live, exogenous human density per geographic QuadKey tile (~1 km²), providing genuine ground-truth demand immune to historical handover bias (Lucas-immune).
-2. **CAMARA Quality on Demand (QoD v1.1.0):** Acts as a **surgical safety net**. If residual saturation persists after global MILP optimization, WiseNet triggers priority QoD sessions (5QI/ARP QoS profile) to guarantee bandwidth for critical and emergency services.
-3. **Universal Client Architecture:** Supports OAuth2 `client_credentials` authentication, with seamless failover between the live Vodafone Sandbox and high-fidelity mock environments.
+2. **CAMARA Device Location Verification & Retrieval (`/location-verification/v1/verify` & `/location-retrieval/v0.3/retrieve`):** Replaces artificial/random mock identifiers by validating physical presence of mission-critical IoT devices (ambulances, police patrols, autonomous shuttles) under congested cells before allocating radio resources.
+3. **CAMARA Quality on Demand (QoD v1.1.0):** Acts as a **surgical safety net**. If residual saturation persists after global MILP optimization, WiseNet triggers priority QoD sessions (`QOS_E` / `QOS_L` profiles, 5QI=1/3) to guarantee bandwidth for verified critical devices.
+4. **Universal Client Architecture:** Supports OAuth2 `client_credentials` authentication directly against the Vodafone Developer Sandbox, with seamless failover to high-fidelity conformant local mocks when sandbox backends are unavailable.
+
 
 ---
 
@@ -408,6 +410,10 @@ To seamlessly integrate with global telecommunications standards (**GSMA Open Ga
                                              ▼
                        [Application of Handover Offsets (0 to 3 dB)]
                       Horizontal Offloading (spatial) + Vertical (carrier)
+                                             │
+                                             ▼
+                    [CAMARA Device Location Verification]
+                    Validate presence of critical fleet under cell
                                              │
                                              ▼
                     [Field Validation & CAMARA QoD Safety Net Trigger]

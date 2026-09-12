@@ -24,6 +24,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 from src.camara.client import CamaraClient
 from src.camara.footfall_client import FootfallClient
+from src.camara.location_client import VodafoneLocationClient
 from src.camara.qod_trigger import QoDTriggerManager
 from src.optimization.milp_engine_v1_5 import MilpEngineV15
 
@@ -51,13 +52,20 @@ def run_camara_demo():
     footfall_id = os.getenv("VODAFONE_ANALYTICS_CLIENT_ID", qod_id)
     footfall_secret = os.getenv("VODAFONE_ANALYTICS_CLIENT_SECRET", qod_secret)
 
+    loc_id = os.getenv("VODAFONE_LOCATION_CLIENT_ID", qod_id)
+    loc_secret = os.getenv("VODAFONE_LOCATION_CLIENT_SECRET", qod_secret)
+
     # -------------------------------------------------------------------------
     # 1. AUTHENTIFICATION OAUTH2
     # -------------------------------------------------------------------------
     print("\n[Étape 1] Authentification OAuth2 Client Credentials...")
     camara = CamaraClient(client_id=qod_id, client_secret=qod_secret, mock_mode=False)
     token = camara.get_token()
-    print(f"  [OK] Jeton QoD Bearer obtenu : {token[:35]}... (TTL: 3600s)")
+    print(f"  [OK] Jeton QoD Bearer obtenu        : {token[:35]}... (TTL: 3600s)")
+
+    loc_client = VodafoneLocationClient(client_id=loc_id, client_secret=loc_secret, mock_mode=False)
+    loc_token = loc_client.get_token()
+    print(f"  [OK] Jeton Location Bearer obtenu   : {loc_token[:35]}... (TTL: 3600s)")
 
     # -------------------------------------------------------------------------
     # 2. CATALOGUE QOS PROFILES
@@ -156,9 +164,10 @@ def run_camara_demo():
     # -------------------------------------------------------------------------
     # 5. FILET DE SÉCURITÉ QUALITY ON DEMAND (QoD)
     # -------------------------------------------------------------------------
-    print("\n[Étape 5] Déclenchement automatique du Filet de Sécurité QoD...")
+    print("\n[Étape 5] Déclenchement automatique du Filet de Sécurité QoD via CAMARA Location...")
     qod_mgr = QoDTriggerManager(
         camara_client=camara,
+        location_client=loc_client,
         congestion_threshold_ratio=0.03,
         min_residual_mo=300.0,
         max_sessions_per_slot=10

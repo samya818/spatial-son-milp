@@ -14,6 +14,7 @@ from src.camara.footfall_client import (
     quadkey_to_tile_xy
 )
 from src.camara.qod_trigger import QoDTriggerManager
+from src.camara.location_client import VodafoneLocationClient
 
 
 class TestCamaraClient:
@@ -218,3 +219,61 @@ class TestQoDTriggerManager:
         deleted = manager.cleanup_expired_sessions()
         assert deleted > 0
         assert len(manager.active_sessions) == 0
+
+
+class TestVodafoneLocationClient:
+
+    def test_location_token_mock(self):
+        client = VodafoneLocationClient(mock_mode=True)
+        token = client.get_token()
+        assert token is not None
+        assert "mock_loc_bearer" in token
+
+    def test_verify_location_inside(self):
+        client = VodafoneLocationClient(mock_mode=True)
+        # Device position: Milan center (45.4642, 9.1900), cell center same
+        res = client.verify_location(
+            phone_number="+401234567890",
+            latitude=45.4642,
+            longitude=9.1900,
+            radius=1000.0,
+            known_device_coords=(45.4642, 9.1900)
+        )
+        assert res["verificationResult"] == "TRUE"
+        assert "lastLocationTime" in res
+
+    def test_verify_location_outside(self):
+        client = VodafoneLocationClient(mock_mode=True)
+        # Device position far away (Rome), cell in Milan
+        res = client.verify_location(
+            phone_number="+401234567890",
+            latitude=45.4642,
+            longitude=9.1900,
+            radius=1000.0,
+            known_device_coords=(41.9028, 12.4964)
+        )
+        assert res["verificationResult"] == "FALSE"
+
+    def test_retrieve_location(self):
+        client = VodafoneLocationClient(mock_mode=True)
+        res = client.retrieve_location("+401234567890", simulated_coords=(45.4642, 9.1900))
+        assert "area" in res
+        assert res["area"]["areaType"] == "CIRCLE"
+        assert res["area"]["center"]["latitude"] == 45.4642
+        assert res["area"]["center"]["longitude"] == 9.1900
+
+    def test_qod_trigger_with_location_verification(self):
+        loc_client = VodafoneLocationClient(mock_mode=True)
+        manager = QoDTriggerManager(
+            location_client=loc_client,
+            congestion_threshold_ratio=0.01,
+            min_residual_mo=100.0
+        )
+        # Cell near Milan center (row 50, col 50 -> square 5050)
+        decisions = {"5050": {"offset_dB": 0.0, "residual_congestion_mo": 2500.0}}
+        caps = {"5050": 8000.0}
+        res = manager.process_milp_residuals(decisions, caps)
+        assert res["congested_cells_count"] == 1
+        assert res["triggered_sessions_count"] >= 1
+        assert res["sessions"][0]["cell_id"] == "5050"
+

@@ -16,8 +16,21 @@ from typing import Dict, Any
 logger = logging.getLogger(__name__)
 
 def get_cbc_solver():
-    """Détecte l'exécutable CBC disponible sur le système ou dans l'environnement virtuel."""
+    """Détecte l'exécutable CBC disponible sur le système ou dans le dépôt."""
     cbc_path = shutil.which("cbc")
+    if not cbc_path:
+        # Recherche dans les répertoires pulp / venv embarqués du projet
+        repo_root = Path(__file__).resolve().parents[2]
+        candidates = [
+            repo_root / "APP" / "venv" / "Lib" / "site-packages" / "pulp" / "solverdir" / "cbc" / "win" / "i64" / "cbc.exe",
+            repo_root / "APP" / "venv" / "Lib" / "site-packages" / "pulp" / "solverdir" / "cbc" / "win" / "i32" / "cbc.exe",
+            repo_root / "venv" / "Lib" / "site-packages" / "pulp" / "solverdir" / "cbc" / "win" / "i64" / "cbc.exe",
+        ]
+        for cand in candidates:
+            if cand.exists():
+                cbc_path = str(cand)
+                break
+
     if not cbc_path:
         try:
             import pulp
@@ -28,8 +41,10 @@ def get_cbc_solver():
             cbc_path = None
             
     if cbc_path:
+        logger.info(f"[V1.5 MILP] Exécutable CBC détecté : {cbc_path}")
         return SolverFactory('cbc', executable=cbc_path)
     return SolverFactory('cbc')
+
 
 class MilpEngineV15:
     """
@@ -142,15 +157,27 @@ class MilpEngineV15:
         
         for c in CELLS:
             chosen_k = 0
-            for k in K:
-                val = pyo.value(model.z[c, k]) if hasattr(model, 'z') else 0
-                if val is not None and val > 0.5:
-                    chosen_k = k
-                    break
+            res_mo = 0.0
+            if results is not None:
+                for k in K:
+                    try:
+                        val = pyo.value(model.z[c, k])
+                        if val is not None and val > 0.5:
+                            chosen_k = k
+                            break
+                    except Exception:
+                        pass
+                try:
+                    res_mo = round(pyo.value(model.e[c]), 2)
+                except Exception:
+                    res_mo = round(max(0.0, initial_cell_traffic[c] - cells_capacity.get(c, 10000.0)), 2)
+            else:
+                res_mo = round(max(0.0, initial_cell_traffic[c] - cells_capacity.get(c, 10000.0)), 2)
+
             decisions[c] = {
                 'offset_idx': chosen_k,
                 'offset_dB': delta_levels[chosen_k],
-                'residual_congestion_mo': round(pyo.value(model.e[c]) if hasattr(model, 'e') else 0.0, 2)
+                'residual_congestion_mo': res_mo
             }
             total_unsatisfied_mo += decisions[c]['residual_congestion_mo']
             
