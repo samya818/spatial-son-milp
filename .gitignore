@@ -1,6 +1,9 @@
 .venv/
 venv/
 env/
+APP/
+APP-zip*.zip
+*.zip
 __pycache__/
 *.pyc
 .DS_Store
@@ -9,6 +12,16 @@ __pycache__/
 .mypy_cache/
 .ipynb_checkpoints/
 logs/*.log
+
+# Secrets and environment
+.env
+.env.local
+.env.*.local
+
+# Personal & scratch files
+ForMe.md
+pipeline_*.html
+v4.html
 
 # Data and Models
 data/raw/
@@ -35,3 +48,5 @@ research/data/raw/
 !docs/**/*.md
 !docs/**/*.html
 !research/notebooks/*.ipynb
+!research/notebooks_v1_5/*.ipynb
+!.env.example
