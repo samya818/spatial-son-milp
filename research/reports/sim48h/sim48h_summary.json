@@ -1,0 +1,48 @@
+{
+  "simulation": {
+    "days": [
+      "2013-11-12",
+      "2013-11-13"
+    ],
+    "n_slots": 96,
+    "n_cells": 756,
+    "n_sites": 126,
+    "topology_isd_m": 750.0,
+    "delta_levels_dB": [
+      0.0,
+      0.5,
+      1.0,
+      1.5,
+      2.0,
+      2.5,
+      3.0
+    ],
+    "seed": 42
+  },
+  "volumes_total_mo": {
+    "real_demand": 88348191.9,
+    "static_unsatisfied": 10618332.1,
+    "milp_unsatisfied": 7930446.3,
+    "oracle_unsatisfied": 7790077.7
+  },
+  "gains": {
+    "milp_vs_static_mo": 2687885.8,
+    "milp_vs_static_go": 2624.888,
+    "milp_vs_static_pct": 25.314,
+    "oracle_vs_static_pct": 26.636,
+    "ml_efficiency_pct": 95.04,
+    "regret_ml_mo": 140368.6,
+    "regret_ml_go": 137.079
+  },
+  "reliability": {
+    "slots_improved": 73,
+    "slots_total": 96,
+    "slots_improved_pct": 76.0
+  },
+  "performance": {
+    "avg_milp_solve_s": 0.583,
+    "avg_oracle_solve_s": 0.52,
+    "avg_mae_mo_per_cell": 146.701,
+    "total_wall_time_s": 136.8
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "run_timestamp_utc": "2026-09-12T23:42:49.977386",
+  "python_version": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "seed": 42,
+  "day_1": "2013-11-12",
+  "day_2": "2013-11-13",
+  "isd_meters": 750.0,
+  "delta_levels": [
+    0.0,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    3.0
+  ],
+  "sim_resolution": 20,
+  "expected_slots": 96,
+  "libraries": {
+    "polars": "1.43.2",
+    "xgboost": "3.2.0",
+    "pyomo": "6.10.1",
+    "pulp": "3.3.2",
+    "numpy": "2.4.6"
+  },
+  "dataset_sha256": "e47b4f3c010d4811384d7a2947aa2959c9fb9ce13bd636fa9646d6f2f38ad2f2",
+  "model_sha256": "09d55a353f584cae769ec36dc62bfced35ae33b7d6cc352ee036d2d94b390917",
+  "dataset_path": "C:\\Users\\hp\\OneDrive\\Desktop\\projectTimeSeries\\research\\data\\processed\\features_target_1024cells.parquet",
+  "model_path": "C:\\Users\\hp\\OneDrive\\Desktop\\projectTimeSeries\\research\\models\\xgb_q80.pkl"
+}
