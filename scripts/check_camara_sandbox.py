@@ -26,6 +26,18 @@ if hasattr(sys.stdout, 'reconfigure'):
 SANDBOX_BASE  = "https://api-sandbox.vf-dmp.engineering.vodafone.com/quality-on-demand/v1"
 SANDBOX_TOKEN = "https://api-sandbox.vf-dmp.engineering.vodafone.com/oauth2/v1/token"
 
+env_path = root / ".env"
+if env_path.exists():
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip('"').strip("'")
+                if k not in os.environ:
+                    os.environ[k] = v
+
 CLIENT_ID     = os.getenv("CAMARA_CLIENT_ID",     "")
 CLIENT_SECRET = os.getenv("CAMARA_CLIENT_SECRET",  "")
 HAS_CREDS     = bool(CLIENT_ID and CLIENT_ID != "mock_client_id")

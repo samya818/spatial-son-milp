@@ -33,7 +33,7 @@ def run_camara_demo():
     print("=" * 80)
 
     # Chargement automatique du .env local si présent
-    env_path = root / ".env"
+    env_path = root_dir / ".env"
     if env_path.exists():
         with open(env_path, "r", encoding="utf-8") as f:
             for line in f:
