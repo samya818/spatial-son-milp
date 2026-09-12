@@ -42,6 +42,7 @@
 | Resource | What you will find | Direct Link |
 | :--- | :--- | :--- |
 | **WiseNet v1.5 (Current)** | 3GPP multi-sector architecture, dual-carrier $(s, f)$, 24h closed loop, CAMARA & Vodafone APIs | **This document (README.md)** |
+| **Jury Defense Guide & FAQ (FR)** | Clear justification of Milan data, Vodafone Sandbox APIs, and Device Location | [🎓 `docs/GUIDE_JURY_CAMARA_ET_DONNEES.md`](docs/GUIDE_JURY_CAMARA_ET_DONNEES.md) |
 | **Version 1.0 (Original Repo & README)** | Direct access to frozen v1.0 repository with original README | [🌿 **Access v1.0 on GitHub**](https://github.com/samya818/spatial-son-milp/tree/v1-stable) |
 | **Complete Reference Guide (FR)** | In-depth pedagogical explanation from A to Z (philosophy, physics, telecom) | [📘 `docs/Rapport_WiseNet_Projet_Explique.html`](docs/Rapport_WiseNet_Projet_Explique.html) |
 | **Scientific Report (EN)** | Verified benchmarks, formal mathematical formulations & protocol | [🔬 `docs/WiseNet_V1_5_Scientific_Report.html`](docs/WiseNet_V1_5_Scientific_Report.html) |

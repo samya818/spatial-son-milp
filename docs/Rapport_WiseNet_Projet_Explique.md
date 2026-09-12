@@ -24,6 +24,10 @@ Ce rapport est construit en deux parties :
 - **Partie 1** explique le projet tel qu'il existe aujourd'hui, validé et mesuré (ci-après appelé **V1**).
 - **Partie 2** explique les améliorations visées pour la suite, dans une version intermédiaire appelée **V1.5**, pensée spécifiquement pour le hackathon MENA Ignite 2026 (GSMA + Nokia) — et pourquoi ce choix de V1.5 remplace une version V2 plus ambitieuse qui avait été envisagée au départ.
 
+> ### 🎓 Pour les Évaluateurs & Préparation de Soutenance
+> Pour comprendre en détail l'articulation mathématique entre le jeu de données de Milan et les APIs Vodafone CAMARA, ainsi que la justification rigoureuse face aux questions critiques du jury, consultez notre guide dédié :  
+> 👉 **[Lire le Guide Spécial Jury & FAQ Données (`docs/GUIDE_JURY_CAMARA_ET_DONNEES.md`)](GUIDE_JURY_CAMARA_ET_DONNEES.md)**
+
 ---
 
 # PARTIE 1 — Le projet actuel (V1) : comment il fonctionne
