@@ -1,0 +1,87 @@
+{
+  "simulation_info": {
+    "title": "WiseNet V1.5 - 1-Hour Simulation with CAMARA & Vodafone APIs",
+    "date_executed": "2026-09-12T20:55:09.645082",
+    "target_hour_start": "2013-11-12 13:00",
+    "target_hour_end": "2013-11-12 13:30",
+    "duration_minutes": 60,
+    "slots_count": 2,
+    "topology": {
+      "sites_count": 126,
+      "cells_count": 756,
+      "isd_meters": 750.0,
+      "spectrum": "F1: 1.8GHz (LTE) + F2: 3.5GHz (5G NR)"
+    }
+  },
+  "cumulative_metrics_1h": {
+    "total_real_demand_mo": 2748962.29,
+    "total_real_demand_gb": 2684.53,
+    "total_real_demand_tb": 2.622,
+    "static_unmanaged_congestion_mo": 619907.88,
+    "static_unmanaged_congestion_gb": 605.38,
+    "greedy_heuristic_congestion_mo": 530939.01,
+    "greedy_heuristic_congestion_gb": 518.5,
+    "wisenet_milp_congestion_mo": 515779.44,
+    "wisenet_milp_congestion_gb": 503.69,
+    "congestion_avoided_vs_static_mo": 104128.44,
+    "congestion_avoided_vs_static_gb": 101.69,
+    "congestion_avoided_vs_greedy_mo": 15159.57,
+    "congestion_avoided_vs_greedy_gb": 14.8,
+    "overall_gain_vs_static_percent": 16.8,
+    "overall_gain_vs_greedy_percent": 2.86,
+    "camara_qod": {
+      "total_sessions_created": 25,
+      "total_sessions_extended": 8,
+      "total_sessions_released": 0,
+      "sessions_cleaned_at_end": 25,
+      "qos_profiles_used": [
+        "QOS_E (Ultra-low latency / Emergency)",
+        "QOS_L (Telemedicine / Critical Fleet)"
+      ]
+    }
+  },
+  "slots_detail": [
+    {
+      "slot_idx": 1,
+      "timestamp": 1384257600.0,
+      "time_label": "13:00",
+      "real_traffic_mo": 1367510.18,
+      "real_traffic_gb": 1335.459,
+      "static_congested_mo": 305576.16,
+      "greedy_congested_mo": 261883.75,
+      "milp_congested_mo": 255093.36,
+      "milp_saved_vs_static_mo": 50482.8,
+      "milp_saved_vs_greedy_mo": 6790.39,
+      "gain_vs_static_pct": 16.52,
+      "gain_vs_greedy_pct": 2.59,
+      "static_congested_cells": 59,
+      "milp_congested_cells": 54,
+      "qod_sessions_created": 15,
+      "qod_sessions_extended": 0,
+      "qod_sessions_released": 0,
+      "qod_active_sessions": 8,
+      "milp_solve_time_sec": 0.652
+    },
+    {
+      "slot_idx": 2,
+      "timestamp": 1384259400.0,
+      "time_label": "13:30",
+      "real_traffic_mo": 1381452.1,
+      "real_traffic_gb": 1349.074,
+      "static_congested_mo": 314331.72,
+      "greedy_congested_mo": 269055.26,
+      "milp_congested_mo": 260686.08,
+      "milp_saved_vs_static_mo": 53645.64,
+      "milp_saved_vs_greedy_mo": 8369.18,
+      "gain_vs_static_pct": 17.07,
+      "gain_vs_greedy_pct": 3.11,
+      "static_congested_cells": 61,
+      "milp_congested_cells": 59,
+      "qod_sessions_created": 10,
+      "qod_sessions_extended": 8,
+      "qod_sessions_released": 0,
+      "qod_active_sessions": 13,
+      "milp_solve_time_sec": 0.58
+    }
+  ]
+}

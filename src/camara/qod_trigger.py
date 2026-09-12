@@ -91,6 +91,9 @@ class QoDTriggerManager:
                     "saturation_pct": round((residual_mo / capacity) * 100, 2)
                 })
 
+                if sessions_created_count >= self.max_sessions_per_slot:
+                    continue
+
                 # Identifier les terminaux critiques à prioriser
                 devices = self._get_critical_devices_for_cell(cell_id)
                 for dev in devices:
