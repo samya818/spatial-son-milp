@@ -604,7 +604,7 @@ spatial-son-milp/
   * Authorship of scientific reports, experimental benchmarks, and engineering documentation.
 
 ### Historical Track: Version 1.0 (Preliminary Exploratory Isotropic Phase)
-* Developed initially as a team project by **Samya Loukili** and **Kenza El Khaniri**, under the academic supervision of **Prof. Toufik Massrour** (ENSAM Meknès).
+* Developed initially as a team project by **Samya Loukili** and ** fatima zahra azzi**,
 
 ### Standardized References
 * **3GPP TR 38.901**: *Channel model for frequencies from 0.5 to 100 GHz (Urban Macro specifications).*
