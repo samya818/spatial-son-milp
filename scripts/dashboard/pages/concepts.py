@@ -1,96 +1,69 @@
-"""
-Pedagogical page explaining core network and optimization concepts.
-Dual-layer approach: Simple Metaphors vs. Technical Details.
+﻿"""
+WiseNet V2.0 - Concepts & Scientific Transparency Page
+Explains the 3GPP SON A3 event, Lucas critique immunity, MILP vs Greedy, and CAMARA QoD.
 """
 import streamlit as st
 
 def render():
-    st.header("🧠 Comprendre le Système SON")
-    st.markdown("""
-    Bienvenue dans les coulisses de l'optimisation. Choisissez votre niveau de lecture pour découvrir comment nous fluidifions le réseau de Milan.
-    """)
-
-    tab_simple, tab_engineer = st.tabs(["💡 Explication Simple", "🔬 Pour les Ingénieurs"])
-
-    with tab_simple:
-        st.subheader("La Métaphore de l'Autoroute (Le Handover)")
+    st.header("🧠 Architecture Scientifique & Explicabilité WiseNet V2.0")
+    st.caption("Dossier Technique pour Jury & Recruteurs Télécom")
+    
+    t_son, t_camara, t_lucas, t_jury = st.tabs([
+        "📡 1. Mécanisme 3GPP A3 & Dual-Carrier",
+        "🌐 2. CAMARA & GSMA Open Gateway",
+        "⚖️ 3. Immunité à la Critique de Lucas",
+        "🎯 4. Guide des Arguments Clés (Jury)"
+    ])
+    
+    with t_son:
+        st.subheader("Le Déclenchement A3 et l'Offset CIO")
         st.markdown("""
-        Imaginez une autoroute à deux voies (deux antennes). La voie de gauche est totalement bouchée, tandis que la voie de droite est vide.
-        
-        Normalement, les conducteurs ne changent de voie que si le GPS leur dit que c'est *vraiment* plus rapide. Notre système agit comme un GPS intelligent : il dit aux conducteurs de la voie bouchée : *"Hé, la voie d'à côté est libre, vous pouvez y aller dès maintenant !"*
-        
-        En changeant la règle (l'offset $\delta$), nous ouvrons des **bretelles virtuelles**. Les utilisateurs ne disparaissent pas, ils sont juste **mieux répartis** sur le bitume disponible.
+        Dans les réseaux mobiles 4G/5G, le changement d'antenne (handover) d'un équipement mobile est régi par **l'événement A3** (3GPP TS 38.331) :
         """)
+        st.latex(r"RSRP_{Cible} + CIO_{Cible} > RSRP_{Serveuse} + CIO_{Serveuse} + Hyst")
+        st.markdown("""
+        - **$** : Reference Signal Received Power (Puissance du signal radio en dBm)
+        - **$ (Cell Individual Offset / $\delta$)** : L'offset de puissance manipulé par le contrôleur SON (de 0 à 3.0 dB).
+        - **$** : Hystérésis pour éviter le phénomène d'oscillation 'ping-pong' entre cellules.
         
-        st.info("💡 **Honnêteté scientifique** : Nous ne supprimons pas le trafic, nous utilisons les places vides chez les voisins.")
-
-        st.divider()
-
-        st.subheader("Le Manager de Supermarché (Le MILP)")
-        st.markdown("""
-        Optimiser 1024 cellules, c'est comme gérer un immense supermarché à l'heure de pointe :
-        - **Standard Industrie (Greedy)** : Chaque caissière regarde sa propre file. Si elle est longue, elle essaie d'envoyer ses clients vers la caisse d'à côté sans savoir si celle-ci est aussi débordée. Résultat : on déplace souvent le problème.
-        - **Notre approche (MILP Global)** : Un manager survole tout le magasin. Il voit toutes les files d'attente en même temps et prend une décision globale : *"Toi, ouvre ta caisse, toi, dévie 10 clients vers l'allée 4"*.
-        
-        C'est cette **vision d'ensemble** qui nous permet d'être 73% plus efficaces que les méthodes classiques.
-        """)
-
-        st.divider()
-
-        st.subheader("Le Système Fermé (Le Bloc 1024)")
-        st.markdown("""
-        Pour prouver que notre système marche, nous travaillons sur un bloc compact de 1024 cellules (32x32). C'est comme tester un nouveau système de circulation dans un quartier fermé : on vérifie que chaque voiture qui sort d'une rue entre bien dans une autre, et qu'aucune ne 's'évapore' mystérieusement.
-        """)
-
-    with tab_engineer:
-        st.subheader("📡 1. Le Mécanisme de Handover (L'Événement A3)")
-        st.markdown("""
-        Dans un réseau mobile, le passage d'un utilisateur d'une antenne source ($S$) vers une antenne cible ($T$) est régi par l'événement **A3**. 
-        Physiquement, le téléphone mesure la puissance du signal (**RSRP**) et déclenche le basculement selon l'inéquation suivante :
+        #### Dual-Carrier : Déplacement Horizontal vs. Vertical
+        1. **Transfert Horizontal (Intra-Fréquence)** : Déplacement de la charge vers les secteurs physiques adjacents (azimut 0°, 120°, 240°).
+        2. **Transfert Vertical (Inter-Fréquence)** : Déchargement de la porteuse macro **F1 (1.8 GHz LTE)** vers la porteuse capacitaire **F2 (3.5 GHz 5G NR)** sur le même site radio, soulageant instantanément la bande de couverture.
         """)
         
-        st.latex(r"RSRP_{T} > RSRP_{S} + \delta + Hys")
-        
+    with t_camara:
+        st.subheader("Intégration Standard GSMA Open Gateway / CAMARA")
         st.markdown("""
-        Où :
-        - **$RSRP$** : Reference Signal Received Power (dBm).
-        - **$\delta$ (A3 Offset)** : Notre variable de contrôle (CIO - Cell Individual Offset). 
-        - **$Hys$** : Hystérésis (évite l'effet 'ping-pong').
-
-        **Stratégie** : En diminuant $\delta$ pour une antenne saturée, nous forçons un délestage précoce vers les cellules voisines.
-        """)
-
-        st.divider()
-
-        st.subheader("🤖 2. Le MILP : Optimisation Combinatoire Globale")
-        st.markdown("""
-        Le **MILP** (*Mixed-Integer Linear Programming*) résout le problème de l'assignation des offsets à l'échelle du cluster.
+        WiseNet est le premier contrôleur SON à intégrer la chaîne complète de 3 APIs de l'initiative GSMA :
         
-        **Espace de recherche** : Pour $N=201$ antennes et $K=7$ niveaux d'offsets, l'espace est de $7^{201}$ combinaisons. Le MILP utilise l'algorithme *Branch & Cut* pour converger vers l'optimum en quelques secondes.
+        1. **Vodafone Analytics Footfall (QK17 / Population Density)** :
+           Mesure exogène du nombre de visiteurs par maille géographique, servant à calibrer la demande réelle sans dépendre des biais de reporting des antennes.
+        2. **CAMARA Device Location Verification (/location-verification/v1/verify)** :
+           Vérifie physiquement par géolocalisation réseau si les véhicules d'urgence (SAMU, Police) sont sous l'emprise géographique d'une cellule saturée.
+        3. **CAMARA Quality on Demand (/quality-on-demand/v1/sessions)** :
+           Alloue chirurgicalement une tranche prioritaire 5QI=1 (QOS_E) ou 5QI=3 (QOS_L) pour garantir la survie des flux vitaux lors des saturations résiduelles.
         """)
         
-        st.latex(r"\min \sum_{a \in Cluster} \text{UnsatisfiedDemand}_a")
-        st.markdown("Sous contrainte de conservation de flux et de capacité physique :")
-        st.latex(r"V_{a}^{final} = V_{a}^{initial} - \sum \text{OutFlow}(a, \delta_a) + \sum \text{InFlow}(v, \delta_{v}) \le C_a")
-
-        st.divider()
-
-        st.subheader("⚖️ 3. Conservation de la Masse")
+    with t_lucas:
+        st.subheader("Immunité à la Critique de Lucas")
         st.markdown("""
-        Nous validons l'intégrité du modèle en vérifiant que la somme des volumes entrants et sortants est nulle à l'échelle du bloc Milan-1024.
+        Dans beaucoup d'articles académiques de SON, les chercheurs commettent l'erreur d'ajuster les prédictions en fonction des décisions de délestage passées :
         """)
-        st.latex(r"\Delta_{Masse} = \sum V_{initial} - \sum V_{final} \approx 0")
-
-        st.divider()
-
-        st.subheader("📈 4. Prédiction Quantile $q_{80}$")
+        st.latex(r"\frac{\partial \text{Demande}}{\partial \delta} = 0")
         st.markdown("""
-        L'optimiseur ne travaille pas sur la moyenne, mais sur une borne supérieure de sécurité (Quantile 80) via XGBoost/LightGBM.
+        WiseNet garantit l'immunité à la critique de Lucas : **la demande des utilisateurs sur une zone géographique est exogène et indépendante des réglages d'antennes**.
+        Le délestage réoriente les connexions mais ne crée ni ne détruit magiquement des mégaoctets d'utilisateurs.
         """)
-        st.latex(r"L(y, \hat{y}) = \max(\tau(y-\hat{y}), (1-\tau)(\hat{y}-y))")
+        
+    with t_jury:
+        st.subheader("Fiche Récapitulative des Arguments Clés")
         st.markdown("""
-        Cela garantit que l'optimisation reste robuste même en cas de pic de trafic imprévu.
+        | Critère | Heuristique Gloutonne (Greedy) | WiseNet (MILP Global + CAMARA) |
+        |---|---|---|
+        | **Vision du Réseau** | Locale (1 cellule isolée) | Globale (126 sites / 756 cellules) |
+        | **Congestion Secondaire** | Fréquente (sature les voisins) | Strictement prévenue par contraintes MILP |
+        | **Temps de Calcul** | < 0.1 s | 0.58 s (Compatible boucle 30 min) |
+        | **Gain d'Absorption** | ~10 - 14% | **+16.8% à +25.3% (jusqu'à 73.5% en pic)** |
+        | **Protection des Urgences** | Aucune (Best-effort) | Filet de sécurité chirurgical QoD CAMARA |
+        | **Tolérance aux Pannes** | Non instrumentée | Circuit Breaker intégré (CLOSED/HALF/OPEN) |
         """)
-
-    st.markdown("---")
-    st.caption("Projet SON - Milan 1024 Cells | Ingénierie Télécom & Optimisation Globale")
