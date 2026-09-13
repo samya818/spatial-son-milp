@@ -1,4 +1,4 @@
-﻿"""
+"""
 WiseNet V2.0 - Sidebar Component with 5 Core Pillars
 Controls:
 - Time Navigation: 24h Slider (00:00 - 23:30) with Play/Stop Animation
@@ -114,7 +114,7 @@ def render_sidebar():
         
         # ── 4. PARAMÈTRES AVANCÉS & STRESS TEST ─────────────────────
         with st.expander("⚙️ Paramètres Ingénieur & Stress Test", expanded=False):
-            st.markdown("**Seuil d'activation A3 ($\delta$ Max) :**")
+            st.markdown(r"**Seuil d'activation A3 ($\delta$ Max) :**")
             delta_val = st.slider("Offset CIO max (dB)", 0.5, 3.0, 2.0, 0.5)
             
             st.markdown("**Facteur de Stress Réseau :**")

@@ -1,4 +1,4 @@
-﻿"""
+"""
 WiseNet V2.0 - Overview Page: The Interactive Heart of the Platform
 Pillars:
 1. Interactive Hexagonal Network Map with Sector Wedges & Dual-Carrier toggle (F1 LTE / F2 5G NR)
@@ -9,6 +9,7 @@ Pillars:
 """
 import streamlit as st
 import pandas as pd
+import polars as pl
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
