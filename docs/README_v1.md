@@ -187,8 +187,7 @@ python check_environment.py --verify
 
 ## 👥 Authors
 - **Loukili Samya**
-- **Kenza El Khaniri**
-- Supervised by **Mr. Toufik Massrour** (ENSAM Meknès).
+
 
 ---
 *Developed for R&D purposes using the Telecom Italia Big Data Challenge dataset.*
