@@ -17,6 +17,8 @@ pulp>=2.7.0
 pandera>=0.17.0
 matplotlib>=3.7.0
 tqdm>=4.65.0
+pydeck>=0.8.0
+pandas>=2.0.0
 
 # --- RESEARCH & FORECASTING (Optional: Skipped on Python 3.13+ for stability) ---
 prophet>=1.1.0; python_version < "3.13"
