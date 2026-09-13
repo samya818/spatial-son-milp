@@ -1,11 +1,10 @@
 """
 WiseNet V2.0 - Sidebar Component with 5 Core Pillars
 Controls:
-- Time Navigation: 24h Slider (00:00 - 23:30) with Play/Stop Animation
-- Frequency Toggle (F1_1800 LTE, F2_3500 5G NR, ALL Dual-Band)
-- Policy Comparison View (Side-by-Side, Overlay, Delta)
-- Stress-Test Capacity Slider
-- Circuit Breaker Live Status Pill
+- Time Navigation: 24h Slider (00:00 - 23:30) with Auto-Play / Pause Animation
+- Frequency Toggle (F1_1800 LTE, F2_3500 5G NR, ALL Dual-Carrier)
+- Advanced Stress-Test Capacity Slider
+- Circuit Breaker Live Status Badge
 """
 import time
 import streamlit as st
@@ -14,7 +13,7 @@ from scripts.dashboard.state import DemoState
 from scripts.dashboard.resilience import milp_cb
 
 def render_sidebar():
-    """Renders comprehensive, recruiter & jury ready sidebar."""
+    """Renders comprehensive, recruiter & jury ready sidebar in English."""
     state = DemoState.get_instance()
     
     with st.sidebar:
@@ -28,7 +27,7 @@ def render_sidebar():
             
         st.markdown("---")
         
-        # ── 1. CIRCUIT BREAKER RESILIENCE PILL ──────────────────────
+        # ── 1. CIRCUIT BREAKER RESILIENCE BADGE ──────────────────────
         cb_state = milp_cb.state
         if cb_state == "CLOSED":
             cb_badge = "<span style='background:rgba(0, 212, 170, 0.2); color:#00d4aa; border:1px solid #00d4aa; padding:4px 10px; border-radius:12px; font-weight:bold; font-size:12px;'>🛡️ Circuit Breaker: CLOSED (Nominal)</span>"
@@ -38,12 +37,12 @@ def render_sidebar():
             cb_badge = "<span style='background:rgba(239, 68, 68, 0.2); color:#ef4444; border:1px solid #ef4444; padding:4px 10px; border-radius:12px; font-weight:bold; font-size:12px;'>🚨 Circuit Breaker: OPEN (Fallback)</span>"
         
         st.markdown(cb_badge, unsafe_allow_html=True)
-        st.caption("Résilience du contrôleur face aux instabilités du solveur")
+        st.caption("Controller resilience protecting against solver latency spikes")
         
         st.markdown("---")
         
         # ── 2. TEMPORAL SLIDER & AUTO-PLAY (24H = 48 SLOTS) ────────
-        st.subheader("⏱️ Navigation Temporelle (24h)")
+        st.subheader("⏱️ Temporal Navigation (24h)")
         
         def format_slot(slot_idx):
             h = slot_idx // 2
@@ -53,17 +52,17 @@ def render_sidebar():
         current_slot = getattr(state, "selected_slot", 26) % 48
         
         selected_slot_idx = st.select_slider(
-            "Créneau 30 min",
+            "30-min Time Interval",
             options=list(range(48)),
             value=current_slot,
             format_func=format_slot,
-            help="Sélectionnez un instant T pour analyser la saturation et la réponse MILP."
+            help="Select time instant T to analyze congestion patterns and the MILP balancing response."
         )
         
         # Auto-Play Simulation Feature
         col_play, col_stop = st.columns(2)
         with col_play:
-            if st.button("▶️ Lecture Auto", use_container_width=True):
+            if st.button("▶️ Auto Play", use_container_width=True):
                 st.session_state["is_playing"] = True
         with col_stop:
             if st.button("⏸️ Pause", use_container_width=True):
@@ -72,16 +71,16 @@ def render_sidebar():
         # Contextual Traffic Peak Card
         hour = selected_slot_idx // 2
         anecdotes = {
-            range(0, 6): ("🌙 Nuit Calme", "Charge minime (~350 Go/h). Les porteuses F2 peuvent être mises en veille."),
-            range(6, 9): ("🌅 Réveil Milanais & Navetteurs", "Forte croissance pendulaire. Premiers transferts A3 actifs."),
-            range(9, 13): ("🏢 Business Peak (Porta Nuova)", "Saturations localisées. Le MILP équilibre les flux bureautiques."),
-            range(13, 15): ("🍽️ Pause Déjeuner & Pic Maximal", "Pic absolu du dataset (2.62 To/h). Déclenchement du filet QoD."),
-            range(15, 18): ("💼 Après-midi Soutenu", "Volume élevé stable. Aucun débordement secondaire grâce au MILP."),
-            range(18, 21): ("🌆 Soirée & Heure de Pointe", "Saturation résidentielle et grands axes de transport."),
-            range(21, 24): ("🏟️ Détente & Événements", "Forte consommation streaming / vidéo.")
+            range(0, 6): ("🌙 Quiet Night Hours", "Minimal background traffic (~350 GB/h). High-capacity F2 carriers can enter sleep mode."),
+            range(6, 9): ("🌅 Morning Commute & Wake-Up", "Steep commuter surge. Initial A3 handover offloading triggers."),
+            range(9, 13): ("🏢 Business Peak (Porta Nuova)", "Localized commercial core saturation. MILP balances dense enterprise flows."),
+            range(13, 15): ("🍽️ Lunch Rush & Peak Demand", "Maximum daily traffic spike (2.62 TB/h). CAMARA QoD safety net active."),
+            range(15, 18): ("💼 Sustained Afternoon", "Stable high volume. Zero secondary cascading congestion under MILP."),
+            range(18, 21): ("🌆 Evening Commute & Rush Hour", "Residential core and transit hub saturation safely redistributed."),
+            range(21, 24): ("🏟️ Leisure & Entertainment", "Heavy video streaming and event traffic.")
         }
         
-        c_title, c_desc = "Trafic Nominal", "Réseau équilibré"
+        c_title, c_desc = "Nominal Traffic", "Balanced Network"
         for r, (t, d) in anecdotes.items():
             if hour in r:
                 c_title, c_desc = t, d
@@ -96,32 +95,32 @@ def render_sidebar():
         
         st.markdown("---")
         
-        # ── 3. COUCHE RADIO (TOGGLE FRÉQUENCE) ──────────────────────
-        st.subheader("📶 Couche Spectrale (Multi-Porteuses)")
+        # ── 3. RADIO LAYER (FREQUENCY TOGGLE) ──────────────────────
+        st.subheader("📶 Spectrum Layer (Multi-Carrier)")
         freq_option = st.radio(
-            "Sélection de la fréquence",
-            options=["F1_1800", "F2_3500", "ALL"],
+            "Carrier Selection",
+            options=["ALL", "F1_1800", "F2_3500"],
             format_func=lambda x: {
-                "F1_1800": "📡 F1 : 1.8 GHz (LTE Macro 20MHz)",
-                "F2_3500": "🚀 F2 : 3.5 GHz (5G NR n78 80MHz)",
-                "ALL": "🌐 Dual-Carrier (Couverture + Capacité)"
+                "ALL": "🌐 Dual-Carrier (Coverage + Capacity)",
+                "F1_1800": "📡 F1: 1.8 GHz (LTE Macro 20MHz)",
+                "F2_3500": "🚀 F2: 3.5 GHz (5G NR n78 80MHz)"
             }[x],
-            index=2,
-            help="Basculez entre LTE et 5G pour visualiser les transferts verticaux."
+            index=0,
+            help="Toggle between LTE coverage and 5G capacity to observe vertical offload dynamics."
         )
         
         st.markdown("---")
         
-        # ── 4. PARAMÈTRES AVANCÉS & STRESS TEST ─────────────────────
-        with st.expander("⚙️ Paramètres Ingénieur & Stress Test", expanded=False):
-            st.markdown(r"**Seuil d'activation A3 ($\delta$ Max) :**")
-            delta_val = st.slider("Offset CIO max (dB)", 0.5, 3.0, 2.0, 0.5)
+        # ── 4. ADVANCED PARAMETERS & STRESS TEST ─────────────────────
+        with st.expander("⚙️ Engineering Controls & Stress Test", expanded=False):
+            st.markdown(r"**A3 Handover Trigger Bound ($\delta$ Max):**")
+            delta_val = st.slider("Max CIO Offset (dB)", 0.5, 3.0, 2.0, 0.5)
             
-            st.markdown("**Facteur de Stress Réseau :**")
-            stress_val = st.slider("Capacité résiduelle des antennes", 0.4, 1.2, 0.85, 0.05,
-                                  help="Simule des pannes partielles ou une météo dégradée")
+            st.markdown("**Network Stress Factor:**")
+            stress_val = st.slider("Antenna Residual Capacity", 0.4, 1.2, 0.85, 0.05,
+                                  help="Simulates adverse weather, physical degradation, or partial base station outages")
                                   
-            st.caption("Plafond budgétaire CAMARA QoD : 15 sessions / slot")
+            st.caption("CAMARA QoD Allocation Budget: 15 sessions / slot")
             
         state.update(
             selected_slot=selected_slot_idx,
@@ -132,7 +131,7 @@ def render_sidebar():
         
         # Footer
         st.markdown("---")
-        st.caption("WiseNet Final Edition | Politecnico di Milano & TIM Data")
+        st.caption("WiseNet Flagship Edition | Politecnico di Milano & TIM Data")
         st.caption("GSMA Open Gateway / CAMARA Compliant")
         
     return state

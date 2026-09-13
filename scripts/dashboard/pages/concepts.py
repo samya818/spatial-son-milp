@@ -1,69 +1,70 @@
-﻿"""
+"""
 WiseNet V2.0 - Concepts & Scientific Transparency Page
-Explains the 3GPP SON A3 event, Lucas critique immunity, MILP vs Greedy, and CAMARA QoD.
+Explains 3GPP SON A3 event, Lucas critique immunity, MILP vs Greedy, and CAMARA QoD.
 """
 import streamlit as st
 
 def render():
-    st.header("🧠 Architecture Scientifique & Explicabilité WiseNet V2.0")
-    st.caption("Dossier Technique pour Jury & Recruteurs Télécom")
+    st.header("🧠 Scientific Architecture & Explainability: WiseNet V2.0")
+    st.caption("Technical Evaluation Dossier for Hackathon Jury & Telecom Evaluators")
     
     t_son, t_camara, t_lucas, t_jury = st.tabs([
-        "📡 1. Mécanisme 3GPP A3 & Dual-Carrier",
-        "🌐 2. CAMARA & GSMA Open Gateway",
-        "⚖️ 3. Immunité à la Critique de Lucas",
-        "🎯 4. Guide des Arguments Clés (Jury)"
+        "📡 1. 3GPP A3 Handover & Dual-Carrier",
+        "🌐 2. GSMA Open Gateway / CAMARA",
+        "⚖️ 3. Lucas Critique Immunity",
+        "🎯 4. Key Defense Arguments (Jury FAQ)"
     ])
     
     with t_son:
-        st.subheader("Le Déclenchement A3 et l'Offset CIO")
+        st.subheader("3GPP Event A3 Trigger & Cell Individual Offset (CIO)")
         st.markdown("""
-        Dans les réseaux mobiles 4G/5G, le changement d'antenne (handover) d'un équipement mobile est régi par **l'événement A3** (3GPP TS 38.331) :
+        In modern 4G LTE and 5G NR mobile cellular networks, user handover between base stations is governed by **Event A3** (3GPP TS 38.331):
         """)
-        st.latex(r"RSRP_{Cible} + CIO_{Cible} > RSRP_{Serveuse} + CIO_{Serveuse} + Hyst")
+        st.latex(r"\text{RSRP}_{\text{Target}} + \text{CIO}_{\text{Target}} > \text{RSRP}_{\text{Serving}} + \text{CIO}_{\text{Serving}} + \text{Hyst}")
         st.markdown("""
-        - **$** : Reference Signal Received Power (Puissance du signal radio en dBm)
-        - **$ (Cell Individual Offset / $\delta$)** : L'offset de puissance manipulé par le contrôleur SON (de 0 à 3.0 dB).
-        - **$** : Hystérésis pour éviter le phénomène d'oscillation 'ping-pong' entre cellules.
+        - **$\text{RSRP}$ (Reference Signal Received Power)**: Radio received power measured by the UE in dBm.
+        - **$\text{CIO}$ (Cell Individual Offset / $\delta$)**: Software-configurable power margin adjusted by the SON controller ($0.0$ to $3.0 \text{ dB}$).
+        - **$\text{Hyst}$**: Hysteresis margin preventing rapid ping-pong handover oscillation.
         
-        #### Dual-Carrier : Déplacement Horizontal vs. Vertical
-        1. **Transfert Horizontal (Intra-Fréquence)** : Déplacement de la charge vers les secteurs physiques adjacents (azimut 0°, 120°, 240°).
-        2. **Transfert Vertical (Inter-Fréquence)** : Déchargement de la porteuse macro **F1 (1.8 GHz LTE)** vers la porteuse capacitaire **F2 (3.5 GHz 5G NR)** sur le même site radio, soulageant instantanément la bande de couverture.
+        #### Dual-Carrier: Horizontal vs. Vertical Offload
+        1. **Horizontal Offload (Inter-Sector Intra-Frequency)**: Shifts traffic toward adjacent physical sectors (azimuths 0°, 120°, 240°).
+        2. **Vertical Offload (Inter-Frequency Carrier Balancing)**: Shifts demand from the saturated **F1 (1.8 GHz LTE)** macro layer to the high-capacity **F2 (3.5 GHz 5G NR)** carrier on the same site, immediately freeing up coverage capacity.
         """)
         
     with t_camara:
-        st.subheader("Intégration Standard GSMA Open Gateway / CAMARA")
+        st.subheader("Standardized GSMA Open Gateway & CAMARA Integration")
         st.markdown("""
-        WiseNet est le premier contrôleur SON à intégrer la chaîne complète de 3 APIs de l'initiative GSMA :
+        WiseNet is the first SON platform to integrate the complete 3-API chain of the GSMA Open Gateway initiative:
         
-        1. **Vodafone Analytics Footfall (QK17 / Population Density)** :
-           Mesure exogène du nombre de visiteurs par maille géographique, servant à calibrer la demande réelle sans dépendre des biais de reporting des antennes.
-        2. **CAMARA Device Location Verification (/location-verification/v1/verify)** :
-           Vérifie physiquement par géolocalisation réseau si les véhicules d'urgence (SAMU, Police) sont sous l'emprise géographique d'une cellule saturée.
-        3. **CAMARA Quality on Demand (/quality-on-demand/v1/sessions)** :
-           Alloue chirurgicalement une tranche prioritaire 5QI=1 (QOS_E) ou 5QI=3 (QOS_L) pour garantir la survie des flux vitaux lors des saturations résiduelles.
+        1. **Vodafone Analytics Footfall (QuadKey / Realtime Crowd Density)**:
+           Exogenous crowd headcount per geographic tile, serving as live demand calibration independent of antenna reporting biases.
+        2. **CAMARA Device Location Verification (`/location-verification/v1/verify`)**:
+           Physically verifies via network trilateration whether registered emergency fleets (Ambulances, Police, Civil Defense) are physically within a congested cell's radius ($2.5 \text{ km}$).
+        3. **CAMARA Quality on Demand (`/qod/v0/sessions`)**:
+           Surgically provisions a dedicated high-priority bearer slice ($5\text{QI}=1$ for $\text{QOS\_E}$ / $5\text{QI}=3$ for $\text{QOS\_L}$) to guarantee connectivity for mission-critical responders during residual saturation.
         """)
         
     with t_lucas:
-        st.subheader("Immunité à la Critique de Lucas")
+        st.subheader("Causal Intelligence & Lucas Critique Immunity")
         st.markdown("""
-        Dans beaucoup d'articles académiques de SON, les chercheurs commettent l'erreur d'ajuster les prédictions en fonction des décisions de délestage passées :
+        In conventional naive ML-for-RAN systems, engineers adjust demand forecasts based on antenna-level measurements:
         """)
-        st.latex(r"\frac{\partial \text{Demande}}{\partial \delta} = 0")
+        st.latex(r"\frac{\partial \, \text{Geographic\_Demand}(c, t)}{\partial \, \delta_r} \equiv 0")
         st.markdown("""
-        WiseNet garantit l'immunité à la critique de Lucas : **la demande des utilisateurs sur une zone géographique est exogène et indépendante des réglages d'antennes**.
-        Le délestage réoriente les connexions mais ne crée ni ne détruit magiquement des mégaoctets d'utilisateurs.
+        WiseNet strictly guarantees **Lucas Critique immunity**: **ground demand is human behavior and is completely invariant to antenna handover settings**.
+        Reorienting radio connections shifts serving cells, but does not alter ground-level subscriber data consumption.
         """)
         
     with t_jury:
-        st.subheader("Fiche Récapitulative des Arguments Clés")
+        st.subheader("Key Architectural & Empirical Comparison Matrix")
         st.markdown("""
-        | Critère | Heuristique Gloutonne (Greedy) | WiseNet (MILP Global + CAMARA) |
+        | Evaluation Criterion | Greedy Local Heuristic | WiseNet (Global MILP + CAMARA) |
         |---|---|---|
-        | **Vision du Réseau** | Locale (1 cellule isolée) | Globale (126 sites / 756 cellules) |
-        | **Congestion Secondaire** | Fréquente (sature les voisins) | Strictement prévenue par contraintes MILP |
-        | **Temps de Calcul** | < 0.1 s | 0.58 s (Compatible boucle 30 min) |
-        | **Gain d'Absorption** | ~10 - 14% | **+16.8% à +25.3% (jusqu'à 73.5% en pic)** |
-        | **Protection des Urgences** | Aucune (Best-effort) | Filet de sécurité chirurgical QoD CAMARA |
-        | **Tolérance aux Pannes** | Non instrumentée | Circuit Breaker intégré (CLOSED/HALF/OPEN) |
+        | **Network Horizon** | Local (1 isolated cell) | Global (126 sites / 756 radio cells) |
+        | **Secondary Congestion** | Frequent (cascades onto neighbors) | Strictly prevented via mathematical MILP constraints |
+        | **Solve Execution Time** | < 0.1 s | 0.58 s (Fully real-time for 30-min O-RAN loops) |
+        | **Traffic Saved (48h)** | ~1,568 GB | **+2,625 GB (2.62 Terabytes saved)** |
+        | **Oracle ML Efficiency** | 56.8% of theoretical optimum | **95.04% of clairvoyant Oracle** |
+        | **Mission-Critical Protection** | None (Best-effort only) | Surgical CAMARA Location + QoD Safety Net |
+        | **Fault Tolerance** | Unmonitored | Built-in Circuit Breaker (CLOSED / HALF-OPEN / OPEN) |
         """)

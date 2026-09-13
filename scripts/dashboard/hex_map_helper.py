@@ -1,4 +1,4 @@
-﻿import math
+import math
 import numpy as np
 import polars as pl
 import json
@@ -89,46 +89,57 @@ class HexMapEngine:
     ) -> List[Dict[str, Any]]:
         """
         Builds polygon records with real-time color coding according to congestion level.
-        Green = < 75%, Amber = 75-100%, Red = > 100% (congested)
+        Green = < 75%, Amber = 75-100%, Red = > 100% (congested / saturated)
         """
         records = []
         loads = loads_dict or {}
         offsets = offsets_dict or {}
         
         for sec in self.sectors_meta:
+            cap_f1 = sec['cap_f1_mo'] * stress_factor
+            cap_f2 = sec['cap_f2_mo'] * stress_factor
+            load_f1 = loads.get(sec['f1_cell_id'], 0.0)
+            load_f2 = loads.get(sec['f2_cell_id'], 0.0)
+            offset_applied = offsets.get(sec['f1_cell_id'], 0.0)
+            
             if frequency == "F1_1800":
                 cell_id = sec['f1_cell_id']
-                cap = sec['cap_f1_mo'] * stress_factor
-                load = loads.get(cell_id, 0.0)
+                cap = cap_f1
+                load = load_f1
+                load_pct = (load / cap * 100.0) if cap > 0 else 0.0
             elif frequency == "F2_3500":
                 cell_id = sec['f2_cell_id']
-                cap = sec['cap_f2_mo'] * stress_factor
-                load = loads.get(cell_id, 0.0)
-            else: # ALL / COMBINED
-                c1, c2 = sec['f1_cell_id'], sec['f2_cell_id']
-                cap = (sec['cap_f1_mo'] + sec['cap_f2_mo']) * stress_factor
-                load = loads.get(c1, 0.0) + loads.get(c2, 0.0)
+                cap = cap_f2
+                load = load_f2
+                load_pct = (load / cap * 100.0) if cap > 0 else 0.0
+            else: # ALL / COMBINED Dual-Carrier
                 cell_id = f"{sec['sector_id']}_BOTH"
+                cap = cap_f1 + cap_f2
+                load = load_f1 + load_f2
+                # In dual carrier, if F1 is congested (> 100%), the carrier bottleneck dominates:
+                pct_f1 = (load_f1 / cap_f1 * 100.0) if cap_f1 > 0 else 0.0
+                pct_f2 = (load_f2 / cap_f2 * 100.0) if cap_f2 > 0 else 0.0
+                pct_comb = (load / cap * 100.0) if cap > 0 else 0.0
+                load_pct = max(pct_comb, max(pct_f1, pct_f2))
                 
-            load_pct = (load / cap * 100.0) if cap > 0 else 0.0
-            offset_applied = offsets.get(cell_id, 0.0)
+            residual_mo = max(0.0, load - cap) if frequency != "ALL" else (max(0.0, load_f1 - cap_f1) + max(0.0, load_f2 - cap_f2))
             
             # Color logic based on saturation
             if load_pct > 100.0:
                 # Saturated / Red
                 excess = min(100.0, load_pct - 100.0)
-                alpha = int(160 + (excess / 100.0) * 80)
+                alpha = int(170 + (excess / 100.0) * 70)
                 color = [239, 68, 68, min(240, alpha)]
-                status = "CRITIQUE (Sature)"
+                status = "CRITICAL (Congested)"
             elif load_pct >= 75.0:
                 # Warning / Amber
-                color = [245, 158, 11, 180]
-                status = "CHARGE SOUTENUE"
+                color = [245, 158, 11, 190]
+                status = "HIGH LOAD (Warning)"
             else:
                 # Optimal / Green
-                alpha = int(90 + (load_pct / 75.0) * 80)
-                color = [0, 212, 170, max(80, alpha)]
-                status = "NOMINAL"
+                alpha = int(100 + (load_pct / 75.0) * 80)
+                color = [0, 212, 170, max(90, alpha)]
+                status = "NOMINAL (Balanced)"
                 
             records.append({
                 'site_id': sec['site_id'],
@@ -143,8 +154,12 @@ class HexMapEngine:
                 'site_lon': sec['site_lon'],
                 'load_mo': round(load, 1),
                 'capacity_mo': round(cap, 1),
+                'load_f1_mo': round(load_f1, 1),
+                'load_f2_mo': round(load_f2, 1),
+                'cap_f1_mo': round(cap_f1, 1),
+                'cap_f2_mo': round(cap_f2, 1),
                 'load_pct': round(load_pct, 1),
-                'residual_congestion_mo': round(max(0.0, load - cap), 1),
+                'residual_congestion_mo': round(residual_mo, 1),
                 'offset_a3_db': round(offset_applied, 1),
                 'status': status,
                 'color': color,

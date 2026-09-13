@@ -1,4 +1,4 @@
-﻿"""
+"""
 Main entry point for the WiseNet V2.0 Flagship Dashboard.
 Features:
 - Hexagonal 3GPP Interactive Network Map (Pydeck)
@@ -54,7 +54,7 @@ def main():
     state = render_sidebar()
 
     # 2. DATA LOADING (Cached)
-    with st.spinner("🛰️ Ingestion des Actifs Réseau (Milan 1024 / 756 cellules)..."):
+    with st.spinner("🛰️ Loading Industrial Assets (Milan 1,024 grid / 756 radio cells)..."):
         traffic_df = load_traffic_data()
         topology = load_topology()
         fractions = load_fractions()
@@ -63,7 +63,7 @@ def main():
     actual_slot = state.selected_slot
 
     # 3. ROUTING
-    tabs = st.tabs(["🛰️ Contrôleur Live (3GPP Hex Map & CAMARA)", "📖 Architecture Scientifique & Justification"])
+    tabs = st.tabs(["🛰️ Live Controller (3GPP Hex Map & CAMARA)", "📖 Scientific Architecture & Defense"])
     
     with tabs[0]:
         overview.render(
@@ -82,9 +82,9 @@ def main():
     # Global Disclaimer
     st.markdown("---")
     st.caption("""
-    ⚠️ **Note d'Intégrité Scientifique** : Dataset Telecom Italia Milan (Novembre-Décembre 2013). 
-    Topologie 3GPP déterministe avec ISD 750m conforme aux spécifications Ericsson AIR et licences TIM Italy.
-    Filet de sécurité CAMARA validé sur la sandbox officielle GSMA Open Gateway / Vodafone.
+    ⚠️ **Scientific Integrity Note**: Benchmark based on Telecom Italia Big Data Challenge (Milan, Nov–Dec 2013). 
+    Deterministic 3GPP TR 38.901 topology with 750m ISD compliant with Ericsson AIR hardware profiles and TIM Italy spectrum allocations.
+    GSMA Open Gateway CAMARA APIs verified against the official developer sandbox.
     """)
 
     # Auto-play tick logic
