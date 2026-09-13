@@ -513,10 +513,15 @@ WiseNet V2.0 includes a production-grade operations console (`scripts/dashboard/
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Hexagonal Tri-Sector Cartography:** Built on PyDeck, displaying all 126 macro sites, 378 directional sector wedges, and 756 radio cells with dynamic color-coding based on live utilization.
-- **Multi-Carrier Spectral Layering:** Allows operators to toggle between 1.8 GHz LTE coverage, 3.5 GHz 5G NR capacity, or dual-carrier view to observe vertical offloading.
-- **Side-by-Side Comparative Mode:** Visualizes unmanaged saturated cells (red) alongside WiseNet-optimized cells (green) in real time.
-- **Decision Receipts:** Displays mathematical verification receipts for each cycle, including XGBoost forecast, MAE, CBC status, and mass conservation audits.
+- **Hexagonal Tri-Sector Cartography:** Built on PyDeck, displaying all 126 macro sites, 378 directional sector wedges, and 756 radio cells with dynamic color-coding based on live utilization (Green < 75%, Amber 75–100%, Red > 100% saturation).
+- **Multi-Carrier Spectral Layering:** Allows operators to toggle between 1.8 GHz LTE coverage (`F1_1800`), 3.5 GHz 5G NR capacity (`F2_3500`), or dual-carrier view (`ALL`) to observe vertical offloading.
+- **Side-by-Side Comparative Mode:** Visualizes unmanaged saturated cells (red) alongside WiseNet-optimized cells (green) in real time, delivering a direct visual demonstration of the 25.3% global (up to 73.5% peak) congestion reduction.
+- **Dynamic A3 Handover Vectors:** Displays animated spatial flow vectors indicating horizontal offload between adjacent physical sectors and vertical offload between LTE and 5G NR.
+- **Transparent Decision Receipts:** Displays mathematical verification receipts for each cycle, including XGBoost forecast, MAE, CBC status, execution latency (< 0.6s), and mass conservation audits.
+- **Greedy Secondary Congestion Benchmark (ADR-002):** Real-time quantitative display of secondary congestion avoided (+GB saved vs. myopic heuristics).
+- **CAMARA Fleet Table & Safety Net Badges:** Real-time tracking of emergency fleet vehicles (SAMU, Police, Civil Defense) with verified in-cell physical location and active `QOS_E` / `QOS_L` priority bearer sessions.
+- **Circuit Breaker Status Indicator:** Live visual badge (`CLOSED` / `HALF-OPEN` / `OPEN`) confirming fault-tolerant resilience.
+- **Temporal 24-Hour Slider & Auto-Play:** Allows continuous play-through across all 48 half-hour slots to simulate live network operations throughout an entire diurnal cycle.
 
 ---
 
@@ -551,25 +556,72 @@ WiseNet is designed for direct integration into **Open RAN (O-RAN) Alliance** st
 ## 21. Open-Source Stack, Verification, and Reproducibility
 
 WiseNet uses an entirely open-source software stack, avoiding proprietary solver licenses (such as Gurobi or CPLEX) that limit academic reproducibility and commercial scalability:
-- **Language & Data Processing:** Python 3.11, Polars, NumPy, SciPy.
+- **Language & Data Processing:** Python 3.11 / 3.12, Polars, NumPy, SciPy.
 - **Machine Learning:** XGBoost (Quantile Objective, $q=0.80$).
 - **Mathematical Modeling & Optimization:** Pyomo 6.10, Coin-OR CBC 2.10.
 - **Visualization & UI:** Streamlit, PyDeck, Plotly.
 - **API Standards:** GSMA Open Gateway CAMARA v1.1.0 (Location Verification, QoD, Footfall).
 
-### Independent Verification Commands
+### Cross-Platform Local Execution Guide (Windows, Mac, Linux)
+
+To evaluate and demonstrate the platform independently on any machine (even across differing host Python versions):
+
+#### 1. Clone the repository and select the production branch
 ```bash
-# Clone and prepare environment
 git clone https://github.com/samya818/spatial-son-milp.git
 cd spatial-son-milp
 git checkout feature/final-interface
-
-# Run the 48-Hour Continuous Empirical Simulation
-python scripts/simulation_48h_rigorous.py
-
-# Launch the V2.0 Flagship Operations Console
-streamlit run scripts/dashboard/app.py
 ```
+
+#### 2. Create and activate an isolated virtual environment
+An isolated virtual environment ensures zero package version conflicts regardless of the system's global Python environment:
+- **Windows (PowerShell):**
+  ```powershell
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  ```
+  *(If script execution is restricted: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`)*
+- **Windows (Command Prompt CMD):**
+  ```cmd
+  python -m venv .venv
+  .\.venv\Scripts\activate.bat
+  ```
+- **macOS / Linux:**
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  ```
+
+#### 3. Upgrade pip and install dependencies
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+pip install pydeck pandas
+```
+> *Note on Python 3.12+: `requirements.txt` is structured to automatically bypass non-essential C++ compiled forecasting libraries (`prophet`, `neuralforecast`) on newer Python versions, ensuring clean and instantaneous installation.*
+
+#### 4. Execute the 48-Hour Continuous Empirical Simulation
+```bash
+# Run the rigorous 96-slot benchmark (generates summary JSON, CSVs, and audit figures)
+python scripts/simulation_48h_rigorous.py
+```
+
+#### 5. Launch the V2.0 Flagship Operations Console
+- **Windows (PowerShell):**
+  ```powershell
+  $env:PYTHONPATH="."
+  streamlit run scripts/dashboard/app.py
+  ```
+- **Windows (CMD):**
+  ```cmd
+  set PYTHONPATH=.
+  streamlit run scripts/dashboard/app.py
+  ```
+- **macOS / Linux:**
+  ```bash
+  PYTHONPATH=. streamlit run scripts/dashboard/app.py
+  ```
+The console automatically opens in your default browser at: **`http://localhost:8501`**.
 
 ---
 
